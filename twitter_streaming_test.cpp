@@ -1,5 +1,18 @@
 #include <cstdio>
+#include <cstdlib>
 #include <curl/curl.h>
+
+size_t callback(char *data, size_t size, size_t nmemb, void *usrdata)
+{
+  static int count = 0;
+  count++;
+  printf("%i:\n\n%s\n\n", count, data);
+
+  if(count == 20)
+    exit(0);
+
+  return size*nmemb;
+}
 
 int main(int argc, char **argv)
 {
@@ -9,8 +22,11 @@ int main(int argc, char **argv)
   curl = curl_easy_init();
 
   if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com");
-
+    curl_easy_setopt(curl, CURLOPT_URL, "https://stream.twitter.com/1/statuses/filter.json");
+    curl_easy_setopt(curl, CURLOPT_POST, 1);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "track=election");
+    curl_easy_setopt(curl, CURLOPT_USERPWD, "vikings383:383vikings");
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
     // Perform the request, res will get the return code
     res = curl_easy_perform(curl);
     // Check for errors
