@@ -5,16 +5,17 @@
 
 using namespace std;
 
-bool find_in_str(const char *needle, const char *haystack)
+string to_lowercase(string text) //convert a string to lowercase
 {
-  // TODO: should only return true if the 'needle' (and any uppercase variations)
-  // can be found in 'haystack'
-  return true;
+  for(int i = 0; i < text.length(); ++i)
+    text[i] = tolower(text[i]);
+
+  return text;
 }
 
 size_t callback(char *data, size_t size, size_t nmemb, void *usrdata)
 {
-  static int romney = 0, obama = 0;
+  static int republican = 0, democrat = 0;
 
   Json::Value root;
   Json::Reader reader;
@@ -22,14 +23,21 @@ size_t callback(char *data, size_t size, size_t nmemb, void *usrdata)
   if(!reader.parse(data, root))
     cout << "JSON fail!\n";
 
-  //cout << root["text"] << "\n";
+  cout << root["text"];
+  
+  //convert tweet to lowercase so lowercase keywords can be searched for
+  string tweet_in_lowercase = to_lowercase(root["text"].asString());
+  
+  cout << tweet_in_lowercase << endl; 
 
-  if(find_in_str(root["text"].asCString(), "obama"))
-    obama++;
-  if(find_in_str(root["text"].asCString(), "romney"))
-    romney++;
+  //TODO: once we add more keywords we may want to move this functionality to a separate function
+  //search the lowercase tweet for the following strings
+  if (string::npos != tweet_in_lowercase.find("obama"))
+    democrat++;
+  if (string::npos != tweet_in_lowercase.find("romney"))
+    republican++;
 
-  cout << "Romney: " << romney << ", Obama: " << obama << "\n";
+  cout << "Romney: " << republican << ", Obama: " << democrat << "\n\n";
 
   return size*nmemb;
 }
