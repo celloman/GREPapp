@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <cstring>
 #include <curl/curl.h>
 #include <json/json.h>
@@ -7,6 +8,14 @@
 using namespace std;
 
 string buffer;
+
+double str_to_double(string x){
+  stringstream s;
+  s << x;
+  double res;
+  s >> res;
+  return res;
+}
 
 string to_lowercase(string text) //convert a string to lowercase
 {
@@ -54,19 +63,18 @@ double get_sentiment(string text, string subject)
       else
       {
         curl_easy_cleanup(curl);
-        return root["docSentiment"]["score"].asDouble();
+        return str_to_double(root["docSentiment"]["score"].asString()) + 1;
       }
     }
 
     curl_easy_cleanup(curl);
   }
-  return 0;
+  return 1;
 }
 
 size_t callback(char *data, size_t size, size_t nmemb, void *usrdata)
 {
-  static int republican = 0, democrat = 0, useful_tweets = 0, tweets = 0;
-  tweets++;
+  static double republican = 0, democrat = 0;
   double sentiment;
   Json::Value root;
   Json::Reader reader;
@@ -77,24 +85,22 @@ size_t callback(char *data, size_t size, size_t nmemb, void *usrdata)
   //convert tweet to lowercase so lowercase keywords can be searched for
   string tweet_in_lowercase = to_lowercase(root["text"].asString());
 
+  cout << tweet_in_lowercase << "\n";
+
   //TODO: once we add more keywords we may want to move this functionality to a separate function
   //search the lowercase tweet for the following strings
   if (string::npos != tweet_in_lowercase.find("obama"))
   {
     sentiment = get_sentiment(root["text"].asString(), "obama");
     democrat += sentiment;
-    if(sentiment != 2)
-      useful_tweets++;
   }
   if (string::npos != tweet_in_lowercase.find("romney"))
   {
     sentiment = get_sentiment(root["text"].asString(), "romney");
     republican += sentiment;
-    if(sentiment != 2)
-      useful_tweets++;
   }
 
-  cout << "Romney: " << republican << ", Obama: " << democrat << " (" << useful_tweets << "/" << tweets << ")\n";
+  cout << "Romney: " << republican << ", Obama: " << democrat << "\n";
 
   return size*nmemb;
 }
