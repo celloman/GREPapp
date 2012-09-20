@@ -1,0 +1,8 @@
+prerequisites:
+
+  - libcurl
+  - libjsoncpp
+
+build instructions:
+
+  make
