@@ -19,14 +19,6 @@ double str_to_double(string x){
 	return res;
 }
 
-string to_lowercase(string text) //convert a string to lowercase
-{
-	for(int i = 0; i < text.length(); ++i)
-		text[i] = tolower(text[i]);
-
-	return text;
-}
-
 size_t write_data(char *data, size_t size, size_t nmemb, void *usrdata)
 {
 	buffer = "";
