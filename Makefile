@@ -17,7 +17,7 @@
 
 CC 	= g++
 #CFLAGS = #none at this time                                                
-LDFLAGS = -lcurl -ljson
+LDFLAGS = -lcurl -ljsoncpp
 
 all: political clean
 
