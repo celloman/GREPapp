@@ -1,11 +1,10 @@
-#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <cstring>
 #include <curl/curl.h>
 #include <json/json.h>
 
-#include "twitter_stream.h"
+#include "twitter_stream/twitter_stream.h"
 
 using namespace std;
 
