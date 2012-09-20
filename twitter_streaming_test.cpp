@@ -5,6 +5,8 @@
 #include <curl/curl.h>
 #include <json/json.h>
 
+#include "twitter_stream.h"
+
 using namespace std;
 
 string buffer;
@@ -72,60 +74,35 @@ double get_sentiment(string text, string subject)
 	return 1;
 }
 
-size_t callback(char *data, size_t size, size_t nmemb, void *usrdata)
+void callback(tweet t)
 {
 	static double republican = 0, democrat = 0;
+
 	double sentiment;
-	Json::Value root;
-	Json::Reader reader;
 
-	if(!reader.parse(data, root))
-		cout << "JSON fail!\n";
-
-	//convert tweet to lowercase so lowercase keywords can be searched for
-	string tweet_in_lowercase = to_lowercase(root["text"].asString());
-
-	cout << tweet_in_lowercase << "\n";
+	cout << t.m_text << "\n";
 
 	//TODO: once we add more keywords we may want to move this functionality to a separate function
 	//search the lowercase tweet for the following strings
-	if (string::npos != tweet_in_lowercase.find("obama"))
+	if (string::npos != t.m_text.find("obama"))
 	{
-		sentiment = get_sentiment(root["text"].asString(), "obama");
+		sentiment = get_sentiment(t.m_text, "obama");
 		democrat += sentiment;
 	}
-	if (string::npos != tweet_in_lowercase.find("romney"))
+	if (string::npos != t.m_text.find("romney"))
 	{
-		sentiment = get_sentiment(root["text"].asString(), "romney");
+		sentiment = get_sentiment(t.m_text, "romney");
 		republican += sentiment;
 	}
 
 	cout << "Romney: " << republican << ", Obama: " << democrat << "\n";
-
-	return size*nmemb;
 }
 
 int main(int argc, char **argv)
 {
-	CURL *curl;
-	CURLcode res;
 
-	curl = curl_easy_init();
-
-	if(curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, "https://stream.twitter.com/1/statuses/filter.json");
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "track=obama,romney");
-		curl_easy_setopt(curl, CURLOPT_USERPWD, "vikings383:383vikings");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-		// Perform the request, res will get the return code
-		res = curl_easy_perform(curl);
-		// Check for errors
-		if(res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-		
-		curl_easy_cleanup(curl);
-	}
+	twitter_stream ts = twitter_stream(&callback);
+	ts.start();
 
 	return 0;
 }
