@@ -56,22 +56,24 @@ double get_sentiment(string text, string subject)
 			else
 			{
 				curl_easy_cleanup(curl);
-				return str_to_double(root["docSentiment"]["score"].asString()) + 1;
+				return str_to_double(root["docSentiment"]["score"].asString());
 			}
 		}
 
 		curl_easy_cleanup(curl);
 	}
-	return 1;
+	return 0;
 }
 
 void callback(tweet t)
 {
 	static double republican = 0, democrat = 0;
+	static int tweets = 0;
+	tweets++;
 
 	double sentiment;
 
-	cout << t.m_text << "\n";
+	cout << t.m_text.substr(0, 30) << "...  ";
 
 	//TODO: once we add more keywords we may want to move this functionality to a separate function
 	//search the lowercase tweet for the following strings
@@ -86,7 +88,7 @@ void callback(tweet t)
 		republican += sentiment;
 	}
 
-	cout << "Romney: " << republican << ", Obama: " << democrat << "\n";
+	cout << "R: " << republican << ", O: " << democrat << " (" << tweets << ")\n";
 }
 
 int main(int argc, char **argv)
