@@ -21,13 +21,16 @@ LDFLAGS = -lcurl -ljsoncpp
 
 all: political clean
 
-political: main.o twitter_stream.o
+political: main.o twitter_stream.o sentiment.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 main.o: main.cpp
 	$(CC) -c $(CFLAGS) $<
 
 twitter_stream.o: twitter_stream/twitter_stream.cpp twitter_stream/twitter_stream.h
+	$(CC) -c $(CFLAGS) $<
+
+sentiment.o: sentiment/sentiment.cpp sentiment/sentiment.h
 	$(CC) -c $(CFLAGS) $<
 
 clean:

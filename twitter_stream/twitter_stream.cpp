@@ -1,6 +1,6 @@
 #include "twitter_stream.h"
 
-size_t write_function(char *data, size_t size, size_t nmemb, void *usrdata)
+size_t twitter_write_function(char *data, size_t size, size_t nmemb, void *usrdata)
 {
 	if(data != NULL)
 	{
@@ -62,7 +62,7 @@ bool twitter_stream::start()
 		curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, "track=obama,romney");
 		curl_easy_setopt(m_curl, CURLOPT_USERPWD, "vikings383:383vikings");
 		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
-		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_function);
+		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, twitter_write_function);
 		// Perform the request, res will get the return code
 		res = curl_easy_perform(m_curl);
 		// Check for errors

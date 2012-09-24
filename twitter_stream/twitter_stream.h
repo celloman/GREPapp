@@ -3,11 +3,11 @@
 #include <stdlib.h>
 
 #include <curl/curl.h>
-#include <json/json.h>
+#include <jsoncpp/json/json.h>
 
 using namespace std;
 
-size_t write_function(char *data, size_t size, size_t nmemb, void *usrdata);
+size_t twitter_write_function(char *data, size_t size, size_t nmemb, void *usrdata);
 
 class tweet {
 
@@ -16,7 +16,6 @@ private:
 
 public:
 	string m_text;
-	
 	tweet(char *json_data);
 };
 
