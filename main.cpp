@@ -44,7 +44,23 @@ int main(int argc, char **argv)
 	vector<string> l_keywords;
 
 	c_keywords.push_back("romney");
+	c_keywords.push_back("conservative");
+	c_keywords.push_back("republican");
+	c_keywords.push_back("republicans");
+	c_keywords.push_back("right wing");
+	c_keywords.push_back("right-wing");
+	c_keywords.push_back("rightwing");
+	c_keywords.push_back("gop");
+
 	l_keywords.push_back("obama");
+	l_keywords.push_back("liberal");
+	l_keywords.push_back("democrat");
+	l_keywords.push_back("democrats");
+	l_keywords.push_back("democratic");
+	l_keywords.push_back("left wing");
+	l_keywords.push_back("left-wing");
+	l_keywords.push_back("leftwing");
+	l_keywords.push_back("obamacare");
 
 	twitter_stream ts = twitter_stream(&callback, c_keywords, l_keywords);
 	
