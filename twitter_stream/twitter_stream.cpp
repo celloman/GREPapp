@@ -6,7 +6,7 @@ size_t twitter_write_function(char *data, size_t size, size_t nmemb, void *usrda
 	{
 		twitter_stream *ts = (twitter_stream*)(usrdata);
 		tweet t = tweet(data);
-		ts->m_callback(t, ts->m_keywords);
+		ts->m_callback(t, ts->m_c_keywords, ts->m_l_keywords);
 	}
 	else
 	{
@@ -42,10 +42,11 @@ tweet::tweet(char *json_data)
 }
 
 // constructor (takes callback function and keywords)
-twitter_stream::twitter_stream(void (*callback)(tweet, vector<string> keywords), vector<string> keywords)
+twitter_stream::twitter_stream(void (*callback)(tweet, vector<string>, vector<string>), vector<string> c_keywords, vector<string> l_keywords)
 {
 	m_callback = callback;
-	m_keywords = keywords;
+	m_c_keywords = c_keywords;
+	m_l_keywords = l_keywords;
 }
 
 // start the curl request

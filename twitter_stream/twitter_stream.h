@@ -27,10 +27,14 @@ private:
 	CURL *m_curl;
 
 public:
-	void (*m_callback)(tweet, vector<string>);
-	vector<string> m_keywords;
+	void (*m_callback)(tweet, vector<string>, vector<string>);
+	vector<string> m_c_keywords;
+	vector<string> m_l_keywords;
 
-	twitter_stream(void (*callback)(tweet, vector<string>), vector<string> keywords);
+	twitter_stream( void (*callback)(tweet, vector<string>, vector<string>), 
+					vector<string> c_keywords, 
+					vector<string> l_keywords
+				  );
 	bool start();
 
 	// void pause();
