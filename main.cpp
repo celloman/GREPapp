@@ -16,18 +16,26 @@ void callback(tweet t, vector<string> c_keywords, vector<string> l_keywords)
 
 	cout << t.m_text.substr(0, 15) << "...  ";
 
-	if (string::npos != t.m_text.find("obama"))
+	//l_keywords is the vector for liberal
+	for (int i = 0; i < l_keywords.size(); i++)
 	{
-		sentiment = sentiment::get(t.m_text, "obama");
-		democrat += sentiment;
+		if (string::npos != t.m_text.find(l_keywords[i]))
+		{
+			sentiment = sentiment::get(t.m_text, l_keywords[i]);
+			democrat += sentiment;
+		}
 	}
-	if (string::npos != t.m_text.find("romney"))
-	{
-		sentiment = sentiment::get(t.m_text, "romney");
-		republican += sentiment;
+	//c_keywords is the vector for conservative
+	for (int i = 0; i < c_keywords.size(); i++)
+	{	
+		if (string::npos != t.m_text.find(c_keywords[i]))
+		{
+			sentiment = sentiment::get(t.m_text, c_keywords[i]);
+			republican += sentiment;
+		}
 	}
 
-	cout << "R: " << republican << ", O: " << democrat << " (" << tweets << ")\n";
+	cout << "R: " << republican << ", D: " << democrat << " (" << tweets << ")\n";
 }
 
 int main(int argc, char **argv)
