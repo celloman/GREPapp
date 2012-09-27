@@ -40,20 +40,22 @@ void callback(tweet t, vector<string> c_keywords, vector<string> l_keywords)
 
 int main(int argc, char **argv)
 {
-	vector<string> c_keywords;
-	vector<string> l_keywords;
-
-	c_keywords.push_back("romney");
-	c_keywords.push_back("conservative");
-	c_keywords.push_back("republican");
-	c_keywords.push_back("republicans");
+        vector<string> c_keywords; //contains keywords corresponding to conservative party
+        vector<string> l_keywords; //contains keywords corresponding to liberal party
+  
+        c_keywords.push_back("romney");
+        c_keywords.push_back("conservative"); //TODO: decide for sure if we want this keyword, it is an adjective
+        c_keywords.push_back("conservatives");
+        c_keywords.push_back("republican");
+        c_keywords.push_back("republicans");
 	c_keywords.push_back("right wing");
 	c_keywords.push_back("right-wing");
 	c_keywords.push_back("rightwing");
 	c_keywords.push_back("gop");
 
 	l_keywords.push_back("obama");
-	l_keywords.push_back("liberal");
+	l_keywords.push_back("liberal"); //TODO: decide for sure if we want this keyword, it is an adjective
+	l_keywords.push_back("liberals");
 	l_keywords.push_back("democrat");
 	l_keywords.push_back("democrats");
 	l_keywords.push_back("democratic");
