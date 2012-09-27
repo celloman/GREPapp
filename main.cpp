@@ -1,12 +1,15 @@
 #include <iostream>
+#include <vector>
 
 #include "twitter_stream/twitter_stream.h"
 #include "sentiment/sentiment.h"
 
 using namespace std;
 
-void callback(tweet t)
+void callback(tweet t, vector<string> keywords)
 {
+	// TODO use keywords passed as argument, not the hard-coded strings "obama" and "romney"
+
 	static double republican = 0, democrat = 0, sentiment;
 	static int tweets = 0;
 	tweets++;
@@ -29,7 +32,12 @@ void callback(tweet t)
 
 int main(int argc, char **argv)
 {
-	twitter_stream ts = twitter_stream(&callback);
+	vector<string> keywords;
+	keywords.push_back("obama");
+	keywords.push_back("romney");
+
+	twitter_stream ts = twitter_stream(&callback, keywords);
+	
 	ts.start();
 
 	return 0;

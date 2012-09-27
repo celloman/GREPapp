@@ -6,7 +6,7 @@ size_t twitter_write_function(char *data, size_t size, size_t nmemb, void *usrda
 	{
 		twitter_stream *ts = (twitter_stream*)(usrdata);
 		tweet t = tweet(data);
-		ts->m_callback(t);
+		ts->m_callback(t, ts->m_keywords);
 	}
 	else
 	{
@@ -42,15 +42,16 @@ tweet::tweet(char *json_data)
 }
 
 // constructor (takes callback function and keywords)
-twitter_stream::twitter_stream(void (*callback)(tweet))
+twitter_stream::twitter_stream(void (*callback)(tweet, vector<string> keywords), vector<string> keywords)
 {
 	m_callback = callback;
-	//m_keywords = keywords;
+	m_keywords = keywords;
 }
 
 // start the curl request
 bool twitter_stream::start()
 {
+	// TODO use m_keywords as the track parameters, not hardcoded "track=obama,romney"
 	CURLcode res;
 
 	m_curl = curl_easy_init();
@@ -68,7 +69,7 @@ bool twitter_stream::start()
 		// Check for errors
 		if(res != CURLE_OK)
 		{
-			cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res);
+			cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
 			return false;
 		}
 		

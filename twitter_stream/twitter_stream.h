@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <stdlib.h>
 
 #include <curl/curl.h>
@@ -26,9 +27,10 @@ private:
 	CURL *m_curl;
 
 public:
-	void (*m_callback)(tweet);
+	void (*m_callback)(tweet, vector<string>);
+	vector<string> m_keywords;
 
-	twitter_stream(void (*callback)(tweet));
+	twitter_stream(void (*callback)(tweet, vector<string>), vector<string> keywords);
 	bool start();
 
 	// void pause();
