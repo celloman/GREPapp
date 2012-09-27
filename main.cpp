@@ -10,11 +10,12 @@ void callback(tweet t, vector<string> c_keywords, vector<string> l_keywords)
 {
 	// TODO use keywords passed as argument, not the hard-coded strings "obama" and "romney"
 
-	static double republican = 0, democrat = 0, sentiment;
+	static double republican = 0, democrat = 0;
+	double sentiment;
 	static int tweets = 0;
 	tweets++;
 
-	cout << t.m_text.substr(0, 15) << "...  ";
+	cout << t.m_text.substr(0, 15) << "...  (" << tweets << ")\n";
 
 	//l_keywords is the vector for liberal
 	for (int i = 0; i < l_keywords.size(); i++)
@@ -45,6 +46,7 @@ int main(int argc, char **argv)
 
 	c_keywords.push_back("romney");
 	c_keywords.push_back("conservative");
+	c_keywords.push_back("conservatives");
 	c_keywords.push_back("republican");
 	c_keywords.push_back("republicans");
 	c_keywords.push_back("right wing");
@@ -56,7 +58,6 @@ int main(int argc, char **argv)
 	l_keywords.push_back("liberal");
 	l_keywords.push_back("democrat");
 	l_keywords.push_back("democrats");
-	l_keywords.push_back("democratic");
 	l_keywords.push_back("left wing");
 	l_keywords.push_back("left-wing");
 	l_keywords.push_back("leftwing");
