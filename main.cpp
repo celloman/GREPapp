@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void callback(tweet t, vector<string> keywords)
+void callback(tweet t, vector<string> c_keywords, vector<string> l_keywords)
 {
 	// TODO use keywords passed as argument, not the hard-coded strings "obama" and "romney"
 
@@ -32,11 +32,13 @@ void callback(tweet t, vector<string> keywords)
 
 int main(int argc, char **argv)
 {
-	vector<string> keywords;
-	keywords.push_back("obama");
-	keywords.push_back("romney");
+	vector<string> c_keywords;
+	vector<string> l_keywords;
 
-	twitter_stream ts = twitter_stream(&callback, keywords);
+	c_keywords.push_back("romney");
+	l_keywords.push_back("obama");
+
+	twitter_stream ts = twitter_stream(&callback, c_keywords, l_keywords);
 	
 	ts.start();
 
