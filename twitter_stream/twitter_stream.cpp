@@ -33,6 +33,7 @@ tweet::tweet(char *json_data)
 	if(json_data == NULL || !reader.parse(json_data, root))
 	{
 		cerr << "failed to decode tweet JSON!\n";
+		cerr << json_data << "\n";
 		exit(-1);
 	}
 	else
@@ -59,6 +60,7 @@ bool twitter_stream::start()
 
 	if(m_curl)
 	{
+		string fields;
 
 		string keywords = "track=" + m_l_keywords[0];
 		for(int i = 1; i < m_l_keywords.size(); i++)
@@ -66,9 +68,11 @@ bool twitter_stream::start()
 		for(int i = 0; i < m_c_keywords.size(); i++)
 			keywords += ',' + m_c_keywords[i];
 
+		fields += keywords;
+
 		curl_easy_setopt(m_curl, CURLOPT_URL, "https://stream.twitter.com/1/statuses/filter.json");
 		curl_easy_setopt(m_curl, CURLOPT_POST, 1);
-		curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, keywords.c_str());
+		curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, fields.c_str());
 		curl_easy_setopt(m_curl, CURLOPT_USERPWD, "vikings383:383vikings");
 		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
 		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, twitter_write_function);
