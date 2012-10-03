@@ -30,7 +30,7 @@
 			});
 
 			(function poll(){
-			    $.ajax({ url: "/home/gschlect/school/CS383Project/out.txt", 
+			    $.ajax({ url: "./out.txt", 
 			    	success: function(data){
 			        	gauge.refresh(data.gauge)
 			        	$('#label').text(data.gauge+":"+(100-data.gauge));
