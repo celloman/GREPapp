@@ -1,3 +1,15 @@
+/******************************************************
+*
+* CS383 Project -- Social Media and Political Mood
+* Team Vikings -- Gresham, Serendel, and Ryan
+*
+* Sentiment analysis powered by AlchemyAPI
+* Learn more about this service at www.alchemyapi.com
+*
+* main.cpp
+*
+******************************************************/
+
 #include <iostream>
 #include <fstream>
 #include <vector>
