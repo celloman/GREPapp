@@ -13,11 +13,60 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
+
 
 #include "twitter_stream/twitter_stream.h"
 #include "sentiment/sentiment.h"
 
+ifstream l_File;
+ifstream c_File;
+
 using namespace std;
+
+void load_c_vector(vector<string> c_keywords)
+{
+	string str;
+
+	c_File.open("C:\\conservative.txt");
+    // Check the file opened successfully.
+    if ( ! c_File.is_open()) 
+	{
+       // cout << "Unable to open input file." << endl;
+        //cout << "Press enter to continue...";
+        //cin >> out;
+       // exit(1);
+    }
+
+	while(getline(c_File, str))
+	{
+		//cout << str << endl;
+		c_keywords.push_back(str);
+	}
+	c_File.close();
+}
+
+void load_l_vector(vector<string> l_keywords)
+{
+	string str;
+
+	l_File.open("C:\\liberal.txt");
+    // Check the file opened successfully.
+    if ( ! l_File.is_open()) 
+	{
+       // cout << "Unable to open input file." << endl;
+        //cout << "Press enter to continue...";
+        //cin >> out;
+        //exit(1);
+    }
+
+	while(getline(l_File, str))
+	{
+		//cout << str << endl;
+		l_keywords.push_back(str);
+	}
+	l_File.close();
+}
 
 void callback(tweet t, vector<string> c_keywords, vector<string> l_keywords)
 {
@@ -67,7 +116,7 @@ int main(int argc, char **argv)
     vector<string> c_keywords; //contains keywords corresponding to conservative party
     vector<string> l_keywords; //contains keywords corresponding to liberal party
 
-    c_keywords.push_back("romney");
+  /*  c_keywords.push_back("romney");
     c_keywords.push_back("conservative"); //TODO: decide for sure if we want this keyword, it is an adjective
     c_keywords.push_back("conservatives");
     c_keywords.push_back("republican");
@@ -86,6 +135,7 @@ int main(int argc, char **argv)
 	l_keywords.push_back("left-wing");
 	l_keywords.push_back("leftwing");
 	l_keywords.push_back("obamacare");
+	*/
 
 	twitter_stream ts = twitter_stream(&callback, c_keywords, l_keywords);
 	
