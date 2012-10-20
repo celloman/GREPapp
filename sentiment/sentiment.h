@@ -10,9 +10,11 @@
 *
 ******************************************************/
 
+#ifndef SENTIMENT_H
+#define SENTIMENT_H
+
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <stdlib.h>
 
 #include <curl/curl.h>
@@ -27,9 +29,10 @@ class sentiment {
 
 private:
 	static CURL *m_curl;
-	static double str_to_double(string x);
 
 public:
 	static string m_response_buffer;
 	static double get(string text, string subject);
 };
+
+#endif

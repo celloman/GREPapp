@@ -6,7 +6,7 @@ size_t twitter_write_function(char *data, size_t size, size_t nmemb, void *usrda
 	{
 		twitter_stream *ts = (twitter_stream*)(usrdata);
 		tweet t = tweet(data);
-		ts->m_callback(t, ts->m_c_keywords, ts->m_l_keywords);
+		ts->m_callback(t);
 	}
 	else
 	{
@@ -16,44 +16,16 @@ size_t twitter_write_function(char *data, size_t size, size_t nmemb, void *usrda
 	return size * nmemb;
 }
 
-// convert a string to lowercase
-string tweet::to_lowercase(string text)
-{
-	for(int i = 0; i < text.length(); ++i)
-		text[i] = tolower(text[i]);
-
-	return text;
-}
-
-// constructor (takes json data)
-tweet::tweet(char *json_data)
-{
-	Json::Value root;
-	Json::Reader reader;
-	if(json_data == NULL || !reader.parse(json_data, root))
-	{
-		cerr << "failed to decode tweet JSON!\n";
-		cerr << json_data << "\n";
-		exit(-1);
-	}
-	else
-	{
-		m_text = to_lowercase(root["text"].asString());
-	}
-}
-
 // constructor (takes callback function and keywords)
-twitter_stream::twitter_stream(void (*callback)(tweet, vector<string>, vector<string>), vector<string> c_keywords, vector<string> l_keywords)
+twitter_stream::twitter_stream(void (*callback)(tweet), vector<string> keywords)
 {
 	m_callback = callback;
-	m_c_keywords = c_keywords;
-	m_l_keywords = l_keywords;
+	m_keywords = keywords;
 }
 
 // start the curl request
 bool twitter_stream::start()
 {
-	// TODO use m_keywords as the track parameters, not hardcoded "track=obama,romney"
 	CURLcode res;
 
 	m_curl = curl_easy_init();
@@ -61,13 +33,11 @@ bool twitter_stream::start()
 	if(m_curl)
 	{
 		string fields;
-
-		string keywords = "track=" + m_l_keywords[0];
-		for(int i = 1; i < m_l_keywords.size(); i++)
-			keywords += ',' + m_l_keywords[i];
-		for(int i = 0; i < m_c_keywords.size(); i++)
-			keywords += ',' + m_c_keywords[i];
-
+		
+		string keywords = "track=" + m_keywords[0];
+		for(int i = 1; i < m_keywords.size(); i++)
+			keywords += ',' + m_keywords[i];
+		
 		fields += keywords;
 
 		curl_easy_setopt(m_curl, CURLOPT_URL, "https://stream.twitter.com/1/statuses/filter.json");

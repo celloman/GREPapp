@@ -16,25 +16,41 @@
 #*********************************************************************************
 
 CC 	= g++
-#CFLAGS = #none at this time                                                
+CFLAGS = -I.                                            
 LDFLAGS = -lcurl -ljsoncpp
 
-all: political clean
+all: get_tweets get_sentiment clean
 
-political: main.o twitter_stream.o sentiment.o
+
+get_tweets: get_tweets.o twitter_stream.o tweet.o keywords.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-main.o: main.cpp
+get_tweets.o: get_tweets.cpp
 	$(CC) -c $(CFLAGS) $<
 
 twitter_stream.o: twitter_stream/twitter_stream.cpp twitter_stream/twitter_stream.h
 	$(CC) -c $(CFLAGS) $<
 
+
+get_sentiment: get_sentiment.o sentiment.o tweet.o keywords.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+get_sentiment.o: get_sentiment.cpp
+	$(CC) -c $(CFLAGS) $<
+
 sentiment.o: sentiment/sentiment.cpp sentiment/sentiment.h
 	$(CC) -c $(CFLAGS) $<
 
+
+tweet.o: tweet/tweet.cpp tweet/tweet.h
+	$(CC) -c $(CFLAGS) $<
+
+keywords.o: keywords/keywords.cpp keywords/keywords.h
+	$(CC) -c $(CFLAGS) $<
+
+
 clean:
-	@rm -f *.o
+	rm -f *.o
 
 cleanall: clean
-	@rm -f political
+	rm -f get_sentiment get_tweets

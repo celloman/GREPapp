@@ -31,15 +31,6 @@ size_t alchemy_write_function(char *data, size_t size, size_t nmemb, void *usrda
 CURL *sentiment::m_curl = NULL;
 string sentiment::m_response_buffer = "";
 
-double sentiment::str_to_double(string x)
-{
-	stringstream s;
-	s << x;
-	double res;
-	s >> res;
-	return res;
-}
-
 double sentiment::get(string text, string subject)
 {
 	CURLcode res;
@@ -70,7 +61,7 @@ double sentiment::get(string text, string subject)
 			else
 			{
 				curl_easy_cleanup(m_curl);
-				return str_to_double(root["docSentiment"]["score"].asString());
+				return atof(root["docSentiment"]["score"].asString().c_str());
 			}
 		}
 
