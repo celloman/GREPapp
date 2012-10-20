@@ -15,12 +15,19 @@
 #
 #*********************************************************************************
 
-CC 	= g++
-CFLAGS = -I.                                            
+CC = g++
+CFLAGS = -I.
 LDFLAGS = -lcurl -ljsoncpp
 
-all: get_tweets get_sentiment clean
+all: release
 
+debug: CFLAGS += -ggdb -O0 -DDEBUG=true
+debug: executables
+
+release: CFLAGS += -O2
+release: executables
+
+executables: get_tweets get_sentiment clean
 
 get_tweets: get_tweets.o twitter_stream.o tweet.o keywords.o
 	$(CC) -o $@ $^ $(LDFLAGS)

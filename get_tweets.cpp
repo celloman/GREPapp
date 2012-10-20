@@ -15,6 +15,7 @@
 #include "twitter_stream/twitter_stream.h"
 #include "tweet/tweet.h"
 #include "keywords/keywords.h"
+#include "logger/logger.h"
 
 using namespace std;
 
@@ -25,6 +26,8 @@ void callback(tweet t)
 
 int main(int argc, char **argv)
 {
+	LOGGER << "testing logger\n";
+
     vector<string> keywords; // will contain all political keywords
 
     keywords::load_liberal(keywords);
