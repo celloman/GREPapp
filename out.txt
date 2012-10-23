@@ -1,1 +1,1 @@
-{"gauge":50, "tweets":0}
+{"gauge":50,"tweets":0}

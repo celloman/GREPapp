@@ -27,7 +27,8 @@ debug: executables
 release: CFLAGS += -O2
 release: executables
 
-executables: get_tweets get_sentiment clean
+executables: get_tweets get_sentiment aggregate clean
+
 
 get_tweets: get_tweets.o twitter_stream.o tweet.o keywords.o
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -49,6 +50,13 @@ sentiment.o: sentiment/sentiment.cpp sentiment/sentiment.h
 	$(CC) -c $(CFLAGS) $<
 
 
+aggregate: aggregate.o tweet.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+aggregate.o: aggregate.cpp
+	$(CC) -c $(CFLAGS) $<
+
+
 tweet.o: tweet/tweet.cpp tweet/tweet.h
 	$(CC) -c $(CFLAGS) $<
 
@@ -60,4 +68,4 @@ clean:
 	rm -f *.o
 
 cleanall: clean
-	rm -f get_sentiment get_tweets
+	rm -f get_sentiment get_tweets aggregate

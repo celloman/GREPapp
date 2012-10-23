@@ -16,11 +16,13 @@
 #include "sentiment/sentiment.h"
 #include "tweet/tweet.h"
 #include "keywords/keywords.h"
+#include "logger/logger.h"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
+	INFO_LOG << "starting get_sentiment process\n";
 
     vector<string> c_keywords, l_keywords;
 
@@ -28,7 +30,7 @@ int main(int argc, char **argv)
     keywords::load_liberal(l_keywords);
 
 	string line = "";
-	double sentiment = 0;
+	sentiment s = sentiment();
 
 	while(getline(cin, line))
 	{
@@ -39,11 +41,7 @@ int main(int argc, char **argv)
 		{
 			if (string::npos != t.m_text.find(l_keywords[i]))
 			{
-				sentiment = sentiment::get(t.m_text, l_keywords[i]);
-				if(sentiment > 0)
-					t.m_liberal_sentiment += sentiment;
-				else
-					t.m_conservative_sentiment += sentiment;
+				s.get_liberal(t, l_keywords[i]);
 			}
 		}
 		//c_keywords is the vector for conservative
@@ -51,15 +49,11 @@ int main(int argc, char **argv)
 		{	
 			if (string::npos != t.m_text.find(c_keywords[i]))
 			{
-				sentiment = sentiment::get(t.m_text, c_keywords[i]);
-				if(sentiment > 0)
-					t.m_conservative_sentiment += sentiment;
-				else
-					t.m_liberal_sentiment += sentiment;
+				s.get_conservative(t, c_keywords[i]);
 			}
 		}
 
-		t.print();
+		t.print(tweet::LIBERAL | tweet::CONSERVATIVE);
 	}
 
 	return 0;

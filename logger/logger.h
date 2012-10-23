@@ -7,6 +7,7 @@
 	#define DEBUG false
 #endif
 
-#define LOGGER if(DEBUG) std::cerr
+#define ERROR_LOG std::cerr
+#define INFO_LOG if(DEBUG) std::cerr
 
 #endif

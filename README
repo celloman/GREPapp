@@ -3,6 +3,8 @@ prerequisites:
   - libcurl
   - libjsoncpp
 
-build instructions:
+for release build: "make"
 
-  make
+for debug build:   "make debug"
+
+to execute: open index.html in firefox, and execute "run.sh"

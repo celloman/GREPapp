@@ -20,19 +20,25 @@
 #include <curl/curl.h>
 #include <jsoncpp/json/json.h>
 
+#include "tweet/tweet.h"
+
 using namespace std;
 
-size_t alchemy_write_function(char *data, size_t size, size_t nmemb, void *usrdata);
+size_t alchemy_write_function_liberal(char *data, size_t size, size_t nmemb, void *usrdata);
+size_t alchemy_write_function_conservative(char *data, size_t size, size_t nmemb, void *usrdata);
 
 
 class sentiment {
 
 private:
-	static CURL *m_curl;
+	CURLM *m_curl;
+	int m_requests;
+	void get(tweet t, string subject, size_t (*write_function)(char*, size_t, size_t, void *));
 
 public:
-	static string m_response_buffer;
-	static double get(string text, string subject);
+	void get_liberal(tweet t, string subject);
+	void get_conservative(tweet t, string subject);
+	sentiment();
 };
 
 #endif

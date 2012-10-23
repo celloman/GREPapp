@@ -21,12 +21,12 @@ using namespace std;
 
 void callback(tweet t)
 {
-	t.print();
+	t.print(tweet::ID | tweet::TEXT | tweet::FOLLOWERS | tweet::RETWEETS | tweet::IS_RETWEET);
 }
 
 int main(int argc, char **argv)
 {
-	LOGGER << "testing logger\n";
+	INFO_LOG << "starting get_tweets process\n";
 
     vector<string> keywords; // will contain all political keywords
 

@@ -26,9 +26,6 @@ public:
 	twitter_stream(void (*callback)(tweet), vector<string> keywords);
 
 	bool start();
-
-	// void pause();
-	// void stop();
 };
 
 #endif
