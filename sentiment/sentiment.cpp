@@ -13,26 +13,21 @@
 #include "sentiment.h"
 
 size_t alchemy_write_function_liberal(char *data, size_t size, size_t nmemb, void *usrdata)
-{
-	Json::Value root;
-	Json::Reader reader;
-	if(data == NULL || !reader.parse(data, root))
-	{
-		ERROR_LOG << "failed to decode alchemy JSON!\n" << reader.getFormattedErrorMessages() << data << "\n\n";
-	}
-	else if(root["status"].asString() == "ERROR")
-	{
-		ERROR_LOG << "alchemy returned error status\n"; 
-	}
-	else
+{ 
+	double sentiment = sentiment::parse_json(data);
+
+	if(sentiment != 0)
 	{
 		tweet *t  = (tweet*)usrdata;
-		double sentiment = atof(root["docSentiment"]["score"].asString().c_str());
 		if(sentiment > 0)
 			t->m_liberal = sentiment;
 		else
 			t->m_conservative = -sentiment;
 		t->print(tweet::LIBERAL | tweet::CONSERVATIVE);
+	}
+	else
+	{
+		INFO_LOG << "neutral tweet\n";
 	}
 
 	return size * nmemb;
@@ -40,28 +35,44 @@ size_t alchemy_write_function_liberal(char *data, size_t size, size_t nmemb, voi
 
 size_t alchemy_write_function_conservative(char *data, size_t size, size_t nmemb, void *usrdata)
 {
-	Json::Value root;
-	Json::Reader reader;
-	if(data == NULL || !reader.parse(data, root))
-	{
-		ERROR_LOG << "failed to decode alchemy JSON!\n" << reader.getFormattedErrorMessages() << data << "\n\n";
-	}
-	else if(root["status"].asString() == "ERROR")
-	{
-		ERROR_LOG << "alchemy returned error status\n";
-	}
-	else
+	double sentiment = sentiment::parse_json(data);
+
+	if(sentiment != 0)
 	{
 		tweet *t  = (tweet*)usrdata;
-		double sentiment = atof(root["docSentiment"]["score"].asString().c_str());
 		if(sentiment > 0)
 			t->m_conservative = sentiment;
 		else
 			t->m_liberal = -sentiment;
 		t->print(tweet::LIBERAL | tweet::CONSERVATIVE);
 	}
+	else
+	{
+		INFO_LOG << "neutral tweet\n";
+	}
 
 	return size * nmemb;
+}
+
+double sentiment::parse_json(char *data)
+{
+	Json::Value root;
+	Json::Reader reader;
+	if(data == NULL || !reader.parse(data, root))
+	{
+		ERROR_LOG << "failed to decode alchemy JSON!\n" << reader.getFormattedErrorMessages() << data << "\n\n";
+		return 0;
+	}
+	else if(root["status"].asString() == "ERROR")
+	{
+		ERROR_LOG << "alchemy returned error status\n" << data << "\n";
+		return 0;
+	}
+	else
+	{
+		INFO_LOG << "alchemy success\n";
+		return atof(root["docSentiment"]["score"].asString().c_str());
+	}
 }
 
 
