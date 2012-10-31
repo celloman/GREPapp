@@ -35,7 +35,8 @@ tweet::tweet(const char *json_data)
 	}
 }
 
-// convert a string to lowercase and replace newlines with spaces
+// convert a string to lowercase, replace newlines with spaces,
+// and replace single quotes with double quotes
 string tweet::filter(string text)
 {
 	for(int i = 0; i < text.length(); ++i)
@@ -47,10 +48,6 @@ string tweet::filter(string text)
 
 	return text;
 }
-
-void convert(int &out, Json::Value in);
-void convert(double &out, Json::Value in);
-void convert(bool &out, Json::Value in);
 
 // print the json of the tweet
 void tweet::print(unsigned int fields)

@@ -31,21 +31,22 @@ int main(int argc, char **argv)
 	{
 		tweet_count++;
 		tweet t = tweet(line.c_str());
-		tweets.push_front(t);
-
-			for(int i = 0; i < tweets.size(); i++)
-			{
-				liberal += tweets[i].m_liberal;
-				conservative += tweets[i].m_conservative;
-			}
-			
-			printf("{\"gauge\":%.0f,\"tweets\":%d}\n", liberal*100 / (liberal+conservative), tweet_count);
-			fflush(stdout);
-
-		if(tweets.size() > 99)
+		
+		if(tweets.size() >= 100)
 		{
 			tweets.pop_back();
 		}
+
+		tweets.push_front(t);
+
+		for(int i = 0; i < tweets.size(); i++)
+		{
+			liberal += tweets[i].m_liberal;
+			conservative += tweets[i].m_conservative;
+		}
+			
+		printf("{\"gauge\":%.0f,\"tweets\":%d}\n", liberal*100 / (liberal+conservative), tweet_count);
+		fflush(stdout);
 	}
 
 	return 0;

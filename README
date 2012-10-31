@@ -1,10 +1,13 @@
-prerequisites:
+dependencies:
 
-  - libcurl
-  - libjsoncpp
+  - CURL (sudo apt-get install libcurl4-gnutls-dev)
+  - JSONCPP (sudo apt-get install libjsoncpp-dev)
+  - Google Test (sudo apt-get install libgtest-dev)
 
-for release build: "make"
+release build: 
+	make
 
-for debug build:   "make debug"
+debug build:
+	make debug
 
 to execute: open index.html in firefox, and execute "run.sh"

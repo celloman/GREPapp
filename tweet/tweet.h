@@ -14,12 +14,10 @@ using namespace std;
 class tweet {
 private:
 	string filter(string text);
-	void convert(int &out, Json::Value in);
-	void convert(double &out, Json::Value in);
-	void convert(bool &out, Json::Value in);
+
 public:
 
-	enum {
+	enum fields {
 		NONE			= 0,
 		ID 				= (1u << 0),
 		TEXT 			= (1u << 1),
