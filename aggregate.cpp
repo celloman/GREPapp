@@ -25,13 +25,15 @@ int main(int argc, char **argv)
 
 	deque<tweet> tweets;
 	string line = "";
-	double liberal, conservative;
+	double liberal, conservative, liberal_gauge, conservative_gauge;
 	int tweet_count = 0;
 
 	while(getline(cin, line))
 	{
 		liberal = 0;
 		conservative = 0;
+		liberal_gauge = 0;
+		conservative_gauge = 0;
 
 		tweet_count++;
 		tweet t = tweet(line.c_str());
@@ -45,12 +47,22 @@ int main(int argc, char **argv)
 
 		for(int i = 0; i < tweets.size(); i++)
 		{
+			if(tweets[i].m_liberal > 0)
+				liberal_gauge += tweets[i].m_liberal;
+			else
+				conservative_gauge -= tweets[i].m_liberal;
+
+			if(tweets[i].m_conservative > 0)
+				conservative_gauge += tweets[i].m_conservative;
+			else
+				liberal_gauge -= tweets[i].m_conservative;
+
 			liberal += tweets[i].m_liberal;
 			conservative += tweets[i].m_conservative;
 		}
 
 		printf("{\"gauge\":%.0f, \"liberal\":%.0f, \"conservative\":%.0f, \"tweets\":%d, \"time\":%ld}\n", 
-			liberal*100 / (liberal+conservative),
+			liberal_gauge*100 / (liberal_gauge+conservative_gauge),
 			liberal,
 			conservative,
 			tweet_count,

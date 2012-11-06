@@ -24,22 +24,26 @@
 
 using namespace std;
 
-size_t alchemy_write_function_liberal(char *data, size_t size, size_t nmemb, void *usrdata);
-size_t alchemy_write_function_conservative(char *data, size_t size, size_t nmemb, void *usrdata);
-
 
 class sentiment {
 
 private:
+
+	static size_t alchemy_write_function(char *data, size_t size, size_t nmemb, void *usrdata);
+	static size_t sentiment140_write_function(char *data, size_t size, size_t nmemb, void *usrdata);
+
+	void send_request(double &sentiment, string text, string subject);
+
 	CURLM *m_curl;
 	int m_requests;
-	void get(tweet &t, string subject, size_t (*write_function)(char*, size_t, size_t, void *));
+	static bool m_alchemy_available;
 
 public:
-	static double parse_json(char *data);
-	void get_liberal(tweet &t, string subject);
-	void get_conservative(tweet &t, string subject);
+
+	double get(string text, string subject);
+
 	sentiment();
+	~sentiment();
 };
 
 #endif

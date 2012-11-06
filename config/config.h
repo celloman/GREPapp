@@ -18,7 +18,7 @@
 #define ALCHEMY_KEY "3ab48469cc894436ef2ea8bf8f7bf76d8abb7cab"
 #define TWITTER_ACCOUNT "vikings383:383vikings"
 
-#define FAKE_SENTIMENT true
+#define FAKE_SENTIMENT false
 
 #define TWEET_CAP 200
 #define AVG_FOLLOWERS 208
