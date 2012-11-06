@@ -42,7 +42,6 @@ int main(int argc, char **argv)
 			if (string::npos != t.m_text.find(l_keywords[i]))
 			{
 				t.m_liberal = s.get(t.m_text, l_keywords[i]) * t.m_weight;
-				DEBUG_LOG << t.m_liberal << "\n";
 			}
 		}
 		//c_keywords is the vector for conservative
@@ -51,7 +50,6 @@ int main(int argc, char **argv)
 			if (string::npos != t.m_text.find(c_keywords[i]))
 			{
 				t.m_conservative = s.get(t.m_text, c_keywords[i]) * t.m_weight;
-				DEBUG_LOG << t.m_conservative << "\n";
 			}
 		}
 

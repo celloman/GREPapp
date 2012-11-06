@@ -20,7 +20,7 @@
 
 #define FAKE_SENTIMENT false
 
-#define TWEET_CAP 200
+#define TWEET_CAP 500
 #define AVG_FOLLOWERS 208
 
 #endif

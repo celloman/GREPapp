@@ -66,7 +66,7 @@ size_t sentiment::sentiment140_write_function(char *data, size_t size, size_t nm
 	else
 	{
 		INFO_LOG << "sentiment140 success\n";
-		*sentiment = atof(root["results"]["polarity"].asString().c_str());
+		*sentiment = root["results"]["polarity"].asDouble();
 		*sentiment -= 2.0;
 		*sentiment /= 2.0;
 	}
@@ -131,10 +131,6 @@ double sentiment::get(string text, string subject)
 
 		curl_multi_add_handle(m_curl, curl);
 		curl_multi_perform(m_curl, &m_requests);
-
-		
-		curl_multi_remove_handle(m_curl, curl);
-		curl_easy_cleanup(curl);
 	}
 
 	#endif
