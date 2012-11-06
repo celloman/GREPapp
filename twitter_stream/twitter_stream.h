@@ -9,6 +9,7 @@
 #include <jsoncpp/json/json.h>
 
 #include "tweet/tweet.h"
+#include "config/config.h"
 
 using namespace std;
 

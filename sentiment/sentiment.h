@@ -16,11 +16,11 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h> // for atof
-
 #include <curl/curl.h>
 #include <jsoncpp/json/json.h>
 
 #include "tweet/tweet.h"
+#include "config/config.h"
 
 using namespace std;
 
@@ -33,12 +33,12 @@ class sentiment {
 private:
 	CURLM *m_curl;
 	int m_requests;
-	void get(tweet t, string subject, size_t (*write_function)(char*, size_t, size_t, void *));
+	void get(tweet &t, string subject, size_t (*write_function)(char*, size_t, size_t, void *));
 
 public:
 	static double parse_json(char *data);
-	void get_liberal(tweet t, string subject);
-	void get_conservative(tweet t, string subject);
+	void get_liberal(tweet &t, string subject);
+	void get_conservative(tweet &t, string subject);
 	sentiment();
 };
 

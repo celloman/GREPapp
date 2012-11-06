@@ -16,7 +16,7 @@
 #include "sentiment/sentiment.h"
 #include "tweet/tweet.h"
 #include "keywords/keywords.h"
-#include "logger/logger.h"
+#include "config/config.h"
 
 using namespace std;
 
@@ -24,10 +24,10 @@ int main(int argc, char **argv)
 {
 	INFO_LOG << "starting get_sentiment process\n";
 
-    vector<string> c_keywords, l_keywords;
+	vector<string> c_keywords, l_keywords;
 
-    keywords::load_conservative(c_keywords);
-    keywords::load_liberal(l_keywords);
+	keywords::load_conservative(c_keywords);
+	keywords::load_liberal(l_keywords);
 
 	string line = "";
 	sentiment s = sentiment();

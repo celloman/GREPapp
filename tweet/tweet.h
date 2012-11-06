@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <jsoncpp/json/json.h>
 
-#include "logger/logger.h"
+#include "config/config.h"
 
 using namespace std;
 
@@ -23,17 +23,19 @@ public:
 		TEXT 			= (1u << 1),
 		LIBERAL 		= (1u << 2),
 		CONSERVATIVE 	= (1u << 3),
-		RANKING			= (1u << 4),
+		WEIGHT			= (1u << 4),
 		FOLLOWERS 		= (1u << 5),
 		RETWEETS 		= (1u << 6),
-		IS_RETWEET 		= (1u << 7)
+		IS_RETWEET 		= (1u << 7),
+		ORIGINAL_ID 	= (1u << 8)
 	};
 
 	string m_text;
 	double m_liberal;
 	double m_conservative;
-	int m_ranking;
+	int m_weight;
 	int64_t m_id;
+	int64_t m_original_id;
 	int m_followers;
 	int m_retweets;
 	bool m_is_retweet;

@@ -1,0 +1,4 @@
+{"id":265316599580487680,"text":"@senorchocolatte we need those just as much as obama lol.","followers":239,"retweets":0,"is_retweet":0,"original_id":0}
+{"id":265298118717890560,"text":"@cr3ativemavrick: 'dc,  what's up - i voted, anybody vote for my man barack obama!?' - @nas *crowd lifts the roof off* #blackrage #li ...","followers":100,"retweets":10,"is_retweet":0,"original_id":0}
+{"id":265316599580487680,"text":"@senorchocolatte we need those just as much as obama lol.","followers":239,"retweets":0,"is_retweet":0,"original_id":0}
+{"id":265316599119085568,"text":"rt @cr3ativemavrick: 'dc,  what's up - i voted, anybody vote for my man barack obama!?' - @nas *crowd lifts the roof off* #blackrage #li ...","followers":568,"retweets":0,"is_retweet":1,"original_id":265298118717890560}

@@ -15,13 +15,13 @@
 #include "twitter_stream/twitter_stream.h"
 #include "tweet/tweet.h"
 #include "keywords/keywords.h"
-#include "logger/logger.h"
+#include "config/config.h"
 
 using namespace std;
 
 void callback(tweet t)
 {
-	t.print(tweet::ID | tweet::TEXT | tweet::FOLLOWERS | tweet::RETWEETS | tweet::IS_RETWEET);
+	t.print(tweet::ID | tweet::ORIGINAL_ID | tweet::TEXT | tweet::FOLLOWERS | tweet::RETWEETS | tweet::IS_RETWEET);
 }
 
 int main(int argc, char **argv)

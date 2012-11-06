@@ -43,7 +43,7 @@ bool twitter_stream::start()
 		curl_easy_setopt(m_curl, CURLOPT_URL, "https://stream.twitter.com/1/statuses/filter.json");
 		curl_easy_setopt(m_curl, CURLOPT_POST, 1);
 		curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, fields.c_str());
-		curl_easy_setopt(m_curl, CURLOPT_USERPWD, "vikings383:383vikings");
+		curl_easy_setopt(m_curl, CURLOPT_USERPWD, TWITTER_ACCOUNT);
 		curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
 		curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, twitter_write_function);
 		// Perform the request, res will get the return code

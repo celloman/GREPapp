@@ -8,6 +8,7 @@
 	<script src="js/raphael.2.1.0.min.js"></script>
 	<script src="js/justgage.1.0.1.min.js"></script>
 	<script src="js/jquery-1.8.2.min.js"></script>
+	<script src="js/highcharts.js"></script>
 
 	<script type='text/javascript'>
 
@@ -25,9 +26,48 @@
 				showMinMax: false,
 				gaugeColor: "#ff3333",
 				levelColors: ["#0066cc"],
-				shadowOpacity: .6,
-				shadowSize: 10
+				shadowOpacity: .4,
+				shadowSize: 7,
+				refreshAnimationTime: 400
 			});
+
+			var chart = new Highcharts.Chart({
+				chart: {
+					renderTo: 'chart',
+					defaultSeriesType: 'line'
+				},
+				yAxis: { 
+					min: 0,
+					title: { text: "Supporters" }
+				},
+				xAxis: { 
+					type: 'datetime',
+					gridLineWidth: 1,
+					gridLineDashStyle: 'longdash',
+					tickInterval: 5
+				},
+				tooltip: {
+					shared: true,
+					crosshairs: true
+				},
+				legend: {
+				    align: 'right',
+				    verticalAlign: 'top',
+				    y: 0,
+				    floating: true,
+				    borderWidth: 0
+				},
+				series: [{
+					name: "Liberal",
+					data: []
+				}, {
+					name: "Conservative",
+					data: []
+				}]
+			});
+
+			var time = 0;
+			var graph_points = 0;
 
 			(function poll(){
 			    $.ajax({ url: "./out.txt", 
@@ -35,9 +75,25 @@
 			        	gauge.refresh(data.gauge)
 			        	$('#label').text(data.gauge+":"+(100-data.gauge));
 			        	$('#sublabel').text(data.tweets+" tweets");
-			    	}, 
+			        	if(data.time > time + 1) // add # of seconds between each update
+			        	{
+			        		if(graph_points < 50) // show 30 points on the graph
+			        		{
+			        			graph_points++;
+								chart.series[0].addPoint(data.liberal, false, false);
+								chart.series[1].addPoint(data.conservative, false, false);
+							}
+							else
+							{
+								chart.series[0].addPoint(data.liberal, false, true);
+								chart.series[1].addPoint(data.conservative, false, true);
+							}
+							chart.redraw();
+							time = data.time;
+						}
+			    	},
 			    	dataType: "json",
-			    	complete: poll,
+			    	complete: setTimeout(poll, 250), // limit the poll to 4 times per second
 			    timeout: 30000 });
 			})();
 
@@ -50,8 +106,8 @@
 			font-family: 'Arial';
 		}
 		#gauge {
-			width: 500px;
-			height: 300px;
+			width: 450px;
+			height: 250px;
 			margin: auto;
 		}
 		#label {
@@ -75,14 +131,19 @@
 			font-weight: bold;
 			color: gray;
 		}
+		#chart {
+			height: 400px;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
 		a.alchemy {
 			position: absolute;
-			bottom: 10px;
+			top: 10px;
 			right: 10px;
 		}
 		div.alchemy {
 			position: absolute;
-			bottom: 34px;
+			top: 34px;
 			right: 275px;
 		}
 	</style>
@@ -98,6 +159,8 @@
 	<a class='alchemy' href='http://www.alchemyapi.com'>
 		<img src='http://www.alchemyapi.com/images/alchemyAPI.jpg' alt='alchemy-logo'/>
 	</a>
+
+	<div id="chart"></div>
 </body>
 
 </html>

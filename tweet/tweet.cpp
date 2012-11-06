@@ -13,24 +13,32 @@ tweet::tweet(const char *json_data)
 	else
 	{
 		m_id = root.get("id", 0).asInt64();
+		m_text = filter(root.get("text", "").asString());
 
 		// is this json straight from twitter? (ie does it have the created_at field?)
 		if(root.get("created_at", "").asString().length() > 0)
 		{
-			m_text = filter(root.get("text", "").asString());
 			m_followers = root["user"].get("followers_count", 0).asInt();
 			m_retweets = root.get("retweet_count", 0).asInt();
 			m_is_retweet = !root["retweeted_status"].empty();
+			if(m_is_retweet)
+			{
+				m_original_id = root["retweeted_status"].get("id", 0).asInt64();
+			}
+			else
+			{
+				m_original_id = 0;
+			}
 		}
 		else // internal json
 		{
-			m_text = root.get("text", "").asString();
 			m_followers = root.get("followers", 0).asInt();
 			m_retweets = root.get("retweets", 0).asInt();
-			m_ranking = root.get("ranking", 0).asInt();
+			m_weight = root.get("weight", 0).asInt();
 			m_conservative = root.get("conservative", 0).asDouble();
 			m_liberal = root.get("liberal", 0).asDouble();
 			m_is_retweet = root.get("is_retweet", false).asBool();
+			m_original_id = root.get("original_id", 0).asInt64();
 		}
 	}
 }
@@ -62,14 +70,16 @@ void tweet::print(unsigned int fields)
 		cout << ",\"liberal\":" << m_liberal;
 	if(fields & CONSERVATIVE)
 		cout << ",\"conservative\":" << m_conservative;
-	if(fields & RANKING)
-		cout << ",\"ranking\":" << m_ranking;
+	if(fields & WEIGHT)
+		cout << ",\"weight\":" << m_weight;
 	if(fields & FOLLOWERS)
 		cout << ",\"followers\":" << m_followers;
 	if(fields & RETWEETS)
 		cout << ",\"retweets\":" << m_retweets;
 	if(fields & IS_RETWEET)
 		cout << ",\"is_retweet\":" << m_is_retweet;
+	if(fields & ORIGINAL_ID)
+		cout << ",\"original_id\":" << m_original_id;
 
 	cout << "}\n" << flush;
 }

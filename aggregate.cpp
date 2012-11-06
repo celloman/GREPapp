@@ -6,15 +6,16 @@
 * Sentiment analysis powered by AlchemyAPI
 * Learn more about this service at www.alchemyapi.com
 *
-* get_tweets.cpp
+* aggregate.cpp
 *
 ******************************************************/
 
 #include <stdio.h>
+#include <ctime>
 #include <deque>
 
 #include "tweet/tweet.h"
-#include "logger/logger.h"
+#include "config/config.h"
 
 using namespace std;
 
@@ -29,10 +30,13 @@ int main(int argc, char **argv)
 
 	while(getline(cin, line))
 	{
+		liberal = 0;
+		conservative = 0;
+
 		tweet_count++;
 		tweet t = tweet(line.c_str());
 		
-		if(tweets.size() >= 100)
+		if(tweets.size() >= TWEET_CAP)
 		{
 			tweets.pop_back();
 		}
@@ -44,8 +48,15 @@ int main(int argc, char **argv)
 			liberal += tweets[i].m_liberal;
 			conservative += tweets[i].m_conservative;
 		}
-			
-		printf("{\"gauge\":%.0f,\"tweets\":%d}\n", liberal*100 / (liberal+conservative), tweet_count);
+
+		printf("{\"gauge\":%.0f, \"liberal\":%.0f, \"conservative\":%.0f, \"tweets\":%d, \"time\":%ld}\n", 
+			liberal*100 / (liberal+conservative),
+			liberal,
+			conservative,
+			tweet_count,
+			time(NULL)
+		);
+
 		fflush(stdout);
 	}
 

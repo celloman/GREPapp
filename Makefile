@@ -24,10 +24,13 @@ all: release
 debug: CFLAGS += -ggdb -O0 -DDEBUG=true
 debug: executables
 
+info: CFLAGS += -O2 -DINFO=true
+info: executables
+
 release: CFLAGS += -O2
 release: executables
 
-executables: get_tweets get_sentiment aggregate clean
+executables: get_tweets get_weight get_sentiment aggregate clean
 
 
 get_tweets: get_tweets.o twitter_stream.o tweet.o keywords.o
@@ -37,6 +40,13 @@ get_tweets.o: get_tweets.cpp
 	$(CC) -c $(CFLAGS) $<
 
 twitter_stream.o: twitter_stream/twitter_stream.cpp twitter_stream/twitter_stream.h
+	$(CC) -c $(CFLAGS) $<
+
+
+get_weight: get_weight.o tweet.o keywords.o filter.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+get_weight.o: get_weight.cpp
 	$(CC) -c $(CFLAGS) $<
 
 
@@ -63,9 +73,12 @@ tweet.o: tweet/tweet.cpp tweet/tweet.h
 keywords.o: keywords/keywords.cpp keywords/keywords.h
 	$(CC) -c $(CFLAGS) $<
 
+filter.o: filter/filter.cpp filter/filter.h
+	$(CC) -c $(CFLAGS) $<
+
 
 clean:
 	rm -f *.o
 
 cleanall: clean
-	rm -f get_sentiment get_tweets aggregate
+	rm -f get_sentiment get_weight get_tweets aggregate
