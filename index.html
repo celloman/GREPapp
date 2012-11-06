@@ -36,26 +36,31 @@
 					renderTo: 'chart',
 					defaultSeriesType: 'line'
 				},
-				yAxis: { 
-					//min: 0,
-					title: { text: "Supporters" }
+				title: { text: ' ' },
+				yAxis: {
+					title: { text: null },
+					/*labels: {
+						align: 'left',
+						x: 3,
+						y: 16
+					}*/
 				},
 				xAxis: { 
 					type: 'datetime',
 					gridLineWidth: 1,
 					gridLineDashStyle: 'longdash',
-					tickInterval: 5
+					tickInterval: 180000
 				},
 				tooltip: {
 					shared: true,
 					crosshairs: true
 				},
 				legend: {
-				    align: 'right',
-				    verticalAlign: 'top',
-				    y: 0,
-				    floating: true,
-				    borderWidth: 0
+					align: 'right',
+					verticalAlign: 'top',
+					y: 0,
+					floating: true,
+					borderWidth: 0
 				},
 				series: [{
 					name: "Liberal",
@@ -75,18 +80,23 @@
 			        	gauge.refresh(data.gauge)
 			        	$('#label').text(data.gauge+":"+(100-data.gauge));
 			        	$('#sublabel').text(data.tweets+" tweets");
-			        	if(data.time > time + 1) // add # of seconds between each update
+			        	if(data.time > time + 18) // add # of seconds between each update
 			        	{
-			        		if(graph_points < 50) // show 30 points on the graph
+			        		var date = new Date();
+			        		date.setHours(date.getHours() - (date.getTimezoneOffset()/60));
+			        		if(date.getHours() > 12) date.setHours(date.getHours() - 12);
+			        		var js_time = date.getTime();
+
+			        		if(graph_points < 50) // # of points to fit on graph
 			        		{
 			        			graph_points++;
-								chart.series[0].addPoint(data.liberal, false, false);
-								chart.series[1].addPoint(data.conservative, false, false);
+								chart.series[0].addPoint([js_time, data.liberal], false, false);
+								chart.series[1].addPoint([js_time, data.conservative], false, false);
 							}
 							else
 							{
-								chart.series[0].addPoint(data.liberal, false, true);
-								chart.series[1].addPoint(data.conservative, false, true);
+								chart.series[0].addPoint([js_time, data.liberal], false, true);
+								chart.series[1].addPoint([js_time, data.conservative], false, true);
 							}
 							chart.redraw();
 							time = data.time;
@@ -132,7 +142,8 @@
 			color: gray;
 		}
 		#chart {
-			height: 400px;
+			padding-top: 20px;
+			height: 380px;
 			padding-left: 10px;
 			padding-right: 10px;
 		}

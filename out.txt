@@ -1,1 +1,1 @@
-{"gauge":50, "liberal":0, "conservative":0, "tweets":0, "time":0}
+{"gauge":0, "liberal":0, "conservative":0, "tweets":0, "time":0}

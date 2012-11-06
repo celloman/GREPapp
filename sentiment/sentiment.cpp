@@ -12,7 +12,7 @@
 
 #include "sentiment.h"
 
-bool sentiment::m_alchemy_available = true;
+bool sentiment::m_alchemy_available = !USE_SENTIMENT140;
 
 size_t sentiment::alchemy_write_function(char *data, size_t size, size_t nmemb, void *usrdata)
 { 
