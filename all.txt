@@ -1,0 +1,3 @@
+{"gauge":-nan, "liberal":0, "conservative":0, "tweets":1, "time":1352253635}
+{"gauge":73, "liberal":3324316, "conservative":-857692, "tweets":1001, "time":1352253660}
+{"gauge":75, "liberal":3318853, "conservative":-1743502, "tweets":2001, "time":1352253687}
