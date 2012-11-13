@@ -1,1 +1,0 @@
-{"gauge":70, "liberal":2164139, "conservative":-1189386, "tweets":2540, "time":1352253701}

@@ -38,8 +38,16 @@
 					zoomType: 'x',
 					spacingRight: 20
 				},
-				title: { text: ' ' },
-				plotOptions: { line: { marker: { enabled: false } } },
+				colors: [
+					'#4572A7', 
+					'#AA4643'
+				],
+				title: { text: ' ' }, // empty string makes the spacing right
+				plotOptions: {
+					line: { 
+						marker: { enabled: true }
+					}
+				},
 				yAxis: {
 					title: { text: null },
 					plotLines: [{
@@ -53,7 +61,10 @@
 					type: 'datetime',
 					gridLineWidth: 1,
 					gridLineDashStyle: 'longdash',
-					tickInterval: 600000
+					dateTimeLabelFormats: {
+						second: '%H:%M:%S',
+					},
+					tickInterval: 180000
 				},
 				tooltip: {
 					shared: true,
@@ -75,40 +86,40 @@
 				}]
 			});
 
-			var time = 0;
+			var graph_time = 0;
 			var graph_points = 0;
 
 			(function poll(){
-			    $.ajax({ url: "./out.txt", 
-			    	success: function(data){
-			        	gauge.refresh(data.gauge)
-			        	$('#label').text(data.gauge+":"+(100-data.gauge));
-			        	$('#sublabel').text(data.tweets+" tweets");
-			        	if(data.time > time + 60) // add # of seconds between each update
-			        	{
-			        		var date = new Date();
-			        		date.setHours(date.getHours() - (date.getTimezoneOffset()/60));
-			        		if(date.getHours() > 12) date.setHours(date.getHours() - 12);
-			        		var js_time = date.getTime();
+				$.ajax({ url: "./out.txt", 
+					success: function(data){
+						gauge.refresh(data.gauge)
+						$('#label').text(data.gauge+":"+(100-data.gauge));
+						$('#sublabel').text(data.tweets+" tweets");
 
-			        		if(graph_points < 720) // # of points to fit on graph
-			        		{
-			        			graph_points++;
-								chart.series[0].addPoint([js_time, data.liberal], false, false);
-								chart.series[1].addPoint([js_time, data.conservative], false, false);
+						if(data.time > graph_time + 18000) // add # of seconds between each update
+						{
+							graph_time = data.time;
+
+							console.log(data.time);
+
+							if(graph_points < 50) // # of points to fit on graph
+							{
+								graph_points++;
+								chart.series[0].addPoint([graph_time, data.liberal], false, false);
+								chart.series[1].addPoint([graph_time, data.conservative], false, false);
 							}
 							else
 							{
-								chart.series[0].addPoint([js_time, data.liberal], false, true);
-								chart.series[1].addPoint([js_time, data.conservative], false, true);
+								chart.series[0].addPoint([graph_time, data.liberal], false, true);
+								chart.series[1].addPoint([graph_time, data.conservative], false, true);
 							}
+
 							chart.redraw();
-							time = data.time;
 						}
-			    	},
-			    	dataType: "json",
-			    	complete: setTimeout(poll, 250), // limit the poll to 4 times per second
-			    timeout: 30000 });
+					},
+					dataType: "json",
+					complete: setTimeout(poll, 250), // limit the poll to 4 times per second
+				timeout: 30000 });
 			})();
 
 		});
