@@ -12,7 +12,7 @@ namespace keywords {
 		// Check the file opened successfully.
 		if ( ! fin.is_open()) 
 		{
-			cout << "Unable to open input file." << endl;
+			ERROR_LOG << "can't find keywords file\n";
 	    }
 
 		while(getline(fin, str))

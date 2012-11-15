@@ -53,6 +53,12 @@ int main(int argc, char **argv)
 			}
 		}
 
+		if(t.m_liberal >= POPULAR_LIMIT || t.m_liberal <= -POPULAR_LIMIT || t.m_conservative >= POPULAR_LIMIT || t.m_conservative <= -POPULAR_LIMIT) 
+		{
+			INFO_LOG << "big tweet\n";
+			WEB_LOG("Popular Tweet", t.m_text, "info");
+		}
+
 		t.print(tweet::LIBERAL | tweet::CONSERVATIVE);
 	}
 

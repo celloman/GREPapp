@@ -1,4 +1,5 @@
 romney
+conservative
 conservatives
 republican
 republicans
@@ -6,3 +7,6 @@ right wing
 right-wing
 rightwing
 gop
+tax cuts
+tax cut
+bush

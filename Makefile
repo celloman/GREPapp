@@ -78,7 +78,10 @@ filter.o: filter/filter.cpp filter/filter.h
 
 
 clean:
-	rm -f *.o
+	rm -f *.o html/out.txt html/log.txt
 
 cleanall: clean
 	rm -f get_sentiment get_weight get_tweets aggregate
+
+test:
+	@tests/iotests.sh

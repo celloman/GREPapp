@@ -34,7 +34,7 @@ size_t sentiment::alchemy_write_function(char *data, size_t size, size_t nmemb, 
 		else if(root["statusInfo"].asString() == "daily-transaction-limit-exceeded")
 		{
 			ERROR_LOG << "alchemy error: " << root["statusInfo"].asString() << "\n";
-			m_alchemy_available = false;
+			WEB_LOG("Uhoh...", "Looks like you hit the daily Alchemy API request limit.", "error");
 		}
 		else
 		{

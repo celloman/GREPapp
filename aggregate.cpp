@@ -68,23 +68,35 @@ int main(int argc, char **argv)
 				conservative_neg += tweets[i].m_conservative;
 		}
 
-		// calculate gauge values
-		liberal_gauge = (liberal_pos - conservative_neg) * 100 / ((liberal_pos - conservative_neg) + (conservative_pos - conservative_neg));
-		conservative_gauge = 100.0 - liberal_gauge;
-
-		if(liberal_gauge > 100 || liberal_gauge < 0 || liberal_gauge + conservative_gauge != 100)
-		{
-			ERROR_LOG << "bad gauge calculation: (liberal gauge value = " << liberal_gauge << ")\n";
-		}
-
 		// get current time (UTC)
 		time(&raw_time);
 
 		// add (or subtract) offset
 		raw_time += 3600 * TIME_ZONE_OFFSET;
 
-		// output to csv every 30 seconds, and only after we reach the tweet cap
-		if(CSV_OUTPUT && raw_time >= last_time + 30 && tweet_count >= TWEET_CAP)
+		// calculate gauge values
+		liberal_gauge = (liberal_pos - conservative_neg) * 100 / (liberal_pos + conservative_pos - liberal_neg - conservative_neg);
+		conservative_gauge = 100.0 - liberal_gauge;
+
+		if(liberal_gauge > 100 || liberal_gauge < 0 || liberal_gauge + conservative_gauge != 100)
+		{
+			ERROR_LOG << "bad gauge calculation: (liberal gauge value = " << liberal_gauge << ")\n";
+		}
+		else
+		{
+			printf("{\"gauge\":%.0f, \"liberal\":%.0f, \"conservative\":%.0f, \"tweets\":%d, \"time\":%ld}\n", 
+				liberal_gauge,
+				liberal_pos + liberal_neg,
+				conservative_pos + conservative_neg,
+				tweet_count,
+				raw_time * 1000 // output page needs this in milliseconds
+			);
+
+			fflush(stdout);
+		}
+
+		// output to csv every CSV_INTERVAL seconds, and only after we reach the tweet cap
+		if(CSV_OUTPUT && raw_time >= last_time + CSV_INTERVAL && tweet_count >= TWEET_CAP)
 		{
 			last_time = raw_time;
 
@@ -106,7 +118,15 @@ int main(int argc, char **argv)
 				if(csv_check == NULL)
 				{
 					INFO_LOG << "starting new csv file\n";
-					fprintf(csv_out, "\"time\", \"liberal percentage\", \"conservative percentage\", \"liberal positive\", \"liberal negative\", \"conservative positive\", \"conservative negative\"\n");
+					fprintf(csv_out, 
+						"\"time\", "
+						"\"liberal percentage\", "
+						"\"conservative percentage\", "
+						"\"liberal positive\", "
+						"\"liberal negative\", "
+						"\"conservative positive\", "
+						"\"conservative negative\"\n"
+					);
 				}
 				else
 				{
@@ -129,23 +149,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		// get regular time (not military time) to send to webpage
-		// figure out what hour of the day it is
-		hours = (raw_time % (3600 * 24)) / 3600;
-		// if it's 1300 or later subtract 12 hours
-		if(hours >= 13) raw_time -= 3600 * 12;
-		// if it's 00xx, add 12 hours
-		if(hours == 0) raw_time += 3600 * 12;
 
-		printf("{\"gauge\":%.0f, \"liberal\":%.0f, \"conservative\":%.0f, \"tweets\":%d, \"time\":%ld}\n", 
-			liberal_gauge,
-			liberal_pos + liberal_neg,
-			conservative_pos + conservative_neg,
-			tweet_count,
-			raw_time * 1000 // output page needs this in milliseconds
-		);
-
-		fflush(stdout);
 	}
 
 	return 0;

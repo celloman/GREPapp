@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "config/config.h"
+
 using namespace std;
 
 namespace keywords {
