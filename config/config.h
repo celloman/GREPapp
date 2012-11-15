@@ -65,7 +65,9 @@ inline void WEB_LOG(std::string title, std::string text, std::string type)
 // offset from GMT; -8 for Pacific Time
 #define TIME_ZONE_OFFSET (-8)
 
+// do you want csv output
 #define CSV_OUTPUT (true)
-#define CSV_INTERVAL (30)
+
+#define UPDATE_AVG_INTERVAL (10)
 
 #endif

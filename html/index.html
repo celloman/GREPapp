@@ -97,14 +97,18 @@
 				$.ajax({ url: "./out.txt", 
 					success: function(data){
 
+						console.log(data);
 						if(!isNaN(data.gauge))
 						{
 							gauge.refresh(data.gauge)
 							$('#label').text(data.gauge+":"+(100-data.gauge));
 							$('#tweet-count').text(data.tweets);
+
+							if(!isNaN(data.daily_liberal) && data.daily_liberal != -1)
+								$('#daily-average').text(data.daily_liberal + ":" + data.daily_conservative);
 						}
 
-						if(data.time > graph_time + (18*1000)) // add # of seconds between each update
+						if(data.time > graph_time + (1*1000)) // add # of seconds between each update
 						{
 							graph_time = data.time;
 
@@ -172,7 +176,7 @@
 			text-align: center;
 			font-weight: bold;
 		}
-		#day-average {
+		#daily-average {
 			width: 200px;
 			position: absolute;
 			left: 50%;
@@ -215,8 +219,8 @@
 
 <body>
 	<div id='gauge'></div>
-	<div id='label'>50:50</div>
-	<div id='day-average'>50:50</div>
+	<div id='label'>--:--</div>
+	<div id='daily-average'>--:--</div>
 	<div id='tweet-count'>0</div>
 
 	<div class='alchemy'>Powered by</div>
