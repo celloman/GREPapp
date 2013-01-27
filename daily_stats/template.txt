@@ -1,3 +1,0 @@
-line 1: liberal gauge value that day
-line 2: number of values taken into account by above average
-line 3: number of tweets processed that day
