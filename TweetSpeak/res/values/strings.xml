@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TweetSpeak</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_topic_list">TopicListActivity</string>
+    <string name="title_activity_topic">TopicActivity</string>
+    <string name="title_activity_gauge">GaugeActivity</string>
+
+</resources>
