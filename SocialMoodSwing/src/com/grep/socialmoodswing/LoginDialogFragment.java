@@ -13,7 +13,7 @@ import android.view.View;
  * LoginDialogFragment creates a pop-up dialog that prompts the user to
  * enter their Twitter authentication credentials.
  * 
- * @author Everett
+ * @author Gresham, Ryan, Everett, Pierce
  *
  */
 public class LoginDialogFragment extends DialogFragment {

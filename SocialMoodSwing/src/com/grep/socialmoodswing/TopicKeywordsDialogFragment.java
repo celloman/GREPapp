@@ -13,7 +13,7 @@ import android.view.View;
  * TopicKeywordsDialogFragment allows for the creation of a new topic,
  * with specified keywords, or the editing of a topic's keywords.
  * 
- * @author
+ * @author Gresham, Ryan, Everett, Pierce
  *
  */
 public class TopicKeywordsDialogFragment extends DialogFragment {

@@ -11,7 +11,7 @@ import android.view.View;
 /**
  * WarningDialogFragment displays a warning to the user.
  * 
- * @author Everett
+ * @author Gresham, Ryan, Everett, Pierce
  *
  */
 public class WarningDialogFragment extends DialogFragment {
