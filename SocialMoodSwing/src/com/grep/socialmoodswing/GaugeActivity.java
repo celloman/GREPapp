@@ -14,6 +14,7 @@ import android.view.View;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
+
 public class GaugeActivity extends FragmentActivity {
 
 	@Override
