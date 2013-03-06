@@ -35,4 +35,9 @@ public class GaugeActivity extends FragmentActivity {
         dialog.show(getSupportFragmentManager(), "WarningDialogFragment");
 	}
 
+	@Override
+	public void onBackPressed() {
+		//display the Warning dialog, don't let user exit GaugeActivity with back button alone
+	    showWarningMessage(getCurrentFocus());
+	}
 }
