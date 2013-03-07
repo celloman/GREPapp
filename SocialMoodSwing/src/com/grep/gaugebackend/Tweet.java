@@ -41,9 +41,10 @@ public class Tweet {
 		weight = 0;
 		
 		// if this isn't a retweet, the original_id will be 0
-		original_id = 0;
 		if(is_retweet)
 			original_id = status.getRetweetedStatus().getId();
+		else
+			original_id = 0;
 	}
 	
 	
