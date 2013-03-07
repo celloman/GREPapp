@@ -1,5 +1,7 @@
 package com.grep.socialmoodswing;
 
+import com.grep.gaugebackend.VikingsPort;
+
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +22,8 @@ public class GaugeActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
+                
+                VikingsPort.go();
 	}
 
 	@Override
