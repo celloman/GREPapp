@@ -1,5 +1,7 @@
 package com.grep.ui;
 
+import com.grep.gaugebackend.VikingsPort;
+
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +22,8 @@ public class GaugeActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
+	
+		VikingsPort.go();
 	}
 
 	@Override
@@ -34,5 +38,10 @@ public class GaugeActivity extends FragmentActivity {
         DialogFragment dialog = new WarningDialogFragment();
         dialog.show(getSupportFragmentManager(), "WarningDialogFragment");
 	}
-
+	
+	@Override
+	public void onBackPressed() {
+		//display the Warning dialog, don't let user exit GaugeActivity with back button alone
+	    showWarningMessage(getCurrentFocus());
+	}
 }
