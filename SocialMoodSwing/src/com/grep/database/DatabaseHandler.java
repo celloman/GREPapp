@@ -4,6 +4,16 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+
+/**
+ * This classes handles all SQLite database functionality. 
+ * 
+ * It creates and updates the database tables, and handles
+ * CRUD operations for each table.
+ * 
+ * @author Everett
+ *
+ */
 public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	//Static variables
@@ -92,4 +102,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Create tables again
         onCreate(db);
     }
+    
+    /*
+     * CRUD operations ( Create, Read, Update, Delete )
+     */
+    
+    
 }
