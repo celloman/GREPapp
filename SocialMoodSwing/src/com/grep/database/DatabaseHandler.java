@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * This classes handles all SQLite database functionality. 
  * 
- * It creates and updates the database tables, and handles
- * CRUD operations for each table.
+ * It contains CRUD operations for each table in the 
+ * database.
  * 
  * @author Everett
  *
@@ -61,27 +61,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Create Authentication Table in SQLite DB
-    	String CREATE_AUTH_TABLE = "CREATE TABLE " + AUTH_TABLE + "("
-                + USER_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + CONSUMER_KEY + " TEXT,"
+    	String CREATE_AUTH_TABLE = "CREATE TABLE " + AUTH_TABLE + " ("
+                + USER_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + CONSUMER_KEY + " TEXT, "
                 + CONSUMER_SECRET + " TEXT" + ")";
         db.execSQL(CREATE_AUTH_TABLE);
         
         // Create Topic Table in SQLite DB
-        String CREATE_TOPIC_TABLE = "CREATE TABLE " + TOPIC_TABLE + "("
-        		+ TOPIC_KEY_ID + "INTEGER PRIMARY KEY AUTOINCREMENT," + TOPIC_NAME + "TEXT"  + ")";
+        String CREATE_TOPIC_TABLE = "CREATE TABLE " + TOPIC_TABLE + " ("
+        		+ TOPIC_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TOPIC_NAME + " TEXT "  + ")";
         db.execSQL(CREATE_TOPIC_TABLE);
         
         // Create Topic Table in SQLite DB
-        String CREATE_KEYWORD_TABLE = "CREATE TABLE " + KEYWORD_TABLE + "("
-        		+ KEYWORD_KEY_ID + "INTEGER PRIMARY KEY AUTOINCREMENT," + KEYWORD_TEXT + "TEXT,"
-        		+ KEYWORD_TOPIC_ID + "INTEGER, FOREIGN KEY (" + KEYWORD_TOPIC_ID + ") REFERENCES "
+        String CREATE_KEYWORD_TABLE = "CREATE TABLE " + KEYWORD_TABLE + " ("
+        		+ KEYWORD_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEYWORD_TEXT + " TEXT,"
+        		+ KEYWORD_TOPIC_ID + " INTEGER, FOREIGN KEY (" + KEYWORD_TOPIC_ID + ") REFERENCES "
         		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + ")" + ")";
         db.execSQL(CREATE_KEYWORD_TABLE);
         
         // Create Topic Table in SQLite DB
-        String CREATE_SESSION_TABLE = "CREATE TABLE " + SESSION_TABLE + "("
-        		+ SESSION_KEY_ID + "INTEGER PRIMARY KEY AUTOINCREMENT," + SESSION_TOPIC_ID 
-        		+ "INTEGER, FOREIGN KEY (" + SESSION_TOPIC_ID + ") REFERENCES " + TOPIC_TABLE 
+        String CREATE_SESSION_TABLE = "CREATE TABLE " + SESSION_TABLE + " ("
+        		+ SESSION_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SESSION_TOPIC_ID 
+        		+ " INTEGER, FOREIGN KEY (" + SESSION_TOPIC_ID + ") REFERENCES " + TOPIC_TABLE 
         		+ " (" + TOPIC_KEY_ID + "), " + SESSION_START_TIME + " TEXT, " + SESSION_DURATION 
         		+ " TEXT, " + SESSION_TWEETS_PROCESSED + " INTEGER, " + SESSION_AVG_POSITIVE
         		+ " INTEGER, " + SESSION_AVG_NEGATIVE + " INTEGER" + ")";
@@ -107,5 +107,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * CRUD operations ( Create, Read, Update, Delete )
      */
     
+    //
     
 }
