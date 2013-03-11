@@ -13,12 +13,12 @@ public class Topic {
 		//empty
 	}
 	
-	// constructor
+	// constructor, set topic name field
 	public Topic(String name) {
 		this.topic_name = name;
 	}
 	
-	// constructor
+	// constructor, set all fields
 	public Topic(int id, String name) {
 		this.id = id;
 		this.topic_name = name;
