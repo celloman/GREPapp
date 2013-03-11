@@ -103,9 +103,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
     
-    /*
-     * CRUD operations ( Create, Read, Update, Delete )
-     */
+   
+    // CRUD operations ( Create, Read, Update, Delete )
     
     //
     
