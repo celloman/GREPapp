@@ -28,7 +28,7 @@ public class Credentials {
 		this.consumerSecret = secret;
 	}
 	
-	// Getting and setting methods
+	// Get and set methods
 	
 	public int getId() {
 		return this.id;

@@ -6,8 +6,10 @@ public class Keyword {
 	// Table key id
 	private int id;
 	
-	// Topic name
-	private String topic_name;
+	private String keyword;
+	
+	// Foreign topic id for keyword
+	private int t_id;
 	
 	// constructor
 	public Keyword() {
@@ -15,15 +17,40 @@ public class Keyword {
 	}
 	
 	// constructor
-	public Keyword(String name) {
-		this.topic_name = name;
+	public Keyword(String keyword) {
+		this.keyword = keyword;
 	}
 	
 	// constructor
-	public Keyword(int id, String name) {
+	public Keyword(int id, String keyword, int topic_id) {
 		this.id = id;
-		this.topic_name = name;
+		this.keyword = keyword;
+		this.t_id = topic_id;
 	}
 	
+	// Get and set methods
 	
+	public int getId() {
+		return this.id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public String getKeyword() {
+		return this.keyword;
+	}
+	
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+	
+	public int getKeywordTopicId() {
+		return this.t_id;
+	}
+	
+	public void setKeywordTopicId(int id) {
+		this.t_id = id;
+	}
 }
