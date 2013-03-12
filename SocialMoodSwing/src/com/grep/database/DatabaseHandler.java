@@ -1,5 +1,8 @@
 package com.grep.database;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -111,7 +114,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      *  Operations are listed in order for each table.
      */
     
-    // Authentication table CRUD
+// Authentication table CRUD
     // Insert credentials into authentication table
     public void addCredentials(Credentials credentials) {
     	SQLiteDatabase db = this.getWritableDatabase();
@@ -129,13 +132,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	SQLiteDatabase db = this.getReadableDatabase();
     	
     	Cursor cursor = db.query(AUTH_TABLE, new String[] { USER_KEY_ID,
-                CONSUMER_KEY, CONSUMER_SECRET }, USER_KEY_ID + "=?",
+                CONSUMER_KEY, CONSUMER_SECRET }, USER_KEY_ID + " =?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
     	if (cursor != null)
             cursor.moveToFirst();
     	
     	Credentials credentials = new Credentials(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2));
+    	
+    	cursor.close();
+    	db.close();
+    	
     	return credentials;
     }
     
@@ -147,7 +154,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	values.put(CONSUMER_KEY, credentials.getConsumerKey());
     	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
     	
-    	// update rows
+    	// update credentials row
     	int numRowsUpdated = db.update(AUTH_TABLE, values, USER_KEY_ID + " = ?",
                 new String[] { String.valueOf(credentials.getId()) });
         
@@ -156,6 +163,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return numRowsUpdated;
     }
     
+    // Delete credentials from authentication table
     public void deleteCredentials(Credentials credentials) {
     	SQLiteDatabase db = this.getWritableDatabase();
         
@@ -163,4 +171,87 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] { String.valueOf(credentials.getId()) });
         db.close();
     }
+    
+// Topic table CRUD
+    // Insert new topic into topic table
+    public void addTopic(Topic topic) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(TOPIC_NAME, topic.getTopicName());
+    	
+    	db.insert(TOPIC_TABLE, null, values);
+    	db.close();
+    }
+    
+    // Retrieve a topic from topic table
+    public Topic getTopic(int id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	Cursor cursor = db.query(TOPIC_TABLE, new String[] { TOPIC_KEY_ID, 
+    			TOPIC_NAME }, TOPIC_KEY_ID + " =?",
+    			new String[] { String.valueOf(id) }, null, null, null, null);
+    	if( cursor != null )
+    		cursor.moveToFirst();
+    	
+    	Topic topic = new Topic(Integer.parseInt(cursor.getString(0)), 
+    			cursor.getString(1));
+    	
+    	cursor.close();
+    	db.close();
+    	
+    	return topic;
+    }
+  
+    // Retrieve all topics in topic table
+    public List<Topic> getAllTopics() {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	List<Topic> topicList = new ArrayList<Topic>();
+    	
+    	// SQLite command for select all
+    	String selectQuery = "SELECT * FROM " + TOPIC_TABLE;
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	
+    	// add all topics in topic table to topic list
+    	if(cursor.moveToFirst()) {
+    		do {
+    			Topic topic = new Topic(Integer.parseInt(cursor.getString(0)),
+    					cursor.getString(1));
+    			
+    			// add topic to list
+    			topicList.add(topic);
+    		} while(cursor.moveToNext());
+    	}
+    	
+    	return topicList;
+    }
+    
+    // Update existing topic
+    public int updateTopic(Topic topic) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(TOPIC_NAME, topic.getTopicName());
+    	
+    	// update topic row
+    	int numRowsUpdated = db.update(TOPIC_TABLE, values, TOPIC_KEY_ID + " =?", 
+    			new String[] { String.valueOf(topic.getId()) });
+    	db.close();
+    	
+    	return numRowsUpdated;
+    }
+    
+    // Delete topic from topic table
+    public void deleteTopic(Topic topic) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+        
+    	db.delete(TOPIC_TABLE, TOPIC_KEY_ID + " = ?",
+                new String[] { String.valueOf(topic.getId()) });
+        db.close();
+    }
+    
+// Keyword table CRUD
+    // Insert new keyword into keyword table
+    public void addKeyword
 }
