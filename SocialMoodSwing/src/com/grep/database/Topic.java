@@ -10,7 +10,8 @@ public class Topic {
 	
 	// constructor
 	public Topic() {
-		//empty
+		this.id = 0;
+		this.topic_name = null;
 	}
 	
 	// constructor, set topic name field

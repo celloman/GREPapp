@@ -1,6 +1,8 @@
 package com.grep.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -21,7 +23,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 	
 	// Database name
-	private static final String DATABASE_NAME = "";
+	private static final String DATABASE_NAME = "SMS_DB";
 	
 	// Table names
 	private static final String AUTH_TABLE = "credentials";
@@ -104,8 +106,61 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     
    
-    // CRUD operations ( Create, Read, Update, Delete )
+    /*
+     *  CRUD operations ( Create, Read, Update, Delete )
+     *  Operations are listed in order for each table.
+     */
     
-    //
+    // Authentication table CRUD
+    // Insert credentials into authentication table
+    public void addCredentials(Credentials credentials) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(CONSUMER_KEY, credentials.getConsumerKey());
+    	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
+    	
+    	db.insert(AUTH_TABLE, null, values);
+    	db.close();
+    }
     
+    // Retrieve credentials from authentication table
+    public Credentials getCredentials(int id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	Cursor cursor = db.query(AUTH_TABLE, new String[] { USER_KEY_ID,
+                CONSUMER_KEY, CONSUMER_SECRET }, USER_KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+    	if (cursor != null)
+            cursor.moveToFirst();
+    	
+    	Credentials credentials = new Credentials(Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1), cursor.getString(2));
+    	return credentials;
+    }
+    
+    // Update existing credentials
+    public int updateCredentials(Credentials credentials) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(CONSUMER_KEY, credentials.getConsumerKey());
+    	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
+    	
+    	// update rows
+    	int numRowsUpdated = db.update(AUTH_TABLE, values, USER_KEY_ID + " = ?",
+                new String[] { String.valueOf(credentials.getId()) });
+        
+    	db.close();
+        
+    	return numRowsUpdated;
+    }
+    
+    public void deleteCredentials(Credentials credentials) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+        
+    	db.delete(AUTH_TABLE, USER_KEY_ID + " = ?",
+                new String[] { String.valueOf(credentials.getId()) });
+        db.close();
+    }
 }

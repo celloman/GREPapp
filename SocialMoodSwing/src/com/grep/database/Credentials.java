@@ -12,7 +12,9 @@ public class Credentials {
 	
 	// constructor
 	public Credentials() {
-		//empty
+		this.id = 0;
+		this.consumerKey = null;
+		this.consumerSecret = null;
 	}
 	
 	// constructor
