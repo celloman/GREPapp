@@ -94,6 +94,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         
     }
  
+    // Enables foreign keys for writable databases when opened
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+    	if (!db.isReadOnly()) {
+    	    // Enable foreign key constraints
+    	    db.execSQL("PRAGMA foreign_keys=ON;");
+    	  }
+    	super.onOpen(db);
+    }
+    
     // Upgrade database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -253,5 +263,83 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     
 // Keyword table CRUD
     // Insert new keyword into keyword table
-    public void addKeyword
+    public void addKeyword(Keyword keyword, Topic topic) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(KEYWORD_TEXT, keyword.getKeyword());
+    	values.put(KEYWORD_TOPIC_ID, topic.getId());
+    	
+    	db.insert(KEYWORD_TABLE, null, values);
+    	db.close();
+    }
+    
+    // Retrieve keyword from keyword table
+    public Keyword getKeyword(int id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	Cursor cursor = db.query(KEYWORD_TABLE, new String[] { KEYWORD_KEY_ID,
+                KEYWORD_TEXT, KEYWORD_TOPIC_ID }, KEYWORD_KEY_ID + " =?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        
+        Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+        
+        cursor.close();
+        db.close();
+        
+        return keyword;
+    }
+    
+    // Retrieve a a list of keywords with the same topic id
+    public List<Keyword> getAllKeywords(int t_keyword_id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	List<Keyword> keywordList = new ArrayList<Keyword>();
+    	
+    	// SQLite command for select all
+    	String selectQuery = "SELECT * FROM " + KEYWORD_TABLE + " WHERE " 
+    	+ KEYWORD_TOPIC_ID + "=" + t_keyword_id;
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	
+    	// add all keywords with selected topic id's in keyword table to the keyword list
+    	if(cursor.moveToFirst()) {
+    		do {
+    			Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
+    	                cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+    			
+    			// add topic to list
+    			keywordList.add(keyword);
+    		} while(cursor.moveToNext());
+    	}
+    	
+    	return keywordList;
+    }
+    
+    // Update keyword in keyword table
+    public int updateKeyword(Keyword keyword) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(KEYWORD_TEXT, keyword.getKeyword());
+    	values.put(KEYWORD_TOPIC_ID, keyword.getKeywordTopicId());
+    	
+    	int numRowsUpdated = db.update(KEYWORD_TABLE, values, KEYWORD_KEY_ID + " =?", 
+    			new String[] { String.valueOf(keyword.getId()) });
+    	
+    	db.close();
+    	
+    	return numRowsUpdated;
+    }
+    
+    // Delete keyword from keyword table
+    public void deleteTopic(Keyword keyword) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+        
+    	db.delete(KEYWORD_TABLE, KEYWORD_KEY_ID + " = ?",
+                new String[] { String.valueOf(keyword.getId()) });
+        db.close();
+    }
 }
