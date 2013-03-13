@@ -13,9 +13,7 @@ public class Keyword {
 	
 	// constructor
 	public Keyword() {
-		this.id = 0;
-		this.keyword = null;
-		this.t_id = 0;
+		//empty
 	}
 	
 	// constructor, sets keyword field

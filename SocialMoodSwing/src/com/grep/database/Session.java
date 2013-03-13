@@ -22,13 +22,7 @@ public class Session {
 	
 	// constructor
 	public Session() {
-		this.id = 0;
-		this.t_id = 0;
-		this.start_time = null;
-		this.duration = null;
-		this.tweets_processed = 0;
-		this.avg_pos_sentiment = 0;
-		this.avg_neg_sentiment = 0;
+		//empty
 	}
 	
 	// constructor, sets all fields but id and t_id
