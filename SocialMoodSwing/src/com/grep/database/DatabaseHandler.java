@@ -80,7 +80,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_KEYWORD_TABLE = "CREATE TABLE " + KEYWORD_TABLE + " ("
         		+ KEYWORD_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEYWORD_TEXT + " TEXT,"
         		+ KEYWORD_TOPIC_ID + " INTEGER, FOREIGN KEY (" + KEYWORD_TOPIC_ID + ") REFERENCES "
-        		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + ")" + ")";
+        		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + "), ON DELETE CASCADE" + ")";
         db.execSQL(CREATE_KEYWORD_TABLE);
         
         // Create Topic Table in SQLite DB
@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         		+ " INTEGER, FOREIGN KEY (" + SESSION_TOPIC_ID + ") REFERENCES " + TOPIC_TABLE 
         		+ " (" + TOPIC_KEY_ID + "), " + SESSION_START_TIME + " TEXT, " + SESSION_DURATION 
         		+ " TEXT, " + SESSION_TWEETS_PROCESSED + " INTEGER, " + SESSION_AVG_POSITIVE
-        		+ " INTEGER, " + SESSION_AVG_NEGATIVE + " INTEGER" + ")";
+        		+ " INTEGER, " + SESSION_AVG_NEGATIVE + " INTEGER" + "), ON DELETE CASCADE";
         db.execSQL(CREATE_SESSION_TABLE);
         
     }
@@ -256,19 +256,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteTopic(Topic topic) {
     	SQLiteDatabase db = this.getWritableDatabase();
         
-    	db.delete(TOPIC_TABLE, TOPIC_KEY_ID + " = ?",
+    	db.delete(TOPIC_TABLE, TOPIC_KEY_ID + " =?",
                 new String[] { String.valueOf(topic.getId()) });
         db.close();
     }
     
 // Keyword table CRUD
     // Insert new keyword into keyword table
-    public void addKeyword(Keyword keyword, Topic topic) {
+    public void addKeyword(Keyword keyword) {
     	SQLiteDatabase db = this.getWritableDatabase();
     	
     	ContentValues values = new ContentValues();
     	values.put(KEYWORD_TEXT, keyword.getKeyword());
-    	values.put(KEYWORD_TOPIC_ID, topic.getId());
+    	values.put(KEYWORD_TOPIC_ID, keyword.getKeywordTopicId());
     	
     	db.insert(KEYWORD_TABLE, null, values);
     	db.close();
@@ -299,9 +299,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	
     	List<Keyword> keywordList = new ArrayList<Keyword>();
     	
-    	// SQLite command for select all
+    	// SQLite command to select all rows with t_keyword_id
     	String selectQuery = "SELECT * FROM " + KEYWORD_TABLE + " WHERE " 
     	+ KEYWORD_TOPIC_ID + "=" + t_keyword_id;
+    	
     	Cursor cursor = db.rawQuery(selectQuery, null);
     	
     	// add all keywords with selected topic id's in keyword table to the keyword list
@@ -341,5 +342,74 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	db.delete(KEYWORD_TABLE, KEYWORD_KEY_ID + " = ?",
                 new String[] { String.valueOf(keyword.getId()) });
         db.close();
+    }
+    
+// Session table CRUD
+    // Insert new session into session table
+    public void addSession(Session session) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(SESSION_TOPIC_ID, session.getSessionTopicId());
+    	values.put(SESSION_START_TIME, session.getStartTime());
+    	values.put(SESSION_DURATION, session.getDuration());
+    	values.put(SESSION_TWEETS_PROCESSED, session.getNumTweetsProcessed());
+    	values.put(SESSION_AVG_POSITIVE, session.getAvgPosSentiment());
+    	values.put(SESSION_AVG_NEGATIVE, session.getAvgNegSentiment());
+    	
+    	db.insert(SESSION_TABLE, null, values);
+    	db.close();
+    }
+    
+    // Retrieve a session from the session table
+    public Session getSession(int id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	Cursor cursor = db.query(SESSION_TABLE, new String[] { SESSION_KEY_ID,
+                SESSION_TOPIC_ID, SESSION_START_TIME, SESSION_DURATION, 
+                SESSION_TWEETS_PROCESSED, SESSION_AVG_POSITIVE, SESSION_AVG_NEGATIVE },
+                SESSION_KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        
+        Session session = new Session(Integer.parseInt(cursor.getString(0)),
+        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3), 
+        		Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), 
+        		Integer.parseInt(cursor.getString(6)));
+        
+        cursor.close();
+        db.close();
+        
+        return session;
+    }
+    
+    // Update session in session table
+    public int updateSession(Session session) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	ContentValues values = new ContentValues();
+    	values.put(SESSION_TOPIC_ID, session.getSessionTopicId());
+    	values.put(SESSION_START_TIME, session.getStartTime());
+    	values.put(SESSION_DURATION, session.getDuration());
+    	values.put(SESSION_TWEETS_PROCESSED, session.getNumTweetsProcessed());
+    	values.put(SESSION_AVG_POSITIVE, session.getAvgPosSentiment());
+    	values.put(SESSION_AVG_NEGATIVE, session.getAvgNegSentiment());
+    	
+    	int numRowsUpdated = db.update(SESSION_TABLE, values, SESSION_KEY_ID + " =?",
+    			new String[] { String.valueOf(session.getId()) });
+    	
+    	db.close();
+    	
+    	return numRowsUpdated;
+    }
+    
+    // Delete a session from session table
+    public void deleteSession(Session session) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+    	db.delete(SESSION_TABLE, SESSION_KEY_ID + " =?", 
+    			new String[] { String.valueOf(session.getId()) });
+    	db.close();
     }
 }
