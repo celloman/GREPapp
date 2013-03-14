@@ -28,8 +28,7 @@
             android:label="@string/title_activity_topic_list" >
         </activity>
         <activity
-            android:name="com.grep.ui.DBUnitTest"
-            android:label="@string/title_activity_dbtest" >
+            android:name="com.grep.ui.DBUnitTest" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

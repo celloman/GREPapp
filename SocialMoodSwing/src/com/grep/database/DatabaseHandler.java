@@ -80,16 +80,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_KEYWORD_TABLE = "CREATE TABLE " + KEYWORD_TABLE + " ("
         		+ KEYWORD_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEYWORD_TEXT + " TEXT,"
         		+ KEYWORD_TOPIC_ID + " INTEGER, FOREIGN KEY (" + KEYWORD_TOPIC_ID + ") REFERENCES "
-        		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + "), ON DELETE CASCADE" + ")";
+        		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + ") ON DELETE CASCADE" + ")";
         db.execSQL(CREATE_KEYWORD_TABLE);
         
         // Create Topic Table in SQLite DB
         String CREATE_SESSION_TABLE = "CREATE TABLE " + SESSION_TABLE + " ("
         		+ SESSION_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SESSION_TOPIC_ID 
-        		+ " INTEGER, FOREIGN KEY (" + SESSION_TOPIC_ID + ") REFERENCES " + TOPIC_TABLE 
-        		+ " (" + TOPIC_KEY_ID + "), " + SESSION_START_TIME + " TEXT, " + SESSION_DURATION 
+        		+ " INTEGER, " + SESSION_START_TIME + " TEXT, " + SESSION_DURATION 
         		+ " TEXT, " + SESSION_TWEETS_PROCESSED + " INTEGER, " + SESSION_AVG_POSITIVE
-        		+ " INTEGER, " + SESSION_AVG_NEGATIVE + " INTEGER" + "), ON DELETE CASCADE";
+        		+ " INTEGER, " + SESSION_AVG_NEGATIVE + " INTEGER, FOREIGN KEY (" + SESSION_TOPIC_ID + ") REFERENCES " + TOPIC_TABLE 
+        		+ "(" + TOPIC_KEY_ID + ") ON DELETE CASCADE " + ")";
         db.execSQL(CREATE_SESSION_TABLE);
         
     }
@@ -285,7 +285,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
         
         Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+        		Integer.parseInt(cursor.getString(1)), cursor.getString(2));
         
         cursor.close();
         db.close();
@@ -309,7 +309,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	if(cursor.moveToFirst()) {
     		do {
     			Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
-    	                cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+    					Integer.parseInt(cursor.getString(1)), cursor.getString(2));
     			
     			// add topic to list
     			keywordList.add(keyword);

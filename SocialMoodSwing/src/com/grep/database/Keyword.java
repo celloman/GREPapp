@@ -17,12 +17,13 @@ public class Keyword {
 	}
 	
 	// constructor, sets keyword field
-	public Keyword(String keyword) {
+	public Keyword(int topic_id, String keyword) {
 		this.keyword = keyword;
+		this.t_id = topic_id;
 	}
 	
 	// constructor, sets all fields
-	public Keyword(int id, String keyword, int topic_id) {
+	public Keyword(int id, int topic_id, String keyword) {
 		this.id = id;
 		this.keyword = keyword;
 		this.t_id = topic_id;
