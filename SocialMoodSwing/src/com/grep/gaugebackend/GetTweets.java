@@ -1,28 +1,50 @@
+/**
+ * GetTweets.java
+ * 
+ * @author Gresham, Ryan, Everett, Pierce
+ */
+
 package com.grep.gaugebackend;
 
 import twitter4j.*;
 import java.util.concurrent.*;
 import twitter4j.conf.ConfigurationBuilder;
 
+/**
+ * public class GetTweets implements Runnable
+ */
 public class GetTweets implements Runnable {
 	
-	protected BlockingQueue<Tweet> queue = null;
-	protected String[] keywords = null;
+	// outgoing m_outQueue of tweets
+	protected BlockingQueue<Tweet> m_outQueue = null;
+	// m_Keywords to search for
+	protected String[] m_Keywords = null;
 	
+	/**
+	 * Constructor
+	 * @param m_outQueue (BlockingQueue<Tweet>)
+	 * @param m_Keywords (String[])
+	 */
 	public GetTweets(BlockingQueue<Tweet> queue, String[] keywords) {
-		this.queue = queue;
-		this.keywords = keywords;
+		m_outQueue = queue;
+		m_Keywords = keywords;
 	}
 	
+	/**
+	 * public void run
+	 */
     public void run() {
         
+		// login info
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setUser("vikings383")
                 .setPassword("383vikings");
     	
+		// create the stream
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
         
+		// status listener for twitter4J streaming
         final class StatusListenerQueueing implements StatusListener {
         	
         	protected BlockingQueue<Tweet> queue = null;
@@ -65,13 +87,13 @@ public class GetTweets implements Runnable {
             @Override
             public void onException(Exception ex) {
 				Thread.currentThread().interrupt();
-            	System.out.println("error!!");
             	System.out.println(ex.toString());
-                ex.printStackTrace();
             }
         };
-        
-        twitterStream.addListener(new StatusListenerQueueing(this.queue));
-        twitterStream.filter(new FilterQuery(0, null, this.keywords));
+
+		// start listening and queueing up outgoing tweets
+        twitterStream.addListener(new StatusListenerQueueing(this.m_outQueue));
+		// add the keyword filtering
+        twitterStream.filter(new FilterQuery(0, null, this.m_Keywords));
     }
 }

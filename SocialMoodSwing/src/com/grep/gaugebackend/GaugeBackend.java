@@ -1,54 +1,64 @@
+/**
+ * GaugeBackend.java
+ * 
+ * @author Gresham, Ryan, Everett, Pierce
+ */
+
 package com.grep.gaugebackend;
 
 import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+/**
+ * public class GaugeBackend
+ */
 public class GaugeBackend {
 	
+	// threads for each module
 	static protected Thread m_getterThread;
 	static protected Thread m_weighterThread;
 	static protected Thread m_sentimenterThread;
-	static protected Thread m_printerThread;
+	static protected Thread m_aggregatorThread;
 
-	public static void start() {
+	public static void start(String[] keywords, BlockingQueue<Tweet> popularTweets, BlockingQueue<Gauge> gaugeValues) {
+		// interprocess communication structures
+		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(100);
+		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(100);
+		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(100);
 		
-		BlockingQueue<Tweet> fetch_queue = new ArrayBlockingQueue<Tweet>(100);
-		BlockingQueue<Tweet> weight_queue = new ArrayBlockingQueue<Tweet>(100);
-		BlockingQueue<Tweet> sentiment_queue = new ArrayBlockingQueue<Tweet>(100);
-		
-		String[] keywords = {"obama", "clinton", "politics", "administration", "liberal", "conservative"};
-		
-		GetTweets getter = new GetTweets(fetch_queue, keywords);
-		GetWeight weighter = new GetWeight(fetch_queue, weight_queue, keywords);
-		GetSentiment sentimenter = new GetSentiment(weight_queue, sentiment_queue, keywords);
-		StatusPrinter printer = new StatusPrinter(sentiment_queue);
+		// create the threads
+		GetTweets getter = new GetTweets(fetchQueue, keywords);
+		GetWeight weighter = new GetWeight(fetchQueue, weightQueue, keywords);
+		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue);
+		Aggregate aggregator = new Aggregate(sentimentQueue, popularTweets, gaugeValues);
 		
 		m_getterThread = new Thread(getter);
 		m_weighterThread = new Thread(weighter);
 		m_sentimenterThread = new Thread(sentimenter);
-		m_printerThread = new Thread(printer);
+		m_aggregatorThread = new Thread(aggregator);
 		
+		// start the threads
 		m_getterThread.start();
 		m_weighterThread.start();
 		m_sentimenterThread.start();
-		m_printerThread.start();
+		m_aggregatorThread.start();
 	}
 	
 	public static void stop() {
-		System.out.println("Trying to stop the threads...");
+		System.out.println("trying to stop the threads...");
+		
 		try {
+			// send interrupt signals
 			m_getterThread.interrupt();
 			m_weighterThread.interrupt();
 			m_sentimenterThread.interrupt();
-			m_printerThread.interrupt();
-			
+			m_aggregatorThread.interrupt();
+			// wait for threads to finish
 			m_getterThread.join();
 			m_weighterThread.join();
 			m_sentimenterThread.join();
-			m_printerThread.join();
+			m_aggregatorThread.join();
 		} catch (InterruptedException ex) {
-			Logger.getLogger(GaugeBackend.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("something went wrong while killing the threads");
 		}
 	}
 

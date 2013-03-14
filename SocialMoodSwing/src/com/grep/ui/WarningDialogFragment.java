@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * WarningDialogFragment displays a warning to the user.
@@ -41,6 +43,13 @@ public class WarningDialogFragment extends DialogFragment {
             	   public void onClick(DialogInterface dialog, int id) {
 					   // stop the threads (hopefully...)
 					   GaugeBackend.stop();
+					   GaugeActivity.m_gaugeConsumer.interrupt();
+					   try {
+						   GaugeActivity.m_gaugeConsumer.join();
+					   } catch (InterruptedException ex) {
+						   System.out.println("something went wrong while killing the gauge consumer thread");
+						   //Logger.getLogger(WarningDialogFragment.class.getName()).log(Level.SEVERE, null, ex);
+					   }
 					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database

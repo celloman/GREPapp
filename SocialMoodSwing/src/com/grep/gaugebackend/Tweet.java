@@ -1,13 +1,22 @@
+/**
+ * Tweet.java
+ * 
+ * @author Gresham, Ryan, Everett, Pierce
+ */
+
 package com.grep.gaugebackend;
 
 import twitter4j.Status;
 
+/**
+ * public class Tweet
+ */
 public class Tweet {
 	
 	// the id of the tweet
 	long id;
 	// if this is a retweet, the id of the original tweet
-	long original_id;
+	long originalID;
 	// the text of the tweet
 	String text;
 	// the keyword in the tweet
@@ -21,29 +30,37 @@ public class Tweet {
 	// the number of retweets this tweet has
 	long retweets;
 	// whether or not this tweet is a retweet
-	boolean is_retweet;
+	boolean isRetweet;
 	// the language code of the user who tweeted this
 	String lang;
 	
+	/**
+	 * Copy Constructor
+	 * @param another (Tweet)
+	 */
 	public Tweet(Tweet another) {
 		id = another.id;
 		retweets = another.retweets;
 		text = another.text;
-		is_retweet = another.is_retweet;
+		isRetweet = another.isRetweet;
 		lang = another.lang;
 		followers = another.followers;
 		keyword = another.keyword;
 		sentiment = another.sentiment;
 		weight = another.weight;
-		original_id = another.original_id;
+		originalID = another.originalID;
 	}
 	
+	/**
+	 * Constructor
+	 * @param status (Status)
+	 */
 	public Tweet(Status status) {
 		// fill in the info from the 'Status'
 		id = status.getId();
 		retweets = (status.getRetweetCount() < 0) ? 0 : status.getRetweetCount();
 		text = status.getText();
-		is_retweet = status.isRetweet();
+		isRetweet = status.isRetweet();
 		lang = status.getUser().getLang();
 		followers = status.getUser().getFollowersCount();
 		keyword = "";
@@ -52,8 +69,8 @@ public class Tweet {
 		sentiment = 0;
 		weight = 0;
 		
-		// if this isn't a retweet, the original_id will be 0
-		original_id = is_retweet ? status.getRetweetedStatus().getId() : 0;
+		// if this isn't a retweet, the originalID will be 0
+		originalID = isRetweet ? status.getRetweetedStatus().getId() : 0;
 	}
 	
 	
