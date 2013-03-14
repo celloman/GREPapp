@@ -20,7 +20,6 @@ public class GetTweets implements Runnable {
         cb.setDebugEnabled(true)
                 .setUser("vikings383")
                 .setPassword("383vikings");
-        
     	
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
         
@@ -34,9 +33,11 @@ public class GetTweets implements Runnable {
         	
             @Override
             public void onStatus(Status status) {
+				System.out.println("getter thread running...");
                 try {
 					this.queue.put(new Tweet(status));
 				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 					e.printStackTrace();
 				}
             }
@@ -63,6 +64,7 @@ public class GetTweets implements Runnable {
 
             @Override
             public void onException(Exception ex) {
+				Thread.currentThread().interrupt();
             	System.out.println("error!!");
             	System.out.println(ex.toString());
                 ex.printStackTrace();

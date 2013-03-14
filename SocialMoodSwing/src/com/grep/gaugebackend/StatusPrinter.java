@@ -12,12 +12,14 @@ public class StatusPrinter implements Runnable {
 	
 	public void run()
 	{	
-		while(true)
+		while(!Thread.currentThread().isInterrupted())
 		{
+			System.out.println("printing thread running...");
 			try {
 				Tweet t = this.queue.take();
 				System.out.println(t.keyword + " " + t.sentiment + " " + t.weight + " " + t.text);
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

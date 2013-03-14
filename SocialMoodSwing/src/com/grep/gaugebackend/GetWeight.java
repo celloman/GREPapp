@@ -45,8 +45,9 @@ public class GetWeight implements Runnable {
 	
 	public void run()
 	{
-		while(true)
+		while(!Thread.currentThread().isInterrupted())
 		{
+			System.out.println("weighting thread running...");
 			try {
 				// get from prev module
 				Tweet t = this.in_queue.take();
@@ -75,6 +76,7 @@ public class GetWeight implements Runnable {
 				this.out_queue.put(t);
 				
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				e.printStackTrace(); // come up with something better to do here
 			}
 			

@@ -1,5 +1,6 @@
 package com.grep.ui;
 
+import com.grep.gaugebackend.GaugeBackend;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -38,6 +39,9 @@ public class WarningDialogFragment extends DialogFragment {
         	   	// Add action buttons
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
+					   // stop the threads (hopefully...)
+					   GaugeBackend.stop();
+					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
             		   WarningDialogFragment.this.getActivity().finish();          		   

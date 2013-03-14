@@ -1,6 +1,6 @@
 package com.grep.ui;
 
-import com.grep.gaugebackend.VikingsPort;
+import com.grep.gaugebackend.GaugeBackend;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -23,7 +23,7 @@ public class GaugeActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
 	
-		VikingsPort.go();
+		GaugeBackend.start();
 	}
 
 	@Override
