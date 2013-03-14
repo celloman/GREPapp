@@ -140,17 +140,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Retrieve credentials from authentication table
     public Credentials getCredentials(int id) {
     	SQLiteDatabase db = this.getReadableDatabase();
+    	Credentials credentials = null;
     	
     	Cursor cursor = db.query(AUTH_TABLE, new String[] { USER_KEY_ID,
                 CONSUMER_KEY, CONSUMER_SECRET }, USER_KEY_ID + " =?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
-    	if (cursor != null)
+    	if (cursor.getCount() > 0) {
             cursor.moveToFirst();
     	
-    	Credentials credentials = new Credentials(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2));
+            credentials = new Credentials(Integer.parseInt(cursor.getString(0)),
+            		cursor.getString(1), cursor.getString(2));
     	
-    	cursor.close();
+            cursor.close();
+    	}
     	db.close();
     	
     	return credentials;
@@ -177,7 +179,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteCredentials(Credentials credentials) {
     	SQLiteDatabase db = this.getWritableDatabase();
         
-    	db.delete(AUTH_TABLE, USER_KEY_ID + " = ?",
+    	db.delete(AUTH_TABLE, USER_KEY_ID + " =?",
                 new String[] { String.valueOf(credentials.getId()) });
         db.close();
     }
@@ -197,17 +199,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Retrieve a topic from topic table
     public Topic getTopic(int id) {
     	SQLiteDatabase db = this.getReadableDatabase();
+    	Topic topic = null;
     	
     	Cursor cursor = db.query(TOPIC_TABLE, new String[] { TOPIC_KEY_ID, 
     			TOPIC_NAME }, TOPIC_KEY_ID + " =?",
     			new String[] { String.valueOf(id) }, null, null, null, null);
-    	if( cursor != null )
+    	if( cursor.getCount() > 0 ) {
     		cursor.moveToFirst();
     	
-    	Topic topic = new Topic(Integer.parseInt(cursor.getString(0)), 
-    			cursor.getString(1));
-    	
-    	cursor.close();
+    		topic = new Topic(Integer.parseInt(cursor.getString(0)), 
+    				cursor.getString(1));
+    		
+    		cursor.close();
+    	}
     	db.close();
     	
     	return topic;
@@ -217,7 +221,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Topic> getAllTopics() {
     	SQLiteDatabase db = this.getReadableDatabase();
     	
-    	List<Topic> topicList = new ArrayList<Topic>();
+    	List<Topic> topicList = null;
     	
     	// SQLite command for select all
     	String selectQuery = "SELECT * FROM " + TOPIC_TABLE;
@@ -225,6 +229,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	
     	// add all topics in topic table to topic list
     	if(cursor.moveToFirst()) {
+    		topicList =  new ArrayList<Topic>();
     		do {
     			Topic topic = new Topic(Integer.parseInt(cursor.getString(0)),
     					cursor.getString(1));
@@ -277,17 +282,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Retrieve keyword from keyword table
     public Keyword getKeyword(int id) {
     	SQLiteDatabase db = this.getReadableDatabase();
+    	Keyword keyword = null;
     	
     	Cursor cursor = db.query(KEYWORD_TABLE, new String[] { KEYWORD_KEY_ID,
                 KEYWORD_TEXT, KEYWORD_TOPIC_ID }, KEYWORD_KEY_ID + " =?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null)
+        if (cursor.getCount() > 0) {
             cursor.moveToFirst();
         
-        Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
-        		Integer.parseInt(cursor.getString(2)), cursor.getString(1));
+            keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
+            		Integer.parseInt(cursor.getString(2)), cursor.getString(1));
         
-        cursor.close();
+        	cursor.close();
+        }
+        
         db.close();
         
         return keyword;
@@ -297,7 +305,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Keyword> getAllKeywords(int t_keyword_id) {
     	SQLiteDatabase db = this.getReadableDatabase();
     	
-    	List<Keyword> keywordList = new ArrayList<Keyword>();
+    	List<Keyword> keywordList = null;
     	
     	// SQLite command to select all rows with t_keyword_id
     	String selectQuery = "SELECT * FROM " + KEYWORD_TABLE + " WHERE " 
@@ -307,6 +315,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	
     	// add all keywords with selected topic id's in keyword table to the keyword list
     	if(cursor.moveToFirst()) {
+    		keywordList = new ArrayList<Keyword>();
     		do {
     			Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
     					Integer.parseInt(cursor.getString(2)), cursor.getString(1));
@@ -336,10 +345,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     
     // Delete keyword from keyword table
-    public void deleteTopic(Keyword keyword) {
+    public void deleteKeyword(Keyword keyword) {
     	SQLiteDatabase db = this.getWritableDatabase();
         
-    	db.delete(KEYWORD_TABLE, KEYWORD_KEY_ID + " = ?",
+    	db.delete(KEYWORD_TABLE, KEYWORD_KEY_ID + " =?",
                 new String[] { String.valueOf(keyword.getId()) });
         db.close();
     }
@@ -364,24 +373,56 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Retrieve a session from the session table
     public Session getSession(int id) {
     	SQLiteDatabase db = this.getReadableDatabase();
+    	Session session = null;
     	
     	Cursor cursor = db.query(SESSION_TABLE, new String[] { SESSION_KEY_ID,
                 SESSION_TOPIC_ID, SESSION_START_TIME, SESSION_DURATION, 
                 SESSION_TWEETS_PROCESSED, SESSION_AVG_POSITIVE, SESSION_AVG_NEGATIVE },
                 SESSION_KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null)
+        if (cursor.getCount() > 0) {
             cursor.moveToFirst();
         
-        Session session = new Session(Integer.parseInt(cursor.getString(0)),
+            session = new Session(Integer.parseInt(cursor.getString(0)),
         		Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3), 
         		Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), 
         		Integer.parseInt(cursor.getString(6)));
         
-        cursor.close();
+        	cursor.close();
+        }
+        
         db.close();
         
         return session;
+    }
+    
+    // Retrieve all sessions with the same topic id
+    public List<Session> getAllSessions(int t_session_id) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	
+    	List<Session> sessionList = null;
+    	
+    	// SQLite command to select all rows with t_keyword_id
+    	String selectQuery = "SELECT * FROM " + SESSION_TABLE + " WHERE " 
+    	+ SESSION_TOPIC_ID + "=" + t_session_id;
+    	
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	
+    	// add all sessions with selected topic id's in session table to the session list
+    	if(cursor.moveToFirst()) {
+    		sessionList = new ArrayList<Session>();
+    		do {
+    			Session session = new Session(Integer.parseInt(cursor.getString(0)),
+    	        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3), 
+    	        		Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), 
+    	        		Integer.parseInt(cursor.getString(6)));
+    			
+    			// add topic to list
+    			sessionList.add(session);
+    		} while(cursor.moveToNext());
+    	}
+    	
+    	return sessionList;
     }
     
     // Update session in session table
