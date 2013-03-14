@@ -7,5 +7,7 @@
     <string name="title_activity_gauge">GaugeActivity</string>
     <string name="title_activity_topic_list">TopicListActivity</string>
     <string name="warning_message">Analysis session will terminate if you leave this page.</string>
+    <string name="minutes_left">&lt;X&gt; minutes left</string>
+    <string name="stop">Stop</string>
 
 </resources>
