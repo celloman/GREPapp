@@ -172,14 +172,7 @@ SocialMoodSwing/build.xml
 
 SocialMoodSwing/gen/com/grep/ui/R.java
 
-#Test branch stuff
-.gitignore
-
-SocialMoodSwing/src/com/grep/ui/DBUnitTest.java
-
+#Database test files
 SocialMoodSwing/res/layout/activity_dbunit_test.xml
-
 SocialMoodSwing/res/menu/activity_dbunit_test.xml
-
-SocialMoosSwing/AndroidManifest.xml
-
+SocialMoodSwing/src/com/grep/ui/DBUnitTest.java
