@@ -1,12 +1,16 @@
 package com.grep.ui;
 
-import com.grep.gaugebackend.VikingsPort;
+import com.grep.gaugebackend.GaugeBackend;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
+import com.grep.gaugebackend.Gauge;
+import com.grep.gaugebackend.Tweet;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * GaugeActivity displays the results of the current analysis session in real time, via
@@ -17,13 +21,23 @@ import android.view.View;
  */
 
 public class GaugeActivity extends FragmentActivity {
+	
+	static public Thread m_gaugeConsumer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
 	
-		VikingsPort.go();
+		String[] keywords = {"obama", "clinton", "politics", "administration", "liberal", "conservative"};
+		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);
+		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
+		GaugeBackend.start(keywords, popularTweets, gaugeValues);
+		
+		// start another thread to process gauge values TODO add another to process
+		// the popular Tweets
+		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues));
+		m_gaugeConsumer.start();
 	}
 
 	@Override

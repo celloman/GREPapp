@@ -1,44 +1,84 @@
+/**
+ * GetSentiment.java
+ * 
+ * @author Gresham, Ryan, Everett, Pierce
+ */
+
 package com.grep.gaugebackend;
 
 import java.util.concurrent.BlockingQueue;
-//import com.loopj.android.http.*;
+import java.net.URLEncoder;
+import com.loopj.android.http.*;
 
-/*public class GetSentiment implements Runnable {
+/**
+ * public class GetSentiment implements Runnable
+ */
+public class GetSentiment implements Runnable {
 
-	protected BlockingQueue<Tweet> in_queue = null;
-	protected BlockingQueue<Tweet> out_queue = null;
-	protected String[] keywords = null;
+	// incoming queue of tweets
+	protected BlockingQueue<Tweet> m_inQueue = null;
+	// outgoing queue of tweets
+	protected BlockingQueue<Tweet> m_outQueue = null;
 	
-	public GetSentiment(BlockingQueue<Tweet> in_queue, BlockingQueue<Tweet> out_queue, String[] keywords) {
-		this.in_queue = in_queue;
-		this.out_queue = out_queue;
-		this.keywords = keywords;
+	/**
+	 * Constructor
+	 * @param inQueue (BlockingQueue<Tweet>)
+	 * @param outQueue (BlockingQueue<Tweet>)
+	 */
+	public GetSentiment(BlockingQueue<Tweet> inQueue, BlockingQueue<Tweet> outQueue) {
+		m_inQueue = inQueue;
+		m_outQueue = outQueue;
 	}
 	
-	public void run()
-	{
-		while(true)
-		{
-			try {
-				
-				Tweet t = this.in_queue.take();
-				
-				AsyncHttpClient client = new AsyncHttpClient();
-				client.get("http://www.sentiment140.com/api/classify?text=" + t.text.replace(' ', '+') + "&query=" + t.keyword, 
-						new AsyncHttpResponseHandler() {
-				    @Override
-				    public void onSuccess(String response) {
-				        System.out.println(response);
-				    }
-				});
-				
-				//this.out_queue.put(t);
-				
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	/**
+	 * public void run
+	 */
+	public void run() {
+		while(!Thread.currentThread().isInterrupted()) {
 			
+			System.out.println("sentiment thread running...");
+			
+			try {
+				final Tweet t = m_inQueue.take();
+
+				// build the url
+				String urlString = 
+					"http://www.sentiment140.com/api/classify?text=" + 
+					URLEncoder.encode(t.text) + 
+					"&query=" + 
+					URLEncoder.encode(t.keyword);
+				
+				// send off the request
+				AsyncHttpClient client = new AsyncHttpClient();
+				
+				client.get(urlString, 
+					new AsyncHttpResponseHandler() {
+						
+						@Override
+						public void onSuccess(String response) {
+							// parse the sentiment from response
+							t.sentiment = Integer.parseInt((response.split("\"polarity\":")[1]).split(",")[0]);
+							t.sentiment = (t.sentiment / 2) - 1;
+							
+							// send the tweet to the next module
+							try {
+								m_outQueue.put(t);
+							} catch (InterruptedException ex) {
+								// immediately reset interrupt flag
+								Thread.currentThread().interrupt();
+							}
+						}
+						
+						@Override
+						public void onFailure(Throwable thrwbl, String string) {
+							System.out.println("sentiment request failed...");
+						}
+					});
+				
+			} catch (InterruptedException ex) {
+				// immediately reset interrupt flag
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 }
-*/
