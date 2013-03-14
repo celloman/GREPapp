@@ -175,7 +175,3 @@ SocialMoodSwing/build.xml
 
 SocialMoodSwing/gen/com/grep/ui/R.java
 
-#Database test files
-SocialMoodSwing/res/layout/activity_dbunit_test.xml
-SocialMoodSwing/res/menu/activity_dbunit_test.xml
-SocialMoodSwing/src/com/grep/ui/DBUnitTest.java
