@@ -18,15 +18,15 @@ public class Keyword {
 	
 	// constructor, sets keyword field
 	public Keyword(int topic_id, String keyword) {
-		this.keyword = keyword;
 		this.t_id = topic_id;
+		this.keyword = keyword;
 	}
 	
 	// constructor, sets all fields
 	public Keyword(int id, int topic_id, String keyword) {
 		this.id = id;
+		this.t_id = topic_id;		
 		this.keyword = keyword;
-		this.t_id = topic_id;
 	}
 	
 	// Get and set methods

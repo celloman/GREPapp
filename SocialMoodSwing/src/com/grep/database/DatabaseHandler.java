@@ -80,7 +80,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_KEYWORD_TABLE = "CREATE TABLE " + KEYWORD_TABLE + " ("
         		+ KEYWORD_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEYWORD_TEXT + " TEXT,"
         		+ KEYWORD_TOPIC_ID + " INTEGER, FOREIGN KEY (" + KEYWORD_TOPIC_ID + ") REFERENCES "
-        		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + ") ON DELETE CASCADE" + ")";
+        		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_KEYWORD_TABLE);
         
         // Create Topic Table in SQLite DB
@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         		+ " INTEGER, " + SESSION_START_TIME + " TEXT, " + SESSION_DURATION 
         		+ " TEXT, " + SESSION_TWEETS_PROCESSED + " INTEGER, " + SESSION_AVG_POSITIVE
         		+ " INTEGER, " + SESSION_AVG_NEGATIVE + " INTEGER, FOREIGN KEY (" + SESSION_TOPIC_ID + ") REFERENCES " + TOPIC_TABLE 
-        		+ "(" + TOPIC_KEY_ID + ") ON DELETE CASCADE " + ")";
+        		+ "(" + TOPIC_KEY_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_SESSION_TABLE);
         
     }
@@ -267,8 +267,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	SQLiteDatabase db = this.getWritableDatabase();
     	
     	ContentValues values = new ContentValues();
-    	values.put(KEYWORD_TEXT, keyword.getKeyword());
     	values.put(KEYWORD_TOPIC_ID, keyword.getKeywordTopicId());
+    	values.put(KEYWORD_TEXT, keyword.getKeyword());
     	
     	db.insert(KEYWORD_TABLE, null, values);
     	db.close();
@@ -285,7 +285,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
         
         Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
-        		Integer.parseInt(cursor.getString(1)), cursor.getString(2));
+        		Integer.parseInt(cursor.getString(2)), cursor.getString(1));
         
         cursor.close();
         db.close();
@@ -293,7 +293,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return keyword;
     }
     
-    // Retrieve a a list of keywords with the same topic id
+    // Retrieve a list of keywords with the same topic id
     public List<Keyword> getAllKeywords(int t_keyword_id) {
     	SQLiteDatabase db = this.getReadableDatabase();
     	
@@ -309,7 +309,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	if(cursor.moveToFirst()) {
     		do {
     			Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
-    					Integer.parseInt(cursor.getString(1)), cursor.getString(2));
+    					Integer.parseInt(cursor.getString(2)), cursor.getString(1));
     			
     			// add topic to list
     			keywordList.add(keyword);
