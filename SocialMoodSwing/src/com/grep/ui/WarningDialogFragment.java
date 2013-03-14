@@ -36,14 +36,14 @@ public class WarningDialogFragment extends DialogFragment {
         builder.setMessage("WARNING!")
         	   .setView(view)
         	   	// Add action buttons
-               .setPositiveButton("Stop", new DialogInterface.OnClickListener() {    
+               .setPositiveButton("OK", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
             		   WarningDialogFragment.this.getActivity().finish();          		   
                    }
                })
-               .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {
+               .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                 	   WarningDialogFragment.this.getDialog().cancel();
                    }

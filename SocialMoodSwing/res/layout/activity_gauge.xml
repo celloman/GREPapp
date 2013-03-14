@@ -4,25 +4,21 @@
     android:layout_height="match_parent"
     tools:context=".GaugeActivity" >
 
-    <Button
-        android:id="@+id/stop_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@color/button_red"
-        android:onClick="showWarningMessage"
-        android:text="@string/stop"
-        android:textColor="@color/white" />
-
     <TextView
-        android:id="@+id/minutes_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/stop_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="@string/minutes_left"
-        android:textStyle="bold" />
+        android:layout_centerVertical="true"
+        android:text="Analysis Session Gauge/Statistics View" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:text="Stop" 
+        android:onClick="showWarningMessage"/>
 
 </RelativeLayout>
