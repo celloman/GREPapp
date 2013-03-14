@@ -162,9 +162,6 @@ pip-log.txt
 # Mac crap
 .DS_Store
 
-#emacs backup file
-*~
-
 SocialMoodSwing/gen/com/grep/socialmoodswing/R.java
 
 SocialMoodSwing/gen/com/grep/ui/R.java
@@ -174,8 +171,3 @@ SocialMoodSwing/build.xml
 SocialMoodSwing/build.xml
 
 SocialMoodSwing/gen/com/grep/ui/R.java
-
-# Database test files
-SocialMoodSwing/res/layout/activity_dbunit_test.xml
-SocialMoodSwing/res/menu/activity_dbunit_test.xml
-SocialMoodSwing/src/com/grep/ui/DBUnitTest.java

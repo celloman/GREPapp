@@ -26,7 +26,8 @@ public class Session {
 	}
 	
 	// constructor, sets all fields but id and t_id
-	public Session(String time, String duration, int num_tweets, int pos, int neg) {
+	public Session(int topic_id, String time, String duration, int num_tweets, int pos, int neg) {
+		this.t_id = topic_id;
 		this.start_time = time;
 		this.duration = duration;
 		this.tweets_processed = num_tweets;
