@@ -39,7 +39,7 @@ public class WarningDialogFragment extends DialogFragment {
         builder.setMessage("WARNING!")
         	   .setView(view)
         	   	// Add action buttons
-               .setPositiveButton("OK", new DialogInterface.OnClickListener() {    
+               .setPositiveButton("Stop", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
 					   // stop the threads (hopefully...)
 					   GaugeBackend.stop();
@@ -56,7 +56,7 @@ public class WarningDialogFragment extends DialogFragment {
             		   WarningDialogFragment.this.getActivity().finish();          		   
                    }
                })
-               .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+               .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                 	   WarningDialogFragment.this.getDialog().cancel();
                    }
