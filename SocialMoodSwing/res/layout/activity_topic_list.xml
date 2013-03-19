@@ -19,7 +19,7 @@
         android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="84dp"
-        android:text="To Topic" 
+        android:text="@string/text_button_topic" 
         android:onClick="goToTopicActivity"/>
 
 </RelativeLayout>
