@@ -35,16 +35,20 @@ public class GaugeActivity extends FragmentActivity {
 		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
 		GaugeBackend.start(keywords, popularTweets, gaugeValues);
+
+		WebView webView = (WebView) findViewById(R.id.webview);
+		webView.loadUrl("file:///android_asset/gauge.html");
+		WebSettings webSettings = webView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+		
+		GaugeInterface gi = new GaugeInterface();
+		
+		webView.addJavascriptInterface(gi, "Android");
 		
 		// start another thread to process gauge values TODO add another to process
 		// the popular Tweets
-		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues));
+		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues, gi));
 		m_gaugeConsumer.start();
-		
-		WebView myWebView = (WebView) findViewById(R.id.webview);
-		myWebView.loadUrl("file:///android_asset/gauge.html");
-		WebSettings webSettings = myWebView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
 	}
 
 	@Override

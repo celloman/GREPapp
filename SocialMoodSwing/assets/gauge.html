@@ -34,7 +34,10 @@ and open the template in the editor.
 				});
 				
 				function refresh_gauge(){
-					gauge.refresh(Math.floor(Math.random()*101))
+					//gauge.refresh(Math.floor(Math.random()*101));
+					var val = Android.getValue();
+					alert(val);
+					//gauge.refresh(val);
 				}
 				
 				setInterval(refresh_gauge, 3000);
