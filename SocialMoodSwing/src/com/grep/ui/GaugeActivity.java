@@ -7,6 +7,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.Tweet;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -38,6 +40,11 @@ public class GaugeActivity extends FragmentActivity {
 		// the popular Tweets
 		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues));
 		m_gaugeConsumer.start();
+		
+		WebView myWebView = (WebView) findViewById(R.id.webview);
+		myWebView.loadUrl("file:///android_asset/gauge.html");
+		WebSettings webSettings = myWebView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
 	}
 
 	@Override
