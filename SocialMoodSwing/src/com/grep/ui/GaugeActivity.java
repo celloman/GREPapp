@@ -30,6 +30,7 @@ public class GaugeActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
+		setTitle(R.string.title_activity_gauge);
 	
 		String[] keywords = {"obama", "clinton", "politics", "administration", "liberal", "conservative"};
 		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);

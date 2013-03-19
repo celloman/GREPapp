@@ -4,8 +4,9 @@
     <string name="app_name">Social Mood Swing</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_gauge">GaugeActivity</string>
-    <string name="title_activity_topic_list">TopicListActivity</string>
+    <string name="title_activity_gauge">Analysis Session</string>
+    <string name="title_activity_topic_list">Topics</string>
     <string name="warning_message">Analysis session will terminate if you leave this page.</string>
+    <string name="title_activity_topic">Run History</string>
 
 </resources>
