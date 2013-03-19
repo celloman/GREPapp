@@ -115,7 +115,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TOPIC_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + KEYWORD_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + SESSION_TABLE);
-        
+	
         // Create tables again
         onCreate(db);
     }
@@ -129,6 +129,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void close() {
     	this.db.close();
     }
+
+    
+    // Clean the database, delete the tables
+    public void clean() {
+    	List<Topic> tList = this.getAllTopics();
+    	
+    	if(tList != null) {
+    		for (Topic t: tList) {
+    			this.deleteTopic(t);
+    		}
+    	}
+    }
+    
+    // Delete the database, context is the activity calling the method
+    public void delete(Context context) {
+    	context.deleteDatabase(DATABASE_NAME);
+    }
+
     
     /*
      *  CRUD operations ( Create, Read, Update, Delete )
@@ -410,22 +428,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	this.db.delete(SESSION_TABLE, SESSION_KEY_ID + " =?", 
     			new String[] { String.valueOf(session.getId()) });
     }
-    
-    
-// Method for clearing out the database
-    public void clean() {
-    	List<Topic> tList = this.getAllTopics();
-    	
-    	if(tList != null) {
-    		for (Topic t: tList) {
-    			this.deleteTopic(t);
-    		}
-    	}
-    }
-    
- // Method for deleting all tables in the database. 
-    // context is the activity calling the method
-    public void delete(Context context) {
-    	context.deleteDatabase(DATABASE_NAME);
-    }
+
 }
