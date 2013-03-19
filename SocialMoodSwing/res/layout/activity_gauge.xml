@@ -18,7 +18,7 @@
         android:layout_centerHorizontal="true"
         android:background="@color/button_red"
         android:onClick="showWarningMessage"
-        android:text="Stop"
+        android:text="@string/text_button_stop"
         android:textColor="@color/white" />
 
     <TextView
