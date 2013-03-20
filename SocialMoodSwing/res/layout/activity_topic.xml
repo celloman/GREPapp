@@ -4,14 +4,11 @@
     android:layout_height="match_parent"
     tools:context=".TopicActivity" >
 
-    <com.androidplot.xy.XYPlot
-	    android:id="@+id/mySimpleXYPlot"
-	    android:layout_width="fill_parent"
-	    android:layout_height="100dp"
-	    android:layout_marginTop="10dp"
-	    android:layout_marginLeft="10dp"
-	    android:layout_marginRight="10dp"
-	    androidPlot.title="A Simple XYPlot Example"/>
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        />
     
     <TextView
         android:id="@+id/textView1"
