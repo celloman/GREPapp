@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 
 /**
@@ -28,26 +30,13 @@ public class TopicActivity extends FragmentActivity {
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
-		createGraph();
-	}
-
-	private void createGraph() {
-		GraphViewSeries exampleSeries = new GraphViewSeries(new GraphViewData[] {
-				new GraphViewData(1, 2.0d),
-				new GraphViewData(2, 1.5d),
-				new GraphViewData(3, 2.5d),
-				new GraphViewData(4, 1.0d)
-		});
-		
-		GraphView graphView = new LineGraphView(
-				this // context
-				, "GraphViewDemo" //heading
-		);
-		graphView.addSeries(exampleSeries); //data
-		
-		LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
-		layout.addView(graphView);
-	}
+		WebView myWebView = (WebView) findViewById(R.id.graph);
+		myWebView.loadUrl("file:///android_asset/graph.html");
+		myWebView.setHorizontalScrollBarEnabled(false);
+		//myWebView.addJavascriptInterface(new JsObject(), "injectedObject");
+		WebSettings webSettings = myWebView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+		}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

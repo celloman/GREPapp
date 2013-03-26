@@ -3,13 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TopicActivity" >
-
-    <LinearLayout
-        android:id="@+id/layout"
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
-        android:paddingRight="30dp"
-    />
+    
+    <WebView  xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/graph"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+	/>
     
     <TextView
         android:id="@+id/textView1"

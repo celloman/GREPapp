@@ -1,0 +1,57 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
+    
+    <script src="./libraries/RGraph.common.core.js" ></script>
+    <script src="./libraries/RGraph.common.dynamic.js" ></script>
+    <script src="./libraries/RGraph.common.tooltips.js" ></script>
+    <script src="./libraries/RGraph.common.effects.js" ></script>
+    <script src="./libraries/RGraph.line.js" ></script>
+    <script src="./libraries/jquery.min.js" ></script>
+</head>
+<body>
+    <canvas id="cvs" width="300" height="220"></canvas>
+    
+    <script>
+        window.onload = function ()
+        {
+            var data1 = [4,6,12,16,8,4,2,8,18,-16,14,50];
+
+            var myLine = new RGraph.Line('cvs',data1);
+            myLine.Set('chart.labels', ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']);
+            myLine.Set('chart.gutter.left', 40); // set left padding
+            myLine.Set('chart.gutter.right', 15); // set right padding
+            myLine.Set('chart.gutter.bottom', 40); // set space for labels under graph
+            myLine.Set('chart.colors', [['green', 'red']]); // different colors for up and down [up, down]
+            myLine.Set('chart.units.post', '');
+            myLine.Set('chart.scale.decimals', 1);
+            myLine.Set('chart.min', -1);
+            myLine.Set('chart.max', 1);
+            myLine.Set('chart.linewidth', 5);
+            myLine.Set('chart.hmargin', 15);
+            myLine.Set('chart.text.color', '#333');
+            myLine.Set('chart.text.font', 'Arial');
+            myLine.Set('chart.text.angle', 45); // set label rotation on bottom
+            myLine.Set('chart.background.grid.autofit', true);
+            myLine.Set('chart.background.grid.autofit.numvlines', 11);
+            myLine.Set('chart.shadow', false);
+            myLine.Set('chart.shadow.color', 'rgba(20,20,20,0.3)');
+            myLine.Set('chart.shadow.blur',  10);
+            myLine.Set('chart.shadow.offsetx', 0);
+            myLine.Set('chart.shadow.offsety', 0);
+            myLine.Set('chart.background.grid.vlines', false);
+            myLine.Set('chart.background.grid.border', true);
+            myLine.Set('chart.noxaxis', true);
+            myLine.Set('chart.axis.color', '#666');
+            myLine.Set('chart.text.color', '#666');
+            //myLine.Set('chart.spline', true);
+            myLine.Set('chart.colors.alternate', true); // Different colors for positive and negative slopes (defined on chart.colors)
+            myLine.Set('chart.xaxispos', 'center'); // Allow for negative values
+
+            RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000});
+        }
+    </script>
+
+</body>
+</html>
