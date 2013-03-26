@@ -19,6 +19,8 @@
             android:name="com.grep.ui.TopicActivity" >
         </activity>
         <activity
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
             android:name="com.grep.ui.GaugeActivity" >
         </activity>
         <activity
