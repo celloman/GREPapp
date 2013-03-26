@@ -1,3 +1,8 @@
+/**
+ * 	DatabaseHandler.java
+ * 
+ *  @author Gresham, Ryan, Everett, Pierce
+ */
 package com.grep.database;
 
 import java.util.ArrayList;
@@ -8,15 +13,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-
 /**
- * This classes handles all SQLite database functionality. 
- * 
- * It contains CRUD operations for each table in the 
- * database.
- * 
- * @author Everett
- *
+ * {@code public class DatabaseHandler extends SQLiteOpenHelper}
+ * <br><br>
+ * Handles all SQLite database interaction and functionality.
+ * <br><br><blockquote>
+ * Instantiating database handler within activity: <br><blockquote>
+ * {@code DatabaseHandler dh = new DatabaseHandler(this)}
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 	
@@ -43,8 +46,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String TOPIC_NAME = "topic";
 	
 	// Keyword Table column names
-	private static final String KEYWORD_KEY_ID = "id";
-	private static final String KEYWORD_TEXT = "keyword";
+	private static final String KEYWORD_KEY_ID = "id";	
+	private static final String KEYWORD_TEXT = "keyword";	
 	private static final String KEYWORD_TOPIC_ID = "topic_id";
 	
 	// Session Table column names
@@ -59,12 +62,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Database object
 	SQLiteDatabase db;
 	
-	// Constructor
+	/**
+	 * Constructor
+	 * @param context	(Context) - the application context that contains the database
+	 */
 	public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 	
-	// Create Tables
+	/**
+	 * */
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Create Authentication Table in SQLite DB
@@ -96,7 +103,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         
     }
  
-    // Enables foreign keys for writable databases when opened
+    /**
+     * Enables foreign keys for writable databases when opened
+     */
     @Override
     public void onOpen(SQLiteDatabase db) {
     	if (!db.isReadOnly()) {
@@ -106,7 +115,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	super.onOpen(db);
     }
     
-    // Upgrade database
+    /**
+     * */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         
@@ -120,18 +130,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
     
-    // Open SQLite database
+    /**
+     * {@code public void open}
+     * <br><br>
+     * Open SQLite database as writable
+     */
     public void open() {
     	this.db = this.getWritableDatabase();
     }
     
-    // Close SQLite database
+    /**
+     * {@code public void close}
+     * <br><br>
+     * Close SQLite database
+     */
     public void close() {
     	this.db.close();
     }
-
     
-    // Clean the database, delete the tables
+    /**
+     * {@code public void clean}
+     * <br><br>
+     * Clean the database, clear out all tables tables
+     */
     public void clean() {
     	List<Topic> tList = this.getAllTopics();
     	
@@ -142,7 +163,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	}
     }
     
-    // Delete the database, context is the activity calling the method
+    /**
+     * {@code public void delete}
+     * <br><br>
+     * Delete the database, context is the activity calling the method
+     * @param context	(Context)
+     */
     public void delete(Context context) {
     	context.deleteDatabase(DATABASE_NAME);
     }
@@ -154,7 +180,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     
 // Authentication table CRUD
-    // Insert credentials into authentication table
+    /**
+     * {@code public void addCredentials}
+     * <br><br>
+     * Insert credentials into authentication table
+     * @param credentials	(Credentials)
+     */
     public void addCredentials(Credentials credentials) {   	
     	ContentValues values = new ContentValues();
     	values.put(CONSUMER_KEY, credentials.getConsumerKey());
@@ -163,7 +194,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	this.db.insert(AUTH_TABLE, null, values);
     }
     
-    // Retrieve credentials from authentication table
+    /**
+     * {@code public Credentials getCredentials}
+     * <br><br>
+     * Retrieve credentials from authentication table
+     * @param id	(int)
+     * @return credentials
+     */
     public Credentials getCredentials(int id) {
     	Credentials credentials = null;
     	
@@ -182,28 +219,43 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return credentials;
     }
     
-    // Update existing credentials
-    public int updateCredentials(Credentials credentials) {  	
+    /**
+     * {@code public boolean update}
+     * <br><br>
+     * Update existing credentials in credentials table
+     * @param credentials
+     * @return updateSuccess
+     */
+    public boolean updateCredentials(Credentials credentials) {  	
     	ContentValues values = new ContentValues();
     	values.put(CONSUMER_KEY, credentials.getConsumerKey());
     	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
     	
     	// update credentials row
-    	int numRowsUpdated = this.db.update(AUTH_TABLE, values, USER_KEY_ID + " = ?",
-                new String[] { String.valueOf(credentials.getId()) });
+    	boolean updateSuccess = this.db.update(AUTH_TABLE, values, USER_KEY_ID + " = ?",
+                new String[] { String.valueOf(credentials.getId()) }) > 0;
         
-        
-    	return numRowsUpdated;
+    	return updateSuccess;
     }
     
-    // Delete credentials from authentication table
+    /**
+     * {@code public void deleteCredentials}
+     * <br><br>
+     * Delete credentials from authentication table
+     * @param credentials	(Credentials)
+     */
     public void deleteCredentials(Credentials credentials) {       
     	this.db.delete(AUTH_TABLE, USER_KEY_ID + " =?",
                 new String[] { String.valueOf(credentials.getId()) });
     }
     
 // Topic table CRUD
-    // Insert new topic into topic table
+    /**
+     * {@code public void addTopic}
+     * <br><br>
+     * Insert new topic into topic table
+     * @param topic	(Topic)
+     */
     public void addTopic(Topic topic) {
     	ContentValues values = new ContentValues();
     	values.put(TOPIC_NAME, topic.getTopicName());
@@ -211,7 +263,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	this.db.insert(TOPIC_TABLE, null, values);
     }
     
-    // Retrieve a topic from topic table
+    /**
+     * {@code public Topic getTopic}
+     * <br><br>
+     * Retrieve a topic from topic table by id
+     * @param id	(int)
+     * @return topic
+     */
     public Topic getTopic(int id) {
     	Topic topic = null;
     	
@@ -230,7 +288,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return topic;
     }
   
-    // Retrieve all topics in topic table
+    /**
+     * {@code public List<Topic> getAllTopics}
+     * <br><br>
+     * Retrieve all topics in topic table as a list
+     * @return topicList
+     */
     public List<Topic> getAllTopics() { 	
     	List<Topic> topicList = null;
     	
@@ -253,26 +316,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return topicList;
     }
     
-    // Update existing topic
-    public int updateTopic(Topic topic) {
+    /**
+     * {@code public boolean updateTopic}
+     * <br><br>
+     * Update existing topic in topic table
+     * @param topic	(Topic)
+     * @return updateSuccess
+     */
+    public boolean updateTopic(Topic topic) {
     	ContentValues values = new ContentValues();
     	values.put(TOPIC_NAME, topic.getTopicName());
     	
     	// update topic row
-    	int numRowsUpdated = this.db.update(TOPIC_TABLE, values, TOPIC_KEY_ID + " =?", 
-    			new String[] { String.valueOf(topic.getId()) });
+    	boolean updateSuccess = this.db.update(TOPIC_TABLE, values, TOPIC_KEY_ID + " =?", 
+    			new String[] { String.valueOf(topic.getId()) }) > 0;
     	
-    	return numRowsUpdated;
+    	return updateSuccess;
     }
     
-    // Delete topic from topic table
+    /**
+     * {@code public void deleteTopic}
+     * <br><br>
+     * Delete topic from topic table
+     * @param topic	(Topic)
+     */
     public void deleteTopic(Topic topic) {        
     	this.db.delete(TOPIC_TABLE, TOPIC_KEY_ID + " =?",
                 new String[] { String.valueOf(topic.getId()) });
     }
     
 // Keyword table CRUD
-    // Insert new keyword into keyword table
+    /**
+     * {@code public void addKeyword}
+     * <br><br>
+     * Insert new keyword into keyword table
+     * @param keyword
+     */
     public void addKeyword(Keyword keyword) {    	
     	ContentValues values = new ContentValues();
     	values.put(KEYWORD_TOPIC_ID, keyword.getKeywordTopicId());
@@ -281,7 +360,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	this.db.insert(KEYWORD_TABLE, null, values);
     }
     
-    // Retrieve keyword from keyword table
+    /**
+     * {@code public Keyword getKeyword}
+     * <br><br>
+     * Retrieve keyword from keyword table
+     * @param id	(int)
+     * @return keyword
+     */
     public Keyword getKeyword(int id) {
     	Keyword keyword = null;
     	
@@ -300,7 +385,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return keyword;
     }
     
-    // Retrieve a list of keywords with the same topic id
+    /**
+     * {@code public List<Keyword> getAllKeywords}
+     * <br><br>
+     * Retrieve a list of keywords with the same topic id
+     * @param t_keyword_id	(int)
+     * @return keywordList
+     */
     public List<Keyword> getAllKeywords(int t_keyword_id) {    	
     	List<Keyword> keywordList = null;
     	
@@ -325,26 +416,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return keywordList;
     }
     
-    // Update keyword in keyword table
-    public int updateKeyword(Keyword keyword) {    	
+    /**
+     * {@code public boolean updateKeyword}
+     * <br><br>
+     * Update existing keyword in keyword table
+     * @param keyword	(Keyword)
+     * @return updateSuccess
+     */
+    public boolean updateKeyword(Keyword keyword) {    	
     	ContentValues values = new ContentValues();
     	values.put(KEYWORD_TEXT, keyword.getKeyword());
     	values.put(KEYWORD_TOPIC_ID, keyword.getKeywordTopicId());
     	
-    	int numRowsUpdated = this.db.update(KEYWORD_TABLE, values, KEYWORD_KEY_ID + " =?", 
-    			new String[] { String.valueOf(keyword.getId()) });
+    	boolean updateSuccess = this.db.update(KEYWORD_TABLE, values, KEYWORD_KEY_ID + " =?", 
+    			new String[] { String.valueOf(keyword.getId()) }) > 0;
     	    	
-    	return numRowsUpdated;
+    	return updateSuccess;
     }
     
-    // Delete keyword from keyword table
+    /**
+     * {@code public void deleteKeyword}
+     * <br><br>
+     * Delete keyword from keyword table
+     * @param keyword	(Keyword)
+     */
     public void deleteKeyword(Keyword keyword) {        
     	this.db.delete(KEYWORD_TABLE, KEYWORD_KEY_ID + " =?",
                 new String[] { String.valueOf(keyword.getId()) });
     }
     
 // Session table CRUD
-    // Insert new session into session table
+    /**
+     * {@code public void addSession}
+     * <br><br>
+     * Insert new session into session table
+     * @param session	(Session)
+     */
     public void addSession(Session session) {    	
     	ContentValues values = new ContentValues();
     	values.put(SESSION_TOPIC_ID, session.getSessionTopicId());
@@ -357,7 +464,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	this.db.insert(SESSION_TABLE, null, values);
     }
     
-    // Retrieve a session from the session table
+    /**
+     * {@code public Session getSession}
+     * <br><br>
+     * Retrieve a session from the session table
+     * @param id	(int)
+     * @return session
+     */
     public Session getSession(int id) {
     	Session session = null;
     	
@@ -380,7 +493,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return session;
     }
     
-    // Retrieve all sessions with the same topic id
+    /**
+     * {@code public List<Session> getAllSessions}
+     * <br><br>
+     * Retrieve all sessions with the same topic id
+     * @param t_session_id	(int)
+     * @return	sessionList
+     */
     public List<Session> getAllSessions(int t_session_id) {    	
     	List<Session> sessionList = null;
     	
@@ -407,8 +526,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	return sessionList;
     }
     
-    // Update session in session table
-    public int updateSession(Session session) {
+    /**
+     * {@code public boolean updateSession}
+     * <br><br>
+     * Update existing session in session table
+     * @param session	(Session)
+     * @return
+     */
+    public boolean updateSession(Session session) {
     	ContentValues values = new ContentValues();
     	values.put(SESSION_TOPIC_ID, session.getSessionTopicId());
     	values.put(SESSION_START_TIME, session.getStartTime());
@@ -417,13 +542,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	values.put(SESSION_AVG_POSITIVE, session.getAvgPosSentiment());
     	values.put(SESSION_AVG_NEGATIVE, session.getAvgNegSentiment());
     	
-    	int numRowsUpdated = this.db.update(SESSION_TABLE, values, SESSION_KEY_ID + " =?",
-    			new String[] { String.valueOf(session.getId()) });
+    	boolean updateSession = this.db.update(SESSION_TABLE, values, SESSION_KEY_ID + " =?",
+    			new String[] { String.valueOf(session.getId()) }) > 0;
     	
-    	return numRowsUpdated;
+    	return updateSession;
     }
     
-    // Delete a session from session table
+    /** 
+     * {@code public void deleteSession}
+     * <br><br>
+     * Delete a session from session table
+     * @param session	(Session)
+     */
     public void deleteSession(Session session) {
     	this.db.delete(SESSION_TABLE, SESSION_KEY_ID + " =?", 
     			new String[] { String.valueOf(session.getId()) });
