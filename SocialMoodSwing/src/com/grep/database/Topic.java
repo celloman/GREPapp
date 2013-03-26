@@ -1,5 +1,16 @@
+/**
+ * Topic.java
+ * 
+ * @author Gresham, Ryan, Everett, Pierce
+ */
+
 package com.grep.database;
 
+/**
+ *	{@code public class Topic}
+ *	<br><br>
+ *  Utility class containing topics used in SQLite database
+ */
 public class Topic {
 	
 	// Local private variables
@@ -8,17 +19,26 @@ public class Topic {
 	
 	private String topic_name;
 	
-	// constructor
+	/**
+	 * Constructor
+	 */
 	public Topic() {
 		//empty
 	}
 	
-	// constructor, set topic name field
+	/**
+	 * Constructor
+	 * @param name	(String)
+	 */
 	public Topic(String name) {
 		this.topic_name = name;
 	}
 	
-	// constructor, set all fields
+	/**
+	 * Constructor
+	 * @param id	(int)
+	 * @param name	(String)
+	 */
 	public Topic(int id, String name) {
 		this.id = id;
 		this.topic_name = name;
@@ -26,18 +46,34 @@ public class Topic {
 	
 	// Get and set methods
 	
+	/**
+	 * {@code public int getId}
+	 * @return id
+	 */
 	public int getId() {
 		return this.id;
 	}
 	
+	/**
+	 * {@code public void setId}
+	 * @param id	(int)
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 	
+	/**
+	 * {@code public String getTopicName}
+	 * @return topic_name
+	 */
 	public String getTopicName() {
 		return this.topic_name;
 	}
 	
+	/**
+	 * {@code public void setTopicName}
+	 * @param name	(String)
+	 */
 	public void setTopicName(String name) {
 		this.topic_name = name;
 	}

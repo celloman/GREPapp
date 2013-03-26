@@ -7,7 +7,7 @@
 package com.grep.database;
 
 /**
- * public class Keyword
+ * {@code public class Keyword}
  * <br><br>
  * Utility class containing keywords used in SQLite database
  */
@@ -15,22 +15,11 @@ public class Keyword {
 	
 	// Local private variables
 	// Table key id
-	/**
-	 * private int id
-	 */
 	private int id;
 	
-	/**
-	 * private String keyword
-	 */
 	private String keyword;
 	
 	// Foreign topic id for keyword
-	/**
-	 * private int t_id
-	 * <br><br>
-	 * Topic ID, foreign key reference
-	 */
 	private int t_id;
 	
 	/**
@@ -65,7 +54,7 @@ public class Keyword {
 	// Get and set methods
 	
 	/**
-	 * public int getId
+	 * {@code public int getId}
 	 * @return id
 	 */
 	public int getId() {
@@ -73,7 +62,7 @@ public class Keyword {
 	}
 	
 	/**
-	 * public void setId
+	 * {@code public void setId}
 	 * @param id (int)
 	 */
 	public void setId(int id) {
@@ -81,7 +70,7 @@ public class Keyword {
 	}
 	
 	/**
-	 * public String getKeyword
+	 * {@code public String getKeyword}
 	 * @return keyword
 	 */
 	public String getKeyword() {
@@ -89,7 +78,7 @@ public class Keyword {
 	}
 	
 	/**
-	 * public void setKeyword
+	 * {@code public void setKeyword}
 	 * @param keyword (String)
 	 */
 	public void setKeyword(String keyword) {
@@ -97,7 +86,7 @@ public class Keyword {
 	}
 	
 	/**
-	 * public int getKeywordTopicId
+	 * {@code public int getKeywordTopicId}
 	 * @return t_id
 	 */
 	public int getKeywordTopicId() {
@@ -105,7 +94,7 @@ public class Keyword {
 	}
 	
 	/**
-	 * public void setKeywordTopicId
+	 * {@code public void setKeywordTopicId}
 	 * @param id (int)
 	 */
 	public void setKeywordTopicId(int id) {

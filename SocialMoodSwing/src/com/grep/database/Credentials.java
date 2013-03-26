@@ -8,7 +8,7 @@
 package com.grep.database;
 
 /**
- *  public class Credentials 
+ *  {@code public class Credentials}
  *  <br><br>
  *  Utility class containing OAuth credentials used in SQLite database
  */
@@ -16,20 +16,10 @@ public class Credentials {
 	
 	// Local private variables
 	// Table key id
-	/**
-	 * private int id
-	 */
 	private int id;
 	
 	// OAuth consumer key and secret
-	/**
-	 * private String consumerKey
-	 */
 	private String consumerKey;
-	
-	/**
-	 * private String consumerSecret
-	 */
 	private String consumerSecret;
 	
 	/**
@@ -64,7 +54,7 @@ public class Credentials {
 	// Get and set methods
 	
 	/**
-	 * public int getId
+	 * {@code public int getId}
 	 * @return id
 	 */
 	public int getId() {
@@ -72,7 +62,7 @@ public class Credentials {
 	}
 	
 	/**
-	 * public void setId
+	 * {@code public void setId}
 	 * @param id	(int)
 	 */
 	public void setId(int id) {
@@ -80,7 +70,7 @@ public class Credentials {
 	}
 	
 	/**
-	 * public String getConsumerKey
+	 * {@code public String getConsumerKey}
 	 * @return consumerKey
 	 */
 	public String getConsumerKey() {
@@ -88,7 +78,7 @@ public class Credentials {
 	}
 	
 	/**
-	 * public void setConsumerKey
+	 * {@code public void setConsumerKey}
 	 * @param key	(String)
 	 */
 	public void setConsumerKey(String key) {
@@ -96,7 +86,7 @@ public class Credentials {
 	}
 	
 	/**
-	 * public String getConsumerSecret
+	 * {@code public String getConsumerSecret}
 	 * @return consumerSecret
 	 */
 	public String getConsumerSecret() {
@@ -104,7 +94,7 @@ public class Credentials {
 	}
 	
 	/**
-	 * setConsumerSecret
+	 * {@code setConsumerSecret}
 	 * @param secret	(String)
 	 */
 	public void setConsumerSecret(String secret) {
