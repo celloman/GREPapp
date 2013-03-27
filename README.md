@@ -1,4 +1,4 @@
-GREPapp
+Social Mood Swing
 =======
 
 CS480 Twitter Social Media Mood App for Android
