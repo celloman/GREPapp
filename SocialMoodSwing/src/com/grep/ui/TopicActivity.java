@@ -1,5 +1,9 @@
 package com.grep.ui;
 
+import java.util.List;
+
+import com.grep.database.DatabaseHandler;
+import com.grep.database.Session;
 import com.jjoe64.graphview.*;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 
@@ -30,10 +34,24 @@ public class TopicActivity extends FragmentActivity {
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
+		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+		int topic_id = dh.getTopic(); // How are we going to get the current topic when this activity is open?
+		
+		// Get a list of session values
+		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		List<String> analysisTimes = null;
+		List<Integer> analysisValues = null;
+		
+		// Create lists to pass to javascript of session values and session times (theoretically)
+		for(int i; analysisSessions.size(); i++) {
+			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
+			analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
+		}
+		
 		WebView myWebView = (WebView) findViewById(R.id.graph);
 		myWebView.loadUrl("file:///android_asset/graph.html");
 		myWebView.setHorizontalScrollBarEnabled(false);
-		//myWebView.addJavascriptInterface(new JsObject(), "injectedObject");
+		//myWebView.addJavascriptInterface(, "injectedObject");
 		WebSettings webSettings = myWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		}
