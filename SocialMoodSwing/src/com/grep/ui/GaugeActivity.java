@@ -7,8 +7,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
-import android.webkit.WebSettings;
+import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
+import android.widget.Toast;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.Tweet;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -25,29 +26,34 @@ import java.util.concurrent.BlockingQueue;
 public class GaugeActivity extends FragmentActivity {
 	
 	static public Thread m_gaugeConsumer;
+	
+	public void showToast(final String toast) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				Toast.makeText(GaugeActivity.this, toast, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
+		setTitle(R.string.title_activity_gauge);
 	
-		String[] keywords = {"obama", "clinton", "politics", "administration", "liberal", "conservative"};
+		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
 		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
 		GaugeBackend.start(keywords, popularTweets, gaugeValues);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setRenderPriority(RenderPriority.HIGH);
 		webView.loadUrl("file:///android_asset/gauge.html");
-		WebSettings webSettings = webView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		
-		GaugeInterface gi = new GaugeInterface();
-		
-		webView.addJavascriptInterface(gi, "Android");
 		
 		// start another thread to process gauge values TODO add another to process
 		// the popular Tweets
-		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues, gi));
+		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues, this, webView));
 		m_gaugeConsumer.start();
 	}
 

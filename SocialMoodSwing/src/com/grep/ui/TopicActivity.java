@@ -22,6 +22,7 @@ public class TopicActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
+		setTitle(R.string.title_activity_topic);
 	}
 
 	@Override

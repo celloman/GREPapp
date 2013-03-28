@@ -1,53 +1,100 @@
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
 <!DOCTYPE html>
 <html>
 	<head>
 		<title>Gauge</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<script src="js/raphael.2.1.0.min.js"></script>
-		<script src="js/justgage.1.0.1.min.js"></script>
+		<script src="js/gauge.min.js"></script>
 		<script src="js/jquery-1.8.2.min.js"></script>
-		
+	
 		<script type='text/javascript'>
 
 			$(document).ready(function(){
-
-				var gauge = new JustGage({
-					id: "gauge",
-					value: 50,
-					min: 0,
-					max: 100,
-					title: ' ',
-					label: ' ',
-					valueFontColor: "#ffffff",
-					labelFontColor: "#ffffff",
-					showMinMax: false,
-					gaugeColor: "#e00000",
-					levelColors: ["#00b71b"],
-					shadowOpacity: .4,
-					shadowSize: 7,
-					refreshAnimationTime: 400,
-					gaugeWidthScale: .9
-				});
+		
+				var opts = {
+					lines: 12,
+					angle: 0.0, // make it a semicircle
+					lineWidth: 0.33,
+					pointer: {
+						length: 0.9,
+						strokeWidth: 0.0, // make the pointer invisible
+						color: '#000000'
+					},
+					colorStart: '#00b71b',
+					colorStop: '#00b71b',
+					strokeColor: '#e00000',
+					generateGradient: false
+				};
 				
-				function refresh_gauge(){
-					//gauge.refresh(Math.floor(Math.random()*101));
-					var val = Android.getValue();
-					alert(val);
-					//gauge.refresh(val);
-				}
-				
-				setInterval(refresh_gauge, 3000);
+				var target = document.getElementById('gauge');
+				gauge = new Gauge(target).setOptions(opts);
+				gauge.maxValue = 100;
+				gauge.animationSpeed = 32;
+				gauge.set(50);
+			
 			});
+			
+			function refresh_gauge(val, count, avg){
+				gauge.set(val);
+				$('#tag').text(val+':'+(100-val));
+				$('#count').text(count);
+				$('#avg')
+					.text((avg > 0 ? '+' : '')+avg+'%')
+					.css('color', (avg > 0 ? '#00b71b' : '#e00000'));
+			}
 			
 		</script>
 		
+		<style type='text/css'>
+			body {
+				font-family: 'Arial';
+				color: #1f1f1f;
+			}
+			
+			#guage {
+				width: 300px;
+				height: 150px;
+				margin-left: auto;
+				margin-right: auto;
+				z-index: 0;
+			}
+			
+			#tag {
+				width: 150px;
+				position: absolute;
+				left: 50%;
+				top: 105px;
+				margin-left: -75px;
+				font-size: 34px;
+				text-align: center;
+				font-weight: bold;
+				z-index: 1;
+			}
+			
+			#labels > div > span {
+				float: right;
+				font-weight: bold;
+			}
+			
+			#labels {
+				width: 220px;
+				position: absolute;
+				left: 50%;
+				margin-left: -110px;
+				top: 160px;
+			}
+			
+			#labels > div {
+				height: 25px;
+			}
+		</style>
+		
 	</head>
 	<body>
-		<div id='gauge' style='width: 300px; height: 200px; margin: auto;'></div>
+		<canvas id='gauge'></canvas>
+		<div id='tag'>50:50</div>
+		<div id='labels'>
+			<div>Tweets Processed:<span id='count'>0</span></div>
+			<div>Average Sentiment:<span id='avg'>50%</span></div>
+		</div>
 	</body>
 </html>
-

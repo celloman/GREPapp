@@ -8,6 +8,8 @@ package com.grep.gaugebackend;
 
 import twitter4j.*;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
@@ -38,8 +40,8 @@ public class GetTweets implements Runnable {
 		// login info
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setUser("vikings383")
-                .setPassword("383vikings");
+                .setUser("greshamschlect")
+                .setPassword("saxon93g");
     	
 		// create the stream
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
@@ -55,7 +57,8 @@ public class GetTweets implements Runnable {
         	
             @Override
             public void onStatus(Status status) {
-				System.out.println("getter thread running...");
+				//System.out.println("getter thread running...");
+				
                 try {
 					this.queue.put(new Tweet(status));
 				} catch (InterruptedException e) {
@@ -95,5 +98,17 @@ public class GetTweets implements Runnable {
         twitterStream.addListener(new StatusListenerQueueing(this.m_outQueue));
 		// add the keyword filtering
         twitterStream.filter(new FilterQuery(0, null, this.m_Keywords));
+		
+		while(!Thread.currentThread().isInterrupted()) {
+			try {
+				Thread.sleep(2000L);
+			} catch (InterruptedException ex) {
+				// immediately reset interrupt flag
+				Thread.currentThread().interrupt();
+			}
+		}
+		
+		twitterStream.cleanUp();
+		twitterStream.shutdown();
     }
 }
