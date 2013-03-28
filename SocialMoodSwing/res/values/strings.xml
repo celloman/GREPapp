@@ -8,5 +8,7 @@
     <string name="title_activity_topic_list">Topics</string>
     <string name="warning_message">Analysis session will terminate if you leave this page.</string>
     <string name="title_activity_topic">Run History</string>
+    <string name="text_button_stop">Stop</string>
+    <string name="text_button_topic">To Topic</string>
 
 </resources>
