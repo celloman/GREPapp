@@ -20,7 +20,7 @@ public class Aggregate implements Runnable {
 	// outgoing queue of gauge values
 	protected BlockingQueue<Gauge> m_outGauge = null;
 	// internal queue of latest tweets (tweet wave)
-	protected CircularFifoBuffer m_tweetWaveQueue = new CircularFifoBuffer(10);
+	protected CircularFifoBuffer m_tweetWaveQueue = new CircularFifoBuffer(25);
 	// total number of tweets processed
 	protected int m_tweetCount = 0;
 	// total positive value
@@ -56,7 +56,7 @@ public class Aggregate implements Runnable {
 		// loop while the thread isn't interrupted
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			System.out.println("aggregator thread running...");
+			//System.out.println("aggregator thread running...");
 			
 			try {
 				// get from prev module
@@ -70,10 +70,8 @@ public class Aggregate implements Runnable {
 					m_outPopularQueue.put(t);
 				}
 				
-				System.out.println(m_tweetWaveQueue.size());
-				
 				// once our tweet wave is full, get aggregating
-				if(m_tweetWaveQueue.size() == 10) {
+				if(m_tweetWaveQueue.size() == 25) {
 					// calculate gauge values
 					Gauge g = new Gauge(m_tweetWaveQueue, m_Positive, m_Negative, m_tweetCount);
 					
