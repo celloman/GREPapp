@@ -36,7 +36,7 @@ public class GetSentiment implements Runnable {
 	public void run() {
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			System.out.println("sentiment thread running...");
+			//System.out.println("sentiment thread running...");
 			
 			try {
 				final Tweet t = m_inQueue.take();
