@@ -255,12 +255,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert new topic into topic table
      * @param topic	(Topic)
+     * @return the topic id of the inserted topic, -1 if error occurred 
      */
-    public void addTopic(Topic topic) {
+    public int addTopic(Topic topic) {
     	ContentValues values = new ContentValues();
     	values.put(TOPIC_NAME, topic.getTopicName());
     	
-    	this.db.insert(TOPIC_TABLE, null, values);
+    	return (int) this.db.insert(TOPIC_TABLE, null, values);
     }
     
     /**
