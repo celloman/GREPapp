@@ -1,12 +1,13 @@
 package com.grep.ui;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
-import com.jjoe64.graphview.*;
-import com.jjoe64.graphview.GraphView.GraphViewData;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -16,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
+import android.webkit.WebViewClient;
 
 /**
  * TopicActivity displays the currently selected topic's run history
@@ -26,34 +27,57 @@ import android.widget.LinearLayout;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
+@SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
-		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-		int topic_id = dh.getTopic(); // How are we going to get the current topic when this activity is open?
-		
-		// Get a list of session values
-		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
-		List<String> analysisTimes = null;
-		List<Integer> analysisValues = null;
+/*		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+		int topic_id = savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
+*/		
+// 		Get a list of session values
+//		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		final List<Integer> analysisValues = new ArrayList<Integer>();
+		final List<String> analysisTimes = new ArrayList<String>();
 		
 		// Create lists to pass to javascript of session values and session times (theoretically)
-		for(int i; analysisSessions.size(); i++) {
-			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
-			analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
+		Random generator = new Random();
+		
+		for(int i = 0; i < 10/*analysisSessions.size()*/; i++) {
+			analysisTimes.add("label" + i);
+			analysisValues.add(generator.nextInt() % 100);
+/*			analysisTimes[i] = analysisSessions.get(i).getStartTime(); // Is this somewhat correct?
+			
+			// Are we storing negative sentiment as a negative number?
+			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment())
+				analysisValues[i] = analysisSessions.get(i).getAvgNegSentiment();
+			else
+				analysisValues[i] = analysisSessions.get(i).getAvgPosSentiment();*/
 		}
 		
-		WebView myWebView = (WebView) findViewById(R.id.graph);
+		final WebView myWebView = (WebView) findViewById(R.id.graph);
+		
+		myWebView.setWebViewClient(new WebViewClient() {  
+		    @Override  
+		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
+		    {  
+				for(int i = 0; i < analysisValues.size(); i++){
+					myWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
+					myWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+				}
+				
+				myWebView.loadUrl("javascript:draw_graph();");
+		    }  
+		});
+		
 		myWebView.loadUrl("file:///android_asset/graph.html");
 		myWebView.setHorizontalScrollBarEnabled(false);
-		//myWebView.addJavascriptInterface(, "injectedObject");
 		WebSettings webSettings = myWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
+		webSettings.setDomStorageEnabled(true);
 		}
 
 	@Override
