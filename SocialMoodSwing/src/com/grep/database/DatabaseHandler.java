@@ -85,14 +85,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         		+ TOPIC_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TOPIC_NAME + " TEXT "  + ")";
         db.execSQL(CREATE_TOPIC_TABLE);
         
-        // Create Topic Table in SQLite DB
+        // Create Keyword Table in SQLite DB
         String CREATE_KEYWORD_TABLE = "CREATE TABLE " + KEYWORD_TABLE + " ("
         		+ KEYWORD_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEYWORD_TEXT + " TEXT,"
         		+ KEYWORD_TOPIC_ID + " INTEGER, FOREIGN KEY (" + KEYWORD_TOPIC_ID + ") REFERENCES "
         		+ TOPIC_TABLE + " (" + TOPIC_KEY_ID + ") ON DELETE CASCADE)";
         db.execSQL(CREATE_KEYWORD_TABLE);
         
-        // Create Topic Table in SQLite DB
+        // Create Session Table in SQLite DB
         String CREATE_SESSION_TABLE = "CREATE TABLE " + SESSION_TABLE + " ("
         		+ SESSION_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + SESSION_TOPIC_ID 
         		+ " INTEGER, " + SESSION_START_TIME + " TEXT, " + SESSION_DURATION 
@@ -151,7 +151,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * {@code public void clean}
      * <br><br>
-     * Clean the database, clear out all tables tables
+     * Clean the database, clear out all table's rows
      */
     public void clean() {
     	List<Topic> tList = this.getAllTopics();
@@ -166,7 +166,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * {@code public void delete}
      * <br><br>
-     * Delete the database, context is the activity calling the method
+     * Delete the database, context is the activity calling the method.
      * @param context	(Context)
      */
     public void delete(Context context) {
@@ -185,7 +185,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert credentials into authentication table
      * @param credentials	(Credentials)
-     * @return Row id of inserted credential
+     * @return Row id of inserted credential, -1 if error occurred
      */
     public int addCredentials(Credentials credentials) {   	
     	ContentValues values = new ContentValues();
@@ -353,7 +353,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert new keyword into keyword table
      * @param keyword
-     * @return Row id of inserted keyword
+     * @return Row id of inserted keyword, -1 if error occurred
      */
     public int addKeyword(Keyword keyword) {    	
     	ContentValues values = new ContentValues();
@@ -454,7 +454,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert new session into session table
      * @param session	(Session)
-     * @return Row id of inserted session
+     * @return Row id of inserted session, -1 if error occurred
      */
     public int addSession(Session session) {    	
     	ContentValues values = new ContentValues();
