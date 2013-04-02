@@ -185,13 +185,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert credentials into authentication table
      * @param credentials	(Credentials)
+     * @return Row id of inserted credential
      */
-    public void addCredentials(Credentials credentials) {   	
+    public int addCredentials(Credentials credentials) {   	
     	ContentValues values = new ContentValues();
     	values.put(CONSUMER_KEY, credentials.getConsumerKey());
     	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
     	
-    	this.db.insert(AUTH_TABLE, null, values);
+    	return (int)this.db.insert(AUTH_TABLE, null, values);
     }
     
     /**
@@ -352,13 +353,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert new keyword into keyword table
      * @param keyword
+     * @return Row id of inserted keyword
      */
-    public void addKeyword(Keyword keyword) {    	
+    public int addKeyword(Keyword keyword) {    	
     	ContentValues values = new ContentValues();
     	values.put(KEYWORD_TOPIC_ID, keyword.getKeywordTopicId());
     	values.put(KEYWORD_TEXT, keyword.getKeyword());
     	
-    	this.db.insert(KEYWORD_TABLE, null, values);
+    	return (int)this.db.insert(KEYWORD_TABLE, null, values);
     }
     
     /**
@@ -452,8 +454,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * <br><br>
      * Insert new session into session table
      * @param session	(Session)
+     * @return Row id of inserted session
      */
-    public void addSession(Session session) {    	
+    public int addSession(Session session) {    	
     	ContentValues values = new ContentValues();
     	values.put(SESSION_TOPIC_ID, session.getSessionTopicId());
     	values.put(SESSION_START_TIME, session.getStartTime());
@@ -462,7 +465,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	values.put(SESSION_AVG_POSITIVE, session.getAvgPosSentiment());
     	values.put(SESSION_AVG_NEGATIVE, session.getAvgNegSentiment());
     	
-    	this.db.insert(SESSION_TABLE, null, values);
+    	return (int)this.db.insert(SESSION_TABLE, null, values);
     }
     
     /**
@@ -484,7 +487,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
         
             session = new Session(Integer.parseInt(cursor.getString(0)),
-        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3), 
+        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), Integer.parseInt(cursor.getString(3)), 
         		Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), 
         		Integer.parseInt(cursor.getString(6)));
         
@@ -515,7 +518,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     		sessionList = new ArrayList<Session>();
     		do {
     			Session session = new Session(Integer.parseInt(cursor.getString(0)),
-    	        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getString(3), 
+    	        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), Integer.parseInt(cursor.getString(3)), 
     	        		Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), 
     	        		Integer.parseInt(cursor.getString(6)));
     			
