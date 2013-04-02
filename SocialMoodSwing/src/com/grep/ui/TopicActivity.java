@@ -58,26 +58,26 @@ public class TopicActivity extends FragmentActivity {
 				analysisValues[i] = analysisSessions.get(i).getAvgPosSentiment();*/
 		}
 		
-		final WebView myWebView = (WebView) findViewById(R.id.graph);
+		final WebView historyGraphWebView = (WebView) findViewById(R.id.graph);
 		
-		myWebView.setWebViewClient(new WebViewClient() {  
+		historyGraphWebView.setWebViewClient(new WebViewClient() {  
 		    @Override  
 		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
 		    {  
 				for(int i = 0; i < analysisValues.size(); i++){
-					myWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
-					myWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
+					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
 				}
 				
-				myWebView.loadUrl("javascript:draw_graph();");
+				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
 		});
 		
-		myWebView.loadUrl("file:///android_asset/graph.html");
-		myWebView.setHorizontalScrollBarEnabled(false);
-		WebSettings webSettings = myWebView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		webSettings.setDomStorageEnabled(true);
+		historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		historyGraphWebView.setHorizontalScrollBarEnabled(false);
+		WebSettings historyGraphWebSettings = historyGraphWebView.getSettings();
+		historyGraphWebSettings.setJavaScriptEnabled(true);
+		historyGraphWebSettings.setDomStorageEnabled(true);
 		}
 
 	@Override
