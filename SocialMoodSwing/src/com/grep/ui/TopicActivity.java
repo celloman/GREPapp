@@ -16,8 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 
 /**
  * TopicActivity displays the currently selected topic's run history
@@ -57,9 +59,9 @@ public class TopicActivity extends FragmentActivity {
 			else
 				analysisValues[i] = analysisSessions.get(i).getAvgPosSentiment();*/
 		}
-		
+		System.out.println("Before creating webview");
 		final WebView historyGraphWebView = (WebView) findViewById(R.id.graph);
-		
+		System.out.println("After creating webview");
 		historyGraphWebView.setWebViewClient(new WebViewClient() {  
 		    @Override  
 		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
@@ -78,6 +80,11 @@ public class TopicActivity extends FragmentActivity {
 		WebSettings historyGraphWebSettings = historyGraphWebView.getSettings();
 		historyGraphWebSettings.setJavaScriptEnabled(true);
 		historyGraphWebSettings.setDomStorageEnabled(true);
+		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph?
+		historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling
+		
+//		EditText hours = (EditText) findViewById(R.id.hours);
+//		EditText minutes = (EditText) findViewById(R.id.minutes);
 		}
 
 	@Override

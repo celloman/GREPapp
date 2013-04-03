@@ -2,15 +2,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TopicActivity" >
+    tools:context=".TopicActivity"
+    android:focusable="true"
+	android:focusableInTouchMode="true"
+    >
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:orientation="vertical" >
-
-        <RelativeLayout
+		
+		<RelativeLayout
             android:id="@+id/relativeLayout2"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -19,24 +22,24 @@
             android:layout_marginTop="10dp" >
 
             <EditText
-                android:id="@+id/editText1"
-                android:layout_width="70dp"
+                android:id="@+id/hours"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:ems="10"
                 android:inputType="number"
-                android:text="Hours"
+                android:hint="Hours"
                 android:textColor="@color/gray" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/minutes"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_toLeftOf="@+id/button1"
-                android:layout_toRightOf="@+id/editText1"
+                android:layout_toRightOf="@+id/hours"
                 android:ems="10"
                 android:inputType="number"
-                android:text="Minutes"
+                android:hint="Minutes"
                 android:textColor="@color/gray" />
 
             <Button
@@ -48,18 +51,32 @@
                 android:text="To Gauge" />
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="120dp" />
+		<EditText
+		    android:id="@+id/editText1"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+	        android:clickable="false" 
+	        android:cursorVisible="false" 
+    	    android:focusable="false" 
+        	android:focusableInTouchMode="false"
+		    android:ems="10"
+		    android:inputType="textMultiLine"
+		    android:scrollHorizontally="false"
+		    android:text="@string/temporary" >
 
-        <WebView
+		    <requestFocus />
+		</EditText>
+        
+		<WebView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/graph"
             android:layout_width="fill_parent"
             android:layout_height="250dp"
+ 	        android:clickable="false" 
+	        android:cursorVisible="false" 
+    	    android:focusable="false" 
+        	android:focusableInTouchMode="false"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
     </LinearLayout>
-
 </RelativeLayout>
