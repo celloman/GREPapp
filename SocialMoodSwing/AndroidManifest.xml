@@ -21,14 +21,11 @@
 			android:screenOrientation="portrait" >
         </activity>
         <activity
-<<<<<<< HEAD
             android:name="com.grep.ui.GaugeActivity" 
 			android:screenOrientation="portrait" >
-=======
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
             android:name="com.grep.ui.GaugeActivity" >
->>>>>>> list_UI
         </activity>
         <activity
             android:name="com.grep.ui.TopicListActivity"

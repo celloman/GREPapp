@@ -2,16 +2,12 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Random;
 
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
 
 import android.annotation.SuppressLint;
-=======
-
->>>>>>> list_UI
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -19,17 +15,14 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-<<<<<<< HEAD
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
-=======
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
->>>>>>> list_UI
 
 /**
  * TopicActivity displays the currently selected topic's run history
@@ -41,10 +34,6 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
-<<<<<<< HEAD
-=======
-		
->>>>>>> list_UI
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
