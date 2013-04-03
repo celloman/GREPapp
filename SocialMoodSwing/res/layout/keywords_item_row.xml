@@ -38,7 +38,8 @@
         android:paddingBottom="15dp"
         android:paddingLeft="15dp"
         android:paddingRight="0dp"
-        android:paddingTop="15dp" />
+        android:paddingTop="15dp"
+        android:hint ="New Keyword" />
 
 
         

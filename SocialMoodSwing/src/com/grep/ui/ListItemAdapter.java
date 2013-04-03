@@ -7,6 +7,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnFocusChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -118,6 +119,21 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
         holder.deleteIcon.setImageResource(item.getIcon());
         //TODO figure out what we are going to setTag()'s to for the list items
         holder.deleteIcon.setTag(position);
+        
+        /*
+		holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+			    EditText keyword = (EditText) v;
+				if(hasFocus) {
+			        if (position == 0)
+			        	Toast.makeText(context, "gained focus" + keyword.getText(), Toast.LENGTH_SHORT).show();
+			    }else
+			    	if (position == 0)
+			    		Toast.makeText(context, "lost focus" + keyword.getText(), Toast.LENGTH_SHORT).show();
+			    }
+			});
+		*/
         
     	return row;
     }

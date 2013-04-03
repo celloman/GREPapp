@@ -3,6 +3,9 @@ package com.grep.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.grep.database.DatabaseHandler;
+import com.grep.database.Topic;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -10,9 +13,12 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 /**
@@ -23,23 +29,43 @@ import android.widget.ListView;
  *
  */
 public class TopicKeywordsDialogFragment extends DialogFragment {
-	ListView keywordsListView;	
+	ListView keywordsListView;
+	EditText topicTitle;
 	static ListItemAdapter adapter;
-	static List<ListItem> rows = new ArrayList<ListItem>();
+	static List<ListItem> rows;
 	String [] keywords = null;
+	boolean isNewTopic;
+	DatabaseHandler db;
 		
 	public TopicKeywordsDialogFragment() {
+		this.isNewTopic = true;
 		//default constructor, for new topic
 	}
 		
 	public TopicKeywordsDialogFragment(String [] keywords /* contains all keywords of topic */) {
 		//overloaded constructor, for editing existing topic
 		this.keywords = keywords;
+		this.isNewTopic = false;
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		db.open();
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		db.close();
 	}
 		
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
+		db = new DatabaseHandler(getActivity());
+		rows = new ArrayList<ListItem>();
+		
 		// Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		
@@ -48,38 +74,112 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	        
 		// Get view from inflater
 		final View view = inflater.inflate(R.layout.keyword_dialog, null);
-			
-		//populate the keywords list
-		rows.add(new ListItem(R.drawable.delete_x, "Ryan Sacksteder"));
-		rows.add(new ListItem(R.drawable.delete_x, "Gresham"));
-		rows.add(new ListItem(R.drawable.delete_x, "Everett Bloch"));
-		rows.add(new ListItem(R.drawable.delete_x, "Pierce"));
-	        
+	
+	    //put empty textedit in first row of listview
+		rows.add(new ListItem(R.drawable.delete_x, ""));		
+		
+		//populate the keywords list with the keywords for this topic
+	    if (!isNewTopic) {
+			for (int i = 0; i < keywords.length; i++)
+		    {
+		      rows.add(new ListItem(R.drawable.delete_x, keywords[i]));
+		    }	
+	    }
+   
 		//create an adapter which defines the data/format of each element of our listview
 		adapter = new ListItemAdapter(view.getContext(), R.layout.keywords_item_row, rows, ListItemAdapter.listItemType.KEYWORD);
 	              
 		//listview we will populate
 		keywordsListView = (ListView)view.findViewById(R.id.keywordsListView);
+		topicTitle = (EditText)view.findViewById(R.id.topicEditText);
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
 
+		
+		/*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+builder.setMessage("Test for preventing dialog close");
+AlertDialog dialog = builder.create();
+dialog.show();
+//Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
+dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+      {            
+          @Override
+          public void onClick(View v)
+          {
+              Boolean wantToCloseDialog = false;
+              //Do stuff, possibly set wantToCloseDialog to true then...
+              if(wantToCloseDialog)
+                  dismiss();
+              //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
+          }
+      });
+*/
+		
+		
+		
+		
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setMessage("Topic Keywords")
 			.setView(view)
 			// Add action buttons
-			.setPositiveButton("Done", new DialogInterface.OnClickListener() {    
+			.setPositiveButton("Save Topic", null)
+			/*.setPositiveButton("Save Topic", new DialogInterface.OnClickListener() {    
+				@Override
 				public void onClick(DialogInterface dialog, int id) {
-					//Action performed when done
+					//TODO save the topic and keywords as is
+					String topicText = topicTitle.getText().toString();
+
+					if (topicText.isEmpty()) {
+						topicTitle.setHintTextColor(getResources().getColor(R.color.red));//Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
+					}
+					
+					else {
+						Topic topic = new Topic(topicTitle.getText().toString());
+						db.addTopic(topic);
+						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
+						//TODO get string value from topic title text edit, if no topic pop warning, else save topic
+						TopicListActivity.adapter.notifyDataSetChanged();
+						TopicKeywordsDialogFragment.this.getDialog().cancel();						
+					}
+				}
+			})*/
+			.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					TopicKeywordsDialogFragment.this.getDialog().cancel();
 				}
 			})
-			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			.setNegativeButton("Delete Topic", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					TopicKeywordsDialogFragment.this.getDialog().cancel();
 				}
 			});
-		
-		return builder.create();
+		AlertDialog dialog = builder.create();
+		dialog.show();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+	      {            
+	          @Override
+	          public void onClick(View v)
+	          {
+	        	//TODO save the topic and keywords as is
+					String topicText = topicTitle.getText().toString();
+
+					if (topicText.isEmpty()) {
+						topicTitle.setHintTextColor(getResources().getColor(R.color.red));
+						Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
+					}
+					
+					else {
+						Topic topic = new Topic(topicTitle.getText().toString());
+						db.addTopic(topic);
+						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
+						//TODO get string value from topic title text edit, if no topic pop warning, else save topic
+						TopicListActivity.adapter.notifyDataSetChanged();
+						TopicKeywordsDialogFragment.this.getDialog().cancel();						
+					}}
+	      });
+		//return builder.create();
+		return dialog;
 	}		
 }

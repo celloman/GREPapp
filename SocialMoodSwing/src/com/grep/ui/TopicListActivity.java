@@ -3,7 +3,11 @@ package com.grep.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.grep.database.DatabaseHandler;
+import com.grep.database.Topic;
+
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
@@ -25,22 +30,47 @@ import android.widget.Toast;
  *
  */
 public class TopicListActivity extends FragmentActivity {
-	ListView topicsListView;
-	ListItemAdapter adapter;
-	List<ListItem> rows = new ArrayList<ListItem>();
+	ListView topicsListView = null;
+	static ListItemAdapter adapter = null;
+	static List<ListItem> rows = new ArrayList<ListItem>();
+	List<Topic> topics = null;
+	DatabaseHandler db = null;
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		db.open();			
+		//Topic topic = new Topic("myTopic");
+		//db.addTopic(topic);
+
+	}
+	
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		db.close();
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		db = new DatabaseHandler(this);
+		
+
+		
 		setContentView(R.layout.activity_topic_list);
 		setTitle(R.string.title_activity_topic_list);
         
-		rows.add(new ListItem(R.drawable.edit_pencil, "Minnesota Vikings are the best team in the NFL! And they are going to get Jennings!"));
+
+
+		/*rows.add(new ListItem(R.drawable.edit_pencil, "Minnesota Vikings are the best team in the NFL! And they are going to get Jennings!"));
         rows.add(new ListItem(R.drawable.edit_pencil, "Gun Contjjjjjjjjjjjjjjffffffffffffrol"));
         rows.add(new ListItem(R.drawable.edit_pencil, "Abortionaaaaaaaaaaaaaaaaaaaaaaaffffffffff"));
         rows.add(new ListItem(R.drawable.edit_pencil, "Politicaffffffffffffaaaaaaaaaaaacccccccccccccs"));
-
+*/
         //create an adapter which defines the data/format of each element of our listview
         adapter = new ListItemAdapter(this, R.layout.listview_item_row, rows, ListItemAdapter.listItemType.TOPIC);
               
@@ -59,7 +89,22 @@ public class TopicListActivity extends FragmentActivity {
             {
             	goToTopicActivity();
             }
-        });		
+        });
+        
+		db.open();
+		rows.clear();
+		
+		topics = db.getAllTopics();
+		
+		if(topics != null)
+			for(int i=0;i< topics.size();i++)
+			{
+				rows.add(new ListItem(R.drawable.edit_pencil, topics.get(i).getTopicName()));
+				adapter.notifyDataSetChanged(); //TODO this duplicates adding items to list for every onResume call
+				//Toast.makeText(this, "toast", Toast.LENGTH_SHORT).show();
+				//db.deleteTopic(topics.get(i));
+			}
+		
 	}
 	
 
@@ -91,7 +136,7 @@ public class TopicListActivity extends FragmentActivity {
 	 */
     public void onClickEditTopicButton(View v)
     {
-    	showTopicKeywordsDialog(); //TODO should be calling version that takes list
+    	launchExistingTopicKeywordsDialog(); //TODO should be calling version that takes list
     	//v.getTag() returns the topic for the edit button that was clicked, Tag is set in *Adapter.java class
     	//TODO add logic for launching the edit topic dialogue
     	//do we need a separate action from when someone hits the add topic button?
@@ -105,16 +150,17 @@ public class TopicListActivity extends FragmentActivity {
 	 */
     public void onClickAddTopicButton(View v)
     {
-    	//showTopicKeywordsDialog();
-    	rows.add(new ListItem(R.drawable.edit_pencil, "Minnesota Vikings are the best team in the NFL! And they are going to get Jennings!"));
-        rows.add(new ListItem(R.drawable.edit_pencil, "Gun Contjjjjjjjjjjjjjjffffffffffffrol"));
-    	adapter.notifyDataSetChanged();
+    	launchNewTopicKeywordsDialog();
+		//Topic topic = new Topic("myTopic");
+		//db.addTopic(topic);
+		//rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
+		//adapter.notifyDataSetChanged();
     	//TODO add logic for launching the new topic dialogue
     	//do we need a separate action from when someone hits the edit topic button?
     }
     
 	/**
-	 * TODO
+	 * TODO add comment, also would prbly be safer to pass the view in as a button not generic view
 	 */
     
 	public void onClickDeleteKeywordButton(View v)
@@ -122,9 +168,18 @@ public class TopicListActivity extends FragmentActivity {
 		int button_row = (Integer) v.getTag();
 		TopicKeywordsDialogFragment.rows.remove(button_row);
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
-	}
+	}	
 	
 	
+	/**
+	 * TODO remove function below
+	 */
+    
+	public void getEditTextString(View v)
+	{
+		EditText keyword = (EditText) v;
+		Toast.makeText(this, keyword.getText(), Toast.LENGTH_SHORT).show();
+	}	
 
     /**
 	 * Creates an instance of the Login dialog fragment for the user to
@@ -139,13 +194,26 @@ public class TopicListActivity extends FragmentActivity {
 	
 	/**
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
-	 * may create a new topic, or edit a topic's keywords.
+	 * may create a new topic.
 	 */
-	public void showTopicKeywordsDialog() {
+	public void launchNewTopicKeywordsDialog() {
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new TopicKeywordsDialogFragment();
         dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
 	}
+	
+	
+	/**
+	 * Creates an instance of the Topic Keywords dialog fragment so the user
+	 * may edit an existing topic.
+	 */
+	public void launchExistingTopicKeywordsDialog() {
+		// Create an instance of the dialog fragment and show it
+		String [] keywords = {"nfl", "ryan", "vikings"};
+        DialogFragment dialog = new TopicKeywordsDialogFragment(keywords);
+        dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
+	}
+	
 
 	/**
 	 * Creates an intent to change to the Topic activity corresponding to the
