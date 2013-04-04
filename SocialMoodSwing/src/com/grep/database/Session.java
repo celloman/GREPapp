@@ -9,7 +9,7 @@ package com.grep.database;
 /**
  * 	{@code public class Session}
  * 	<br><br>
- *  Utility class containing OAuth credentials used in SQLite database
+ *  Utility class containing Analysis Session info used in SQLite database
  */
 public class Session {
 	
@@ -23,8 +23,8 @@ public class Session {
 	// Time session was started
 	private String start_time;
 	
-	// Duration of session
-	private String duration;
+	// Duration of session in seconds
+	private int duration;
 	
 	// Tweet processing statistics
 	private int tweets_processed;
@@ -40,16 +40,18 @@ public class Session {
 	
 	/**
 	 * Constructor
+	 * <br><br>
+	 * This constructor is used for creating a new session, the current time 
+	 * and database id will be added automatically
 	 * @param topic_id	(int)
-	 * @param time	(String)
-	 * @param duration	(String)
+	 * @param duration	(int)
 	 * @param num_tweets	(int)
 	 * @param pos	(int)
 	 * @param neg	(int)
 	 */
-	public Session(int topic_id, String time, String duration, int num_tweets, int pos, int neg) {
+	public Session(int topic_id, int duration, int num_tweets, int pos, int neg) {
 		this.t_id = topic_id;
-		this.start_time = time;
+		this.start_time = java.text.DateFormat.getDateTimeInstance().format(java.util.Calendar.getInstance().getTime());
 		this.duration = duration;
 		this.tweets_processed = num_tweets;
 		this.avg_pos_sentiment = pos;
@@ -58,15 +60,17 @@ public class Session {
 	
 	/**
 	 * Constructor
+	 * <br><br>
+	 * This constructor will used for retrieving a session from the database
 	 * @param id	(int)
+	 * @param time (String)
 	 * @param topic_id	(int)
-	 * @param time	(String)
-	 * @param duration	(String)
+	 * @param duration	(int)
 	 * @param num_tweets	(int)
 	 * @param pos	(int)
 	 * @param neg	(int)
 	 */
-	public Session(int id, int topic_id, String time, String duration, int num_tweets, int pos, int neg) {
+	public Session(int id, int topic_id, String time, int duration, int num_tweets, int pos, int neg) {
 		this.id = id;
 		this.t_id = topic_id;
 		this.start_time = time;
@@ -127,18 +131,18 @@ public class Session {
 	}
 	
 	/**
-	 * {@code public String getDuration}
+	 * {@code public int getDuration}
 	 * @return duration
 	 */
-	public String getDuration() {
+	public int getDuration() {
 		return this.duration;
 	}
 	
 	/**
 	 * {@code public void setDuration}
-	 * @param duration	(String)
+	 * @param duration	(int)
 	 */
-	public void setDuration(String duration) {
+	public void setDuration(int duration) {
 		this.duration = duration;
 	}
 	

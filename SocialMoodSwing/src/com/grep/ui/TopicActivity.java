@@ -16,8 +16,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * TopicActivity displays the currently selected topic's run history
@@ -35,9 +40,9 @@ public class TopicActivity extends FragmentActivity {
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
-/*		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-		int topic_id = savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
-*/		
+//		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+//		int topic_id = savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
+		
 // 		Get a list of session values
 //		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
 		final List<Integer> analysisValues = new ArrayList<Integer>();
@@ -49,43 +54,70 @@ public class TopicActivity extends FragmentActivity {
 		for(int i = 0; i < 10/*analysisSessions.size()*/; i++) {
 			analysisTimes.add("label" + i);
 			analysisValues.add(generator.nextInt() % 100);
-/*			analysisTimes[i] = analysisSessions.get(i).getStartTime(); // Is this somewhat correct?
+/*			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
 			
 			// Are we storing negative sentiment as a negative number?
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment())
-				analysisValues[i] = analysisSessions.get(i).getAvgNegSentiment();
+				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 			else
-				analysisValues[i] = analysisSessions.get(i).getAvgPosSentiment();*/
+				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());*/
 		}
-		
-		final WebView myWebView = (WebView) findViewById(R.id.graph);
-		
-		myWebView.setWebViewClient(new WebViewClient() {  
+		System.out.println("Before creating webview");
+		final WebView historyGraphWebView = (WebView) findViewById(R.id.graph);
+		System.out.println("After creating webview");
+		historyGraphWebView.setWebViewClient(new WebViewClient() {  
 		    @Override  
 		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
 		    {  
 				for(int i = 0; i < analysisValues.size(); i++){
-					myWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
-					myWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
+					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
 				}
 				
-				myWebView.loadUrl("javascript:draw_graph();");
+				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
 		});
 		
-		myWebView.loadUrl("file:///android_asset/graph.html");
-		myWebView.setHorizontalScrollBarEnabled(false);
-		WebSettings webSettings = myWebView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		webSettings.setDomStorageEnabled(true);
+		historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		historyGraphWebView.setHorizontalScrollBarEnabled(false);
+		WebSettings historyGraphWebSettings = historyGraphWebView.getSettings();
+		historyGraphWebSettings.setJavaScriptEnabled(true);
+		historyGraphWebSettings.setDomStorageEnabled(true);
+		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph?
+		historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling
+		
+//		EditText hours = (EditText) findViewById(R.id.hours);
+//		EditText minutes = (EditText) findViewById(R.id.minutes);
+		EditText info = (EditText) findViewById(R.id.topicInfo);
+		
+		int totalTweets = 0;
+		int totalTime = 0;
+		int avgSentiment = 0;
+		
+/*		for(int i = 0; i < analysisSessions.size(); i++) {
+			totalTweets += analysisSessions.get(i).getNumTweetsProcessed();
+			totalTime += analysisSessions.get(i).getDuration();
+			// Check to see if this is right at some point
+			if(analysisSessions.get(i).getAvgPosSentiment() > (-1) * analysisSessions.get(i).getAvgNegSentiment())
+				avgSentiment += analysisSessions.get(i).getAvgPosSentiment();
+			else
+				avgSentiment -= analysisSessions.get(i).getAvgNegSentiment();
+		}*/
+		
+		info.setText("Tweets Processed:\t" + totalTweets + "\n");
+		info.append("Hours Running:\t\t\t" + totalTime + "\n");
+		info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "\n");
+		
 		}
 
+	/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_topic, menu);
 		return true;
 	}
+	*/
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -2,30 +2,83 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TopicActivity" >
-    
-    <WebView  xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/graph"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-	/>
-    
-    <TextView
-        android:id="@+id/textView1"
+    tools:context=".TopicActivity"
+    android:focusable="true"
+	android:focusableInTouchMode="true"
+    >
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Selected Topic view" />
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical" >
+		
+		<RelativeLayout
+            android:id="@+id/relativeLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp" >
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="78dp"
-        android:text="To Gauge" 
-        android:onClick="goToGaugeActivity"/>
+            <EditText
+                android:id="@+id/hours"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:ems="10"
+                android:inputType="number"
+                android:hint="Hours"
+                android:textColor="@color/gray" />
 
+            <EditText
+                android:id="@+id/minutes"
+                android:layout_width="70dp"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/button1"
+                android:layout_toRightOf="@+id/hours"
+                android:ems="10"
+                android:inputType="number"
+                android:hint="Minutes"
+                android:textColor="@color/gray" />
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:onClick="goToGaugeActivity"
+                android:text="To Gauge" />
+        </RelativeLayout>
+
+		<EditText
+		    android:id="@+id/topicInfo"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+			android:background="@null"		    
+	        android:clickable="false" 
+	        android:cursorVisible="false" 
+    	    android:focusable="false" 
+        	android:focusableInTouchMode="false"
+		    android:ems="10"
+		    android:inputType="textMultiLine"
+		    android:scrollHorizontally="false"
+		    android:text="@string/temporary"
+		    android:gravity="center_vertical"/>
+        
+		<WebView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/graph"
+            android:layout_width="fill_parent"
+            android:layout_height="250dp"
+ 	        android:clickable="false" 
+	        android:cursorVisible="false" 
+    	    android:focusable="false" 
+        	android:focusableInTouchMode="false"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+    </LinearLayout>
 </RelativeLayout>
