@@ -6,6 +6,8 @@
 
 package com.grep.gaugebackend;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 
 /**
@@ -19,11 +21,11 @@ public class GaugeBackend {
 	static protected Thread m_sentimenterThread;
 	static protected Thread m_aggregatorThread;
 
-	public static void start(String[] keywords, BlockingQueue<Tweet> popularTweets, BlockingQueue<Gauge> gaugeValues) {
+	public static void start(String[] keywords, BlockingQueue<Tweet> popularTweets, BlockingQueue<Gauge> gaugeValues, long duration) {
 		// interprocess communication structures
-		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(100);
-		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(100);
-		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(100);
+		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(5);
+		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(5);
+		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
 		
 		// create the threads
 		GetTweets getter = new GetTweets(fetchQueue, keywords);
@@ -41,6 +43,15 @@ public class GaugeBackend {
 		m_weighterThread.start();
 		m_sentimenterThread.start();
 		m_aggregatorThread.start();
+		
+		// the analysis duration timer
+		Timer t = new Timer();
+		t.schedule(new TimerTask() {          
+			@Override
+			public void run() {
+				stop();
+			}
+		}, duration*1000);
 	}
 	
 	public static void stop() {

@@ -7,6 +7,7 @@ package com.grep.ui;
 
 import android.webkit.WebView;
 import com.grep.gaugebackend.Gauge;
+import com.grep.gaugebackend.Tweet;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -15,7 +16,9 @@ import java.util.concurrent.BlockingQueue;
 public class GaugeConsumer implements Runnable {
 	
 	// incoming gauge values queue
-	protected BlockingQueue<Gauge> m_inQueue = null;
+	protected BlockingQueue<Gauge> m_inQueueGauge = null;
+	// incoming popular tweets queue
+	protected BlockingQueue<Tweet> m_inQueueTweets = null;
 	// app context
 	protected GaugeActivity m_activity = null;
 	// webview that needs updating
@@ -25,8 +28,9 @@ public class GaugeConsumer implements Runnable {
 	 * Constructor
 	 * @param inQueue (BlockingQueue<Tweet>)
 	 */
-	public GaugeConsumer(BlockingQueue<Gauge> inQueue, GaugeActivity a, WebView wv) {
-		m_inQueue = inQueue;
+	public GaugeConsumer(BlockingQueue<Gauge> inQueueGauge, BlockingQueue<Tweet> inQueueTweets, GaugeActivity a, WebView wv) {
+		m_inQueueGauge = inQueueGauge;
+		m_inQueueTweets = inQueueTweets;
 		m_activity = a;
 		m_wv = wv;
 	}
@@ -39,7 +43,7 @@ public class GaugeConsumer implements Runnable {
 			//System.out.println("gauge consumer thread running...");
 			
 			try {
-				Gauge g = m_inQueue.take();
+				Gauge g = m_inQueueGauge.take();
 				Integer gaugeVal = 50;
 				
 				if((g.m_Positive - g.m_Negative) != 0)
@@ -47,13 +51,17 @@ public class GaugeConsumer implements Runnable {
 				
 				System.out.println("tweet count: " + Integer.toString(g.m_tweetCount));
 				
-				m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.2f)",
+				m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.1f)",
 					gaugeVal,
 					g.m_tweetCount,
 					g.m_sessionAverage*100
 				));
 				
-				//m_activity.showToast(Integer.toString(gaugeVal));
+				// check for popular tweets, toast if we have one
+				Tweet t = m_inQueueTweets.poll();
+				if(t != null) {
+					m_activity.showToast(t.text);
+				}
 				
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();

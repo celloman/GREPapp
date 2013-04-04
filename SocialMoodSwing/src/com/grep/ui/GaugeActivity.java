@@ -30,7 +30,7 @@ public class GaugeActivity extends FragmentActivity {
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
 			public void run() {
-				Toast.makeText(GaugeActivity.this, toast, Toast.LENGTH_SHORT).show();
+				Toast.makeText(GaugeActivity.this, toast, Toast.LENGTH_LONG).show();
 			}
 		});
 	}
@@ -44,7 +44,7 @@ public class GaugeActivity extends FragmentActivity {
 		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
 		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, popularTweets, gaugeValues);
+		GaugeBackend.start(keywords, popularTweets, gaugeValues, 60);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setJavaScriptEnabled(true);
@@ -53,7 +53,7 @@ public class GaugeActivity extends FragmentActivity {
 		
 		// start another thread to process gauge values TODO add another to process
 		// the popular Tweets
-		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues, this, webView));
+		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues, popularTweets, this, webView));
 		m_gaugeConsumer.start();
 	}
 

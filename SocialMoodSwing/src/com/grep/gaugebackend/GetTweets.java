@@ -57,7 +57,7 @@ public class GetTweets implements Runnable {
         	
             @Override
             public void onStatus(Status status) {
-				//System.out.println("getter thread running...");
+				System.out.println(String.format("getter thread running... %d", this.queue.size()));
 				
                 try {
 					this.queue.put(new Tweet(status));

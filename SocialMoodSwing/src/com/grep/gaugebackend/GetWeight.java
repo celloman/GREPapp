@@ -68,7 +68,7 @@ public class GetWeight implements Runnable {
 	public void run() {
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			//System.out.println("weighting thread running...");
+			System.out.println(String.format("weighting thread: (%d, %d)", this.m_inQueue.size(), this.m_outQueue.size()));
 			
 			try {
 				// get from prev module

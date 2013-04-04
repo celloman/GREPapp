@@ -56,7 +56,7 @@ public class Aggregate implements Runnable {
 		// loop while the thread isn't interrupted
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			//System.out.println("aggregator thread running...");
+			System.out.println(String.format("aggregate thread: (%d, %d)", this.m_inQueue.size(), this.m_outGauge.size()));
 			
 			try {
 				// get from prev module
@@ -67,7 +67,8 @@ public class Aggregate implements Runnable {
 				saveTweet(t);
 				// check for popular tweets
 				if(t.weight > 1000) {
-					m_outPopularQueue.put(t);
+					// use offer(), not put() so that it won't block
+					m_outPopularQueue.offer(t);
 				}
 				
 				// once our tweet wave is full, get aggregating
@@ -78,6 +79,8 @@ public class Aggregate implements Runnable {
 					// update positive and negative session totals
 					m_Positive += g.m_Positive;
 					m_Negative += g.m_Negative;
+					
+					System.out.println(String.format("%d, %d", m_Positive, m_Negative));
 					
 					// send the gauge values out
 					m_outGauge.put(g);
