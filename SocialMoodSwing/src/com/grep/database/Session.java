@@ -6,6 +6,10 @@
 
 package com.grep.database;
 
+import java.text.SimpleDateFormat;
+
+import android.text.format.DateFormat;
+
 /**
  * 	{@code public class Session}
  * 	<br><br>
@@ -51,7 +55,8 @@ public class Session {
 	 */
 	public Session(int topic_id, int duration, int num_tweets, int pos, int neg) {
 		this.t_id = topic_id;
-		this.start_time = java.text.DateFormat.getDateTimeInstance().format(java.util.Calendar.getInstance().getTime());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
+		this.start_time = dateFormat.format(java.util.Calendar.getInstance().getTime());
 		this.duration = duration;
 		this.tweets_processed = num_tweets;
 		this.avg_pos_sentiment = pos;
