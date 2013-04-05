@@ -4,7 +4,8 @@
     android:orientation="horizontal" 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="5dp">
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
          
      <ImageView
          android:id="@+id/imgIcon"
@@ -12,10 +13,10 @@
          android:contentDescription="Image to be placed at end of keyword list row."
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:paddingBottom="15dp"
+         android:paddingBottom="10dp"
          android:paddingLeft="15dp"
          android:paddingRight="15dp"
-         android:paddingTop="15dp"
+         android:paddingTop="10dp"
          android:layout_alignParentRight="true"
          android:layout_centerVertical="true"
          android:gravity="right"
@@ -25,21 +26,20 @@
 
      <EditText
         android:id="@+id/txtTitle"
-        android:inputType="text"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/imgIcon"
-        android:focusable="true"
+
         android:singleLine="true"
         android:textSize="16sp"
-        android:textColor="#000000"
-        android:paddingBottom="15dp"
+		android:inputType="text"
+        android:textColor="@color/black"
+        android:paddingBottom="5dp"
         android:paddingLeft="15dp"
         android:paddingRight="0dp"
-        android:paddingTop="15dp"
-        android:hint ="New Keyword" />
+        android:paddingTop="5dp" />
 
 
         

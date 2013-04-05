@@ -40,9 +40,14 @@ public class TopicActivity extends FragmentActivity {
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
-/*		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-		int topic_id = savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
-*/		
+//		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+		int topic_id = getIntent().getIntExtra("topicId", -1);//savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
+
+		if (topic_id == -1) {
+			//TODO below error
+			//error we couldn't get the correct corresponding topic Id
+		}
+		
 // 		Get a list of session values
 //		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
 		final List<Integer> analysisValues = new ArrayList<Integer>();

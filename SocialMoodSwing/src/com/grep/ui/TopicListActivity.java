@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Topic;
+import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -41,9 +41,6 @@ public class TopicListActivity extends FragmentActivity {
 	{
 		super.onResume();
 		db.open();			
-		//Topic topic = new Topic("myTopic");
-		//db.addTopic(topic);
-
 	}
 	
 	@Override
@@ -58,19 +55,10 @@ public class TopicListActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		db = new DatabaseHandler(this);
-		
-
-		
+				
 		setContentView(R.layout.activity_topic_list);
 		setTitle(R.string.title_activity_topic_list);
-        
 
-
-		/*rows.add(new ListItem(R.drawable.edit_pencil, "Minnesota Vikings are the best team in the NFL! And they are going to get Jennings!"));
-        rows.add(new ListItem(R.drawable.edit_pencil, "Gun Contjjjjjjjjjjjjjjffffffffffffrol"));
-        rows.add(new ListItem(R.drawable.edit_pencil, "Abortionaaaaaaaaaaaaaaaaaaaaaaaffffffffff"));
-        rows.add(new ListItem(R.drawable.edit_pencil, "Politicaffffffffffffaaaaaaaaaaaacccccccccccccs"));
-*/
         //create an adapter which defines the data/format of each element of our listview
         adapter = new ListItemAdapter(this, R.layout.listview_item_row, rows, ListItemAdapter.listItemType.TOPIC);
               
@@ -80,14 +68,14 @@ public class TopicListActivity extends FragmentActivity {
         //set our adapter for the listview so that we can know what each list element (row) will be like
         topicsListView.setAdapter(adapter);
         
-        //setup the click listener for when a list item (row) in list is clicked
+        //setup the click listener for when a list item (row) in the topics list is clicked
         topicsListView.setOnItemClickListener(new OnItemClickListener()
         {
-
             @Override
             public void onItemClick(AdapterView<?> arg0, View listRow, int position, long arg3)
             {
-            	goToTopicActivity();
+            	TopicListItemHolder holder = (TopicListItemHolder) listRow.getTag();      	
+            	goToTopicActivity(holder.itemId);
             }
         });
         
@@ -99,7 +87,7 @@ public class TopicListActivity extends FragmentActivity {
 		if(topics != null)
 			for(int i=0;i< topics.size();i++)
 			{
-				rows.add(new ListItem(R.drawable.edit_pencil, topics.get(i).getTopicName()));
+				rows.add(new ListItem(R.drawable.edit_pencil, topics.get(i).getTopicName(), topics.get(i).getId()));
 				adapter.notifyDataSetChanged(); //TODO this duplicates adding items to list for every onResume call
 				//Toast.makeText(this, "toast", Toast.LENGTH_SHORT).show();
 				//db.deleteTopic(topics.get(i));
@@ -170,7 +158,28 @@ public class TopicListActivity extends FragmentActivity {
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
 	}	
 	
-	
+
+	/**
+	 * When add keyword button is clicked, validate that there is a keyword to add. If no keyword, provide notification
+	 * to the user. If keyword is provided, add it to the beginning of the keywords listview, and update the display.
+	 */
+    
+	public void onClickAddKeywordButton(View v)
+	{
+		if(!TopicKeywordsDialogFragment.newKeywordEditText.getText().toString().isEmpty()) {
+			//TODO I am currently giving the keyword an itemID of 0 as the last param to my constructor, need to change this
+			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, TopicKeywordsDialogFragment.newKeywordEditText.getText().toString(), 0));
+			TopicKeywordsDialogFragment.newKeywordEditText.setText("");
+			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
+			TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
+		}
+		else {
+			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
+			Toast.makeText(this, "Please enter a keyword to add to the list!", Toast.LENGTH_SHORT).show();
+		}
+
+	}		
+
 	/**
 	 * TODO remove function below
 	 */
@@ -209,8 +218,7 @@ public class TopicListActivity extends FragmentActivity {
 	 */
 	public void launchExistingTopicKeywordsDialog() {
 		// Create an instance of the dialog fragment and show it
-		String [] keywords = {"nfl", "ryan", "vikings"};
-        DialogFragment dialog = new TopicKeywordsDialogFragment(keywords);
+        DialogFragment dialog = new TopicKeywordsDialogFragment();
         dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
 	}
 	
@@ -219,8 +227,15 @@ public class TopicListActivity extends FragmentActivity {
 	 * Creates an intent to change to the Topic activity corresponding to the
 	 * topic selected in the list.
 	 */
-	public void goToTopicActivity(){
+	public void goToTopicActivity(int topicId){	
+		//Toast.makeText(this, topicId.toString(), Toast.LENGTH_LONG).show();
 		Intent intent = new Intent(this, TopicActivity.class);
+		
+		//adding topic id to bundle
+		//Bundle bundle = new Bundle();
+		//bundle.putInt("topic", topicId);
+		intent.putExtra("topicId", topicId);
+		
 		startActivity(intent);
 	}
 }
