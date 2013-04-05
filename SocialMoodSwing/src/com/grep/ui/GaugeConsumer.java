@@ -60,7 +60,10 @@ public class GaugeConsumer implements Runnable {
 				// check for popular tweets, toast if we have one
 				Tweet t = m_inQueueTweets.poll();
 				if(t != null) {
-					m_activity.showToast(t.text);
+					//m_activity.showToast(t.text);
+					m_wv.loadUrl( String.format("javascript:toastr.info('%s')",
+						t.text
+					));
 				}
 				
 			} catch (InterruptedException ex) {
