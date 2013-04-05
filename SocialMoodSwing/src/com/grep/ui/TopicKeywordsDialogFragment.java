@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.grep.database.DatabaseHandler;
+import com.grep.database.Keyword;
 import com.grep.database.Topic;
 
 import android.app.AlertDialog;
@@ -13,9 +14,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,12 +26,21 @@ import android.widget.Toast;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
+
+//load original database into list (load id's), if I delete a keyword change the id tag to negative of that id
+//if I add a keyword, give it an id tag of 0
+//if I edit a keyword, leave it's id as it
+//in the end, loop through secondary list of keywords
+//	if negative, remove keyword from database
+//  if 0, add keyword to database
+//  if positive, compare with the keyword in the database with that id and see if the text has changed, if so update text
 public class TopicKeywordsDialogFragment extends DialogFragment {
 	ListView keywordsListView;
 	EditText topicTitle;
+	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
 	static List<ListItem> rows;
-	String [] keywords = null;
+	Keyword [] keywords = null;
 	boolean isNewTopic;
 	DatabaseHandler db;
 		
@@ -42,7 +49,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		//default constructor, for new topic
 	}
 		
-	public TopicKeywordsDialogFragment(String [] keywords /* contains all keywords of topic */) {
+	public TopicKeywordsDialogFragment(Keyword [] keywords /* contains all keywords of topic */) {
 		//overloaded constructor, for editing existing topic
 		this.keywords = keywords;
 		this.isNewTopic = false;
@@ -64,6 +71,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
 		db = new DatabaseHandler(getActivity());
+		
 		rows = new ArrayList<ListItem>();
 		
 		// Build the dialog and set up the button click handlers
@@ -74,15 +82,56 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	        
 		// Get view from inflater
 		final View view = inflater.inflate(R.layout.keyword_dialog, null);
-	
-	    //put empty textedit in first row of listview
-		rows.add(new ListItem(R.drawable.delete_x, ""));		
 		
+		newKeywordEditText = (EditText) view.findViewById(R.id.newKeywordEditText);
+		/* 		
+	    newKeywordEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+	        @Override
+	        public void onFocusChange(View v, boolean hasFocus) {      	
+	        	//if we lost focus and there is text in the new keyword edit box, add the keyword to the list
+	        	if(!hasFocus && !newKeywordEditText.getText().toString().isEmpty()) {
+	        		rows.add(new ListItem(R.drawable.delete_x, newKeywordEditText.getText().toString()));
+	        		newKeywordEditText.setText("");
+	        		newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
+	        	}
+	        }
+	    });
+	    
+	    */
+	    
+	    //TODO this is not quite working, need to get this working or figure out a better way of doing
+	    //this, maybe a checkmark button or something. Also need to validate that at least one keyword
+	    //was given, else highlight new keyword in red and pop a toast
+	    //the below works on Jason's phone but listview items don't pop up until exiting keyboard
+
+		/* Use enter key to add keyword in addKeywordEditText to the keyword list, some issues
+		 Currently works to use enter to add keyword to list, but only for first two keywords, then has issues
+
+		newKeywordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+	        @Override
+	        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+	        	//if done button hit on keyboard
+	        	if(actionId == EditorInfo.IME_ACTION_DONE) { 
+		        	//if there is text in the new keyword edit box, add the keyword to the list
+		        	if(!newKeywordEditText.getText().toString().isEmpty()) {
+		        		rows.add(new ListItem(R.drawable.delete_x, newKeywordEditText.getText().toString()));
+		        		newKeywordEditText.setText("");
+		        		newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));		        		
+		        	}
+		        	
+
+	                return true;
+	            }
+	            return false;
+	        }
+	    });
+		 */		
 		//populate the keywords list with the keywords for this topic
 	    if (!isNewTopic) {
 			for (int i = 0; i < keywords.length; i++)
 		    {
-		      rows.add(new ListItem(R.drawable.delete_x, keywords[i]));
+		      rows.add(new ListItem(R.drawable.delete_x, keywords[i].getKeyword(), keywords[i].getId() )); //TODO do some testing to make sure this keyword id is correct
 		    }	
 	    }
    
@@ -171,13 +220,21 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 					}
 					
 					else {
-						Topic topic = new Topic(topicTitle.getText().toString());
-						db.addTopic(topic);
-						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
-						//TODO get string value from topic title text edit, if no topic pop warning, else save topic
-						TopicListActivity.adapter.notifyDataSetChanged();
-						TopicKeywordsDialogFragment.this.getDialog().cancel();						
-					}}
+						
+						if (rows.isEmpty()) {
+							newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
+							Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
+						}
+						
+						else {
+							Topic topic = new Topic(topicTitle.getText().toString());
+							int topic_id = db.addTopic(topic);
+							TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
+							TopicListActivity.adapter.notifyDataSetChanged();
+							TopicKeywordsDialogFragment.this.getDialog().cancel();			
+						}
+					}
+	          }
 	      });
 		//return builder.create();
 		return dialog;

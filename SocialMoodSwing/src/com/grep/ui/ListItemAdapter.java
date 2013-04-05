@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//TODO I am passing in an id into each ListItem, I need to use this ID to settag for my different listview elements
 //adapts our list to fit a specific list type (list of keywords with delete icon or topics with edit icon)
 public class ListItemAdapter extends ArrayAdapter<ListItem>{
 	
@@ -28,12 +29,14 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
     {
         ImageView editIcon;
         TextView textView;
+        int itemId;
     }
     
     static class KeywordListItemHolder
     {
     	EditText textEdit;
     	ImageView deleteIcon;
+    	int itemId;
     }
        
     public ListItemAdapter(Context context, int layoutResourceId, List<ListItem> listItems, listItemType type) {
@@ -75,7 +78,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
             holder.editIcon = (ImageView)row.findViewById(R.id.imgIcon);
             holder.textView = (TextView)row.findViewById(R.id.txtTitle);
             
-            row.setTag(holder);
+            row.setTag(holder);// TODO may still want this, but testing below with an id as the tag
         }
         else
         {
@@ -86,6 +89,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
         holder.textView.setText(item.getText());
         holder.editIcon.setTag(holder.textView.getText());
         holder.editIcon.setImageResource(item.getIcon());
+        holder.itemId = item.getItemId();
         
         return row;
     }
@@ -119,6 +123,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
         holder.deleteIcon.setImageResource(item.getIcon());
         //TODO figure out what we are going to setTag()'s to for the list items
         holder.deleteIcon.setTag(position);
+        holder.itemId = item.getItemId();
         
         /*
 		holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {

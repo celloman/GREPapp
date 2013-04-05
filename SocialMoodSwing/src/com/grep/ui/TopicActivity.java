@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 /**
  * TopicActivity displays the currently selected topic's run history
@@ -40,27 +41,45 @@ public class TopicActivity extends FragmentActivity {
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
-//		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-//		int topic_id = savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
-		
+		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+		int topic_id = getIntent().getIntExtra("topicId", -1);//savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
+
+		System.out.println("topic id: " + topic_id);
+
+		if (topic_id == -1) {
+			//TODO below error
+			//error we couldn't get the correct corresponding topic Id
+		}
+
 // 		Get a list of session values
-//		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		System.out.println("Before getting sessions");
+		List<Session> analysisSessions = new ArrayList<Session>();//dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		System.out.println("After getting sessions");
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
 		
 		// Create lists to pass to javascript of session values and session times (theoretically)
 		Random generator = new Random();
+
+		// Create 40 random fake analysis sessions
+		for(int i = 0; i < 40; i++)
+			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
 		
-		for(int i = 0; i < 10/*analysisSessions.size()*/; i++) {
-			analysisTimes.add("label" + i);
-			analysisValues.add(generator.nextInt() % 100);
-/*			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
+		//Only show the last 15 analysis sessions
+		int length = 0;
+		if(analysisSessions.size() > 15)
+			length = analysisSessions.size() - 15;
+		
+		for(int i = length; i < analysisSessions.size(); i++) {
+/*			analysisTimes.add("label" + i);
+			analysisValues.add(generator.nextInt() % 100);*/
+			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
 			
 			// Are we storing negative sentiment as a negative number?
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment())
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 			else
-				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());*/
+				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 		}
 		System.out.println("Before creating webview");
 		final WebView historyGraphWebView = (WebView) findViewById(R.id.graph);
@@ -94,7 +113,7 @@ public class TopicActivity extends FragmentActivity {
 		int totalTime = 0;
 		int avgSentiment = 0;
 		
-/*		for(int i = 0; i < analysisSessions.size(); i++) {
+		for(int i = 0; i < analysisSessions.size(); i++) {
 			totalTweets += analysisSessions.get(i).getNumTweetsProcessed();
 			totalTime += analysisSessions.get(i).getDuration();
 			// Check to see if this is right at some point
@@ -102,12 +121,16 @@ public class TopicActivity extends FragmentActivity {
 				avgSentiment += analysisSessions.get(i).getAvgPosSentiment();
 			else
 				avgSentiment -= analysisSessions.get(i).getAvgNegSentiment();
-		}*/
+		}
 		
 		info.setText("Tweets Processed:\t" + totalTweets + "\n");
 		info.append("Hours Running:\t\t\t" + totalTime + "\n");
 		info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "\n");
 		
+		if(analysisSessions.size() == 0)
+			info.setText("There are no analysis sessions in the database." +
+					" \n\nEnter a duration above and click \"To Gauge\"" +
+					" in order to begin an analysis session");
 		}
 
 	/*

@@ -1,31 +1,77 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@color/black" >
+    android:layout_height="wrap_content" >
 
     <EditText
         android:id="@+id/topicEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" 
+        android:layout_alignParentTop="true"
 		android:textSize="20sp"
 		android:textStyle="bold"
+		android:textColor="@color/black"
+		android:singleLine="true"
 		android:layout_marginTop="15dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="20dp"
-        android:hint="Topic Title" >
-        
-        <requestFocus />
+        android:layout_marginBottom="10dp"
+        android:hint="Topic Title" >    
+    <requestFocus />
     </EditText>
+
+    <RelativeLayout
+    	android:id="@+id/addKeywordLayout"
+    	xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:orientation="horizontal" 
+    	android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+    	android:layout_below="@+id/topicEditText"
+    	android:layout_marginBottom="15dp"
+    	android:paddingLeft="5dp"
+    	android:paddingRight="5dp">
+    
+		<EditText
+        	android:id="@+id/newKeywordEditText"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_alignParentLeft="true"
+        	android:layout_toLeftOf="@+id/addKeywordIcon"
+        	android:textSize="16sp"
+			android:textColor="@color/black"
+			android:singleLine="true"
+			android:inputType="text"
+        	android:layout_marginBottom="15dp"
+        	android:hint="New Keyword"
+        	android:paddingBottom="15dp"
+        	android:paddingLeft="15dp"
+        	android:paddingRight="0dp"
+        	android:paddingTop="15dp" >
+    	</EditText>
+    
+    	<ImageView
+        	android:id="@+id/addKeywordIcon"
+         	android:src="@drawable/delete_x"
+         	android:contentDescription="Image to be placed at end of add keyword edittext."
+         	android:layout_width="wrap_content"
+         	android:layout_height="wrap_content"
+         	android:paddingBottom="15dp"
+         	android:paddingLeft="15dp"
+         	android:paddingRight="15dp"
+         	android:paddingTop="15dp"
+         	android:layout_alignParentRight="true"
+        	android:layout_centerVertical="true"
+         	android:gravity="right"
+         	android:clickable="true"
+         	android:focusable="false"
+         	android:onClick="onClickAddKeywordButton" />	
+		</RelativeLayout>    
     
     <ListView
         android:id="@+id/keywordsListView"
-        android:cacheColorHint="@color/black"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/topicEditText" />
+        android:layout_below="@+id/addKeywordLayout" />
 
 </RelativeLayout>
