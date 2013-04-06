@@ -39,18 +39,20 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	EditText topicTitle;
 	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
-	static List<ListItem> rows;
-	int topicId = -1; //invalid topicId, only change value if we are launching a keywords dialog for existing topic
+	static List<ListItem> rows = new ArrayList<ListItem>();;
+	int topicId;
 	List<Keyword> keywords = null;
 	boolean isNewTopic;
 	DatabaseHandler db;
 		
-	public TopicKeywordsDialogFragment() {
+	//default constructor, for new topic
+	public TopicKeywordsDialogFragment()
+	{
 		this.isNewTopic = true;
-		//default constructor, for new topic
 	}
 		
-	public TopicKeywordsDialogFragment(int topicId, List<Keyword> keywords) {
+	public TopicKeywordsDialogFragment(int topicId, List<Keyword> keywords) 
+	{
 		//overloaded constructor, for editing existing topic
 		this.topicId = topicId;
 		this.keywords = keywords;
@@ -58,13 +60,15 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	}
 	
 	@Override
-	public void onResume(){
+	public void onResume()
+	{
 		super.onResume();
 		db.open();
 	}
 	
 	@Override
-	public void onPause(){
+	public void onPause()
+	{
 		super.onPause();
 		db.close();
 	}
@@ -74,19 +78,19 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	{
 		db = new DatabaseHandler(getActivity());
 		db.open(); //do I have to call this here as well, was getting null pointer exceptions with database when this wasn't here
-		
-		rows = new ArrayList<ListItem>();
-		
-		// Build the dialog and set up the button click handlers
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
-		// Get the layout inflater
+				
+		//Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 	        
-		// Get view from inflater
+		//Get view from inflater
 		final View view = inflater.inflate(R.layout.keyword_dialog, null);
 		
+		
+		//listview of keywords we will populate, edittext for the topic title, edittext for new keywords
+		keywordsListView   = (ListView) view.findViewById(R.id.keywordsListView);
+		topicTitle         = (EditText) view.findViewById(R.id.topicEditText);
 		newKeywordEditText = (EditText) view.findViewById(R.id.newKeywordEditText);
+		
 		/* 		
 	    newKeywordEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
 
@@ -131,21 +135,19 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	    });
 		 */		
 		
-		//listview we will populate and the edittext for the topic title
-		keywordsListView = (ListView) view.findViewById(R.id.keywordsListView);
-		topicTitle = (EditText) view.findViewById(R.id.topicEditText);
-		
-		//populate the keywords list with the keywords for this topic
+		//since rows is static, it may need to be cleared if there were existing keyword rows left over from last view of activity
+		rows.clear();
+			
+		//if existing topic, populate the keywords list with the keywords for this topic
 	    if (!isNewTopic) {
 	    	topicTitle.setText(db.getTopic(this.topicId).getTopicName());
 	    	
 			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
 				for (int i = 0; i < keywords.size(); i++)
-		    	{	
-		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword(), keywords.get(i).getId() )); //TODO do some testing to make sure this keyword id is correct
+		    	{
+		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword() + "no!!!", keywords.get(i).getId() )); //TODO do some testing to make sure this keyword id is correct
 		    	}
-			}
-		    	
+			}		    	
 	    }
    
 		//create an adapter which defines the data/format of each element of our listview
@@ -174,78 +176,57 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
       });
 */
 		
-		
-		
+		//Build the dialog and set up the button click handlers
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());		
 		
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setMessage("Topic Keywords")
 			.setView(view)
+			
 			// Add action buttons
 			.setPositiveButton("Save Topic", null)
-			/*.setPositiveButton("Save Topic", new DialogInterface.OnClickListener() {    
-				@Override
-				public void onClick(DialogInterface dialog, int id) {
-					//TODO save the topic and keywords as is
-					String topicText = topicTitle.getText().toString();
-
-					if (topicText.isEmpty()) {
-						topicTitle.setHintTextColor(getResources().getColor(R.color.red));//Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
-					}
-					
-					else {
-						Topic topic = new Topic(topicTitle.getText().toString());
-						db.addTopic(topic);
-						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
-						//TODO get string value from topic title text edit, if no topic pop warning, else save topic
-						TopicListActivity.adapter.notifyDataSetChanged();
-						TopicKeywordsDialogFragment.this.getDialog().cancel();						
-					}
-				}
-			})*/
 			.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
+				public void onClick(DialogInterface dialog, int id)
+				{
 					TopicKeywordsDialogFragment.this.getDialog().cancel();
 				}
 			})
 			.setNegativeButton("Delete Topic", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
+				public void onClick(DialogInterface dialog, int id) 
+				{
 					TopicKeywordsDialogFragment.this.getDialog().cancel();
 				}
 			});
+		
 		AlertDialog dialog = builder.create();
 		dialog.show();
-		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-	      {            
-	          @Override
-	          public void onClick(View v)
-	          {
-	        	//TODO save the topic and keywords as is
-					String topicText = topicTitle.getText().toString();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v)
+			{
+				String topicText = topicTitle.getText().toString();
 
-					if (topicText.isEmpty()) {
-						topicTitle.setHintTextColor(getResources().getColor(R.color.red));
-						Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
-					}
-					
+				if (topicText.isEmpty()) {
+					topicTitle.setHintTextColor(getResources().getColor(R.color.red));
+					Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
+				}
+				else {		
+					if (rows.isEmpty()) {
+						newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
+						Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
+					}	
 					else {
-						
-						if (rows.isEmpty()) {
-							newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
-							Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
-						}
-						
-						else {
-							Topic topic = new Topic(topicTitle.getText().toString());
-							int topic_id = db.addTopic(topic);
-							TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
-							TopicListActivity.adapter.notifyDataSetChanged();
-							TopicKeywordsDialogFragment.this.getDialog().cancel();			
-						}
+						Topic topic = new Topic(topicTitle.getText().toString());
+						int topic_id = db.addTopic(topic);
+						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
+						TopicListActivity.adapter.notifyDataSetChanged();
+						TopicKeywordsDialogFragment.this.getDialog().cancel();			
 					}
-	          }
-	      });
-		//return builder.create();
+				}
+	         }
+		});
+
 		return dialog;
 	}		
 }
