@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.grep.database.DatabaseHandler;
+import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -118,16 +120,16 @@ public class TopicListActivity extends FragmentActivity {
 
 	
 	/**
-	 * Upon Edit Button (pencil) being clicked, create an
-	 * instance of the keywords dialog fragment for the
-	 * user to add a new topic name with new keywords.
+	 * Upon Edit Button (pencil) being clicked, get the topicId
+	 * associated with that button and create an instance of the
+	 * keywords dialog fragment with associated topic name and
+	 * keywords loaded into the dialog fragment.
 	 */
     public void onClickEditTopicButton(View v)
     {
-    	launchExistingTopicKeywordsDialog(); //TODO should be calling version that takes list
-    	//v.getTag() returns the topic for the edit button that was clicked, Tag is set in *Adapter.java class
-    	//TODO add logic for launching the edit topic dialogue
-    	//do we need a separate action from when someone hits the add topic button?
+    	//the edit button has a tag set in the background corresponding to the topicId for listview element
+    	int topicId = (Integer) v.getTag();
+    	launchExistingTopicKeywordsDialog(topicId);
     }
 
 	
@@ -139,12 +141,6 @@ public class TopicListActivity extends FragmentActivity {
     public void onClickAddTopicButton(View v)
     {
     	launchNewTopicKeywordsDialog();
-		//Topic topic = new Topic("myTopic");
-		//db.addTopic(topic);
-		//rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
-		//adapter.notifyDataSetChanged();
-    	//TODO add logic for launching the new topic dialogue
-    	//do we need a separate action from when someone hits the edit topic button?
     }
     
 	/**
@@ -216,9 +212,12 @@ public class TopicListActivity extends FragmentActivity {
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
 	 * may edit an existing topic.
 	 */
-	public void launchExistingTopicKeywordsDialog() {
+	public void launchExistingTopicKeywordsDialog(int topicId) {
+		//get the keywords to pass into the constructor
+		List<Keyword> keywords = db.getAllKeywords(topicId);
+		
 		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment();
+        DialogFragment dialog = new TopicKeywordsDialogFragment(topicId, keywords);
         dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
 	}
 	

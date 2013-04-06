@@ -87,7 +87,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
         
         ListItem item = listItems.get(position);
         holder.textView.setText(item.getText());
-        holder.editIcon.setTag(holder.textView.getText());
+        holder.editIcon.setTag(item.getItemId());
         holder.editIcon.setImageResource(item.getIcon());
         holder.itemId = item.getItemId();
         

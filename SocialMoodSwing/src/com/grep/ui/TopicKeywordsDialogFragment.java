@@ -40,7 +40,8 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
 	static List<ListItem> rows;
-	Keyword [] keywords = null;
+	int topicId = -1; //invalid topicId, only change value if we are launching a keywords dialog for existing topic
+	List<Keyword> keywords = null;
 	boolean isNewTopic;
 	DatabaseHandler db;
 		
@@ -49,8 +50,9 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		//default constructor, for new topic
 	}
 		
-	public TopicKeywordsDialogFragment(Keyword [] keywords /* contains all keywords of topic */) {
+	public TopicKeywordsDialogFragment(int topicId, List<Keyword> keywords) {
 		//overloaded constructor, for editing existing topic
+		this.topicId = topicId;
 		this.keywords = keywords;
 		this.isNewTopic = false;
 	}
@@ -71,6 +73,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
 		db = new DatabaseHandler(getActivity());
+		db.open(); //do I have to call this here as well, was getting null pointer exceptions with database when this wasn't here
 		
 		rows = new ArrayList<ListItem>();
 		
@@ -127,20 +130,26 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	        }
 	    });
 		 */		
+		
+		//listview we will populate and the edittext for the topic title
+		keywordsListView = (ListView) view.findViewById(R.id.keywordsListView);
+		topicTitle = (EditText) view.findViewById(R.id.topicEditText);
+		
 		//populate the keywords list with the keywords for this topic
 	    if (!isNewTopic) {
-			for (int i = 0; i < keywords.length; i++)
-		    {
-		      rows.add(new ListItem(R.drawable.delete_x, keywords[i].getKeyword(), keywords[i].getId() )); //TODO do some testing to make sure this keyword id is correct
-		    }	
+	    	topicTitle.setText(db.getTopic(this.topicId).getTopicName());
+	    	
+			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
+				for (int i = 0; i < keywords.size(); i++)
+		    	{	
+		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword(), keywords.get(i).getId() )); //TODO do some testing to make sure this keyword id is correct
+		    	}
+			}
+		    	
 	    }
    
 		//create an adapter which defines the data/format of each element of our listview
 		adapter = new ListItemAdapter(view.getContext(), R.layout.keywords_item_row, rows, ListItemAdapter.listItemType.KEYWORD);
-	              
-		//listview we will populate
-		keywordsListView = (ListView)view.findViewById(R.id.keywordsListView);
-		topicTitle = (EditText)view.findViewById(R.id.topicEditText);
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
