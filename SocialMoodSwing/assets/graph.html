@@ -11,7 +11,7 @@
     <script src="./libraries/jquery.min.js" ></script>
 </head>
 <body>
-    <div style="text-align:center"><canvas id="cvs" width="300" height="220" style="display:inline"></canvas></div>
+    <div style="text-align:center"><canvas id="cvs" width="300" height="300" style="display:inline"></canvas></div>
     
     <script>
     	sessions = new Array();
@@ -26,7 +26,7 @@
        		myLine.Set('chart.labels', timeStamps);
 			myLine.Set('chart.gutter.left', 40); // set left padding
             myLine.Set('chart.gutter.right', 15); // set right padding
-            myLine.Set('chart.gutter.bottom', 40); // set space for labels under graph
+            myLine.Set('chart.gutter.bottom', 100); // set space for labels under graph
             myLine.Set('chart.colors', [['green', 'red']]); // different colors for up and down [up, down]
             myLine.Set('chart.units.post', '%');
             //myLine.Set('chart.scale.decimals', 1);
@@ -36,7 +36,7 @@
             //myLine.Set('chart.hmargin', 15);
             myLine.Set('chart.text.color', '#000');
             myLine.Set('chart.text.font', 'Arial');
-            myLine.Set('chart.text.angle', 45); // set label rotation on bottom
+            myLine.Set('chart.text.angle', 75); // set label rotation on bottom
             myLine.Set('chart.background.grid.autofit', true);
             myLine.Set('chart.background.grid.autofit.numvlines', 11);
             myLine.Set('chart.shadow', false);
