@@ -158,7 +158,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	
     	if(tList != null) {
     		for (Topic t: tList) {
-    			this.deleteTopic(t);
+    			this.deleteTopic(t.getId());
     		}
     	}
     }
@@ -242,12 +242,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * {@code public void deleteCredentials}
      * <br><br>
-     * Delete credentials from authentication table
-     * @param credentials	(Credentials)
+     * Delete credentials from authentication table by id
+     * @param credentials	(int)
      */
-    public void deleteCredentials(Credentials credentials) {       
+    public void deleteCredentials(int credentials_id) {       
     	this.db.delete(AUTH_TABLE, USER_KEY_ID + " =?",
-                new String[] { String.valueOf(credentials.getId()) });
+                new String[] { String.valueOf(credentials_id) });
     }
     
 // Topic table CRUD
@@ -337,14 +337,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     
     /**
-     * {@code public void deleteTopic}
+     * {@code public void Topic}
      * <br><br>
-     * Delete topic from topic table
-     * @param topic	(Topic)
+     * Delete topic from topic table by id
+     * @param topic	(int)
      */
-    public void deleteTopic(Topic topic) {        
+    public void deleteTopic(int topic_id) {        
     	this.db.delete(TOPIC_TABLE, TOPIC_KEY_ID + " =?",
-                new String[] { String.valueOf(topic.getId()) });
+                new String[] { String.valueOf(topic_id) });
     }
     
 // Keyword table CRUD
@@ -440,12 +440,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * {@code public void deleteKeyword}
      * <br><br>
-     * Delete keyword from keyword table
-     * @param keyword	(Keyword)
+     * Delete keyword from keyword table by id
+     * @param keyword_id	(int)
      */
-    public void deleteKeyword(Keyword keyword) {        
+    public void deleteKeyword(int keyword_id) {        
     	this.db.delete(KEYWORD_TABLE, KEYWORD_KEY_ID + " =?",
-                new String[] { String.valueOf(keyword.getId()) });
+                new String[] { String.valueOf(keyword_id) });
     }
     
 // Session table CRUD
@@ -555,12 +555,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /** 
      * {@code public void deleteSession}
      * <br><br>
-     * Delete a session from session table
-     * @param session	(Session)
+     * Delete a session from session table by id
+     * @param session_id	(int)
      */
-    public void deleteSession(Session session) {
+    public void deleteSession(int session_id) {
     	this.db.delete(SESSION_TABLE, SESSION_KEY_ID + " =?", 
-    			new String[] { String.valueOf(session.getId()) });
+    			new String[] { String.valueOf(session_id) });
     }
 
 }
