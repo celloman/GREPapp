@@ -1,25 +1,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".TopicListActivity" >
+    tools:context=".TopicListActivity"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="List of Topics" />
+    <ListView
+        android:id="@+id/topicsListView"
+        android:transcriptMode="alwaysScroll"
+        android:layout_width="fill_parent"
+        android:layout_height="344dp"
+        android:layout_above="@+id/add_topic"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/add_topic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="84dp"
-        android:text="@string/text_button_topic" 
-        android:onClick="goToTopicActivity"/>
+        android:layout_marginTop="10dp"
+        android:text="Add Topic"
+        android:onClick="onClickAddTopicButton" />
 
 </RelativeLayout>
