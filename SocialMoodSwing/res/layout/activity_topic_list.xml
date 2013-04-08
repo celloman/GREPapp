@@ -10,10 +10,11 @@
         android:id="@+id/topicsListView"
         android:transcriptMode="alwaysScroll"
         android:layout_width="fill_parent"
-        android:layout_height="344dp"
+        android:layout_height="fill_parent"
         android:layout_above="@+id/add_topic"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:scrollingCache ="false" />
 
     <Button
         android:id="@+id/add_topic"

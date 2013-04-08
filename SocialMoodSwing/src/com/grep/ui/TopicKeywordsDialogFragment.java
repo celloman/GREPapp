@@ -42,8 +42,9 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
 	static List<ListItem> rows = new ArrayList<ListItem>();
-	int topicId;
-	List<Keyword> keywords = null;
+	static int topicId;
+	List<Keyword> keywords = new ArrayList<Keyword>();
+	static List<Keyword> keywordTracker = new ArrayList<Keyword>();
 	boolean isNewTopic;
 	DatabaseHandler db;
 	boolean buttonHeightSet;
@@ -53,7 +54,6 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	{
 		this.isNewTopic = true;
 		this.buttonHeightSet = false;
-		
 	}
 		
 	public TopicKeywordsDialogFragment(int topicId, List<Keyword> keywords) 
@@ -61,8 +61,9 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		//overloaded constructor, for editing existing topic
 		this.topicId = topicId;
 		this.keywords = keywords;
+		this.keywordTracker = keywords;
 		this.isNewTopic = false;
-		this.buttonHeightSet = false;
+		this.buttonHeightSet = false;	
 	}
 	
 	@Override
@@ -151,7 +152,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
 				for (int i = 0; i < keywords.size(); i++)
 		    	{
-		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword() + "no!!!", keywords.get(i).getId() )); //TODO do some testing to make sure this keyword id is correct
+		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword(), keywords.get(i).getId() ));
 		    	}
 			}		    	
 	    }
@@ -199,6 +200,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	        }
 	    });
 
+		//onClick for Save Topic button
 		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v)
@@ -218,11 +220,43 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 						Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
 					}	
 					else {
-						Topic topic = new Topic(topicTitle.getText().toString());
-						int topic_id = db.addTopic(topic);
-						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
-						TopicListActivity.adapter.notifyDataSetChanged();
-						TopicKeywordsDialogFragment.this.getDialog().cancel();			
+						//if editing an existing topic
+						if (!isNewTopic) {
+							Topic topic = db.getTopic(topicId);
+							
+							//if topic name has been changed in the dialog, update in db and in TopicListActivity listview
+							if (!topic.getTopicName().equals(topicText)) {
+								for(int i = 0; i < TopicListActivity.rows.size(); i++)
+								{
+									//find the changed topic by topicId in the TopicActivity listview
+									if (TopicListActivity.rows.get(i).getItemId() == topicId) {
+										TopicListActivity.rows.get(i).setText(topicText);
+										break;
+									}								
+								}
+								topic.setTopicName(topicText);
+								//update all edits to this topic
+								db.updateTopic(topic);
+								TopicListActivity.adapter.notifyDataSetChanged();
+							}
+							
+							TopicKeywordsDialogFragment.this.getDialog().cancel();
+						}
+						else {
+							//if new topic, add to db and update TopicListActivity listview
+							Topic topic = new Topic(topicTitle.getText().toString());
+							int topic_id = db.addTopic(topic);
+							
+							for (int i = 0; i < rows.size(); i++)
+							{
+								Keyword keyword = new Keyword(topic_id, rows.get(i).getText());
+								db.addKeyword(keyword);
+							}
+														
+							TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
+							TopicListActivity.adapter.notifyDataSetChanged();
+							TopicKeywordsDialogFragment.this.getDialog().cancel();	
+						}
 					}
 				}
 	         }

@@ -22,6 +22,11 @@ public class ListItem {
     	return this.text;
     }
     
+    public void setText(String text)
+    {
+    	this.text = text;
+    }
+    
     public int getItemId()
     {
     	return this.itemId;

@@ -116,9 +116,12 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         ListItem item = listItems.get(position);
         
         holder.textEdit.setText(item.getText());
+        
         holder.deleteIcon.setImageResource(item.getIcon());
-        //TODO may need to set the deleteIcon tag to the keywordId, if I absolutely need position for deletion in the list, could add 2 tags elements
-        holder.deleteIcon.setTag(position);
+        holder.deleteIcon.setTag(R.id.list_item_position, position);
+        holder.deleteIcon.setTag(R.id.list_item_id, item.getItemId());
+        holder.deleteIcon.setTag(R.id.list_item_text, item.getText());
+        
         holder.itemId = item.getItemId();
         
     	return row;

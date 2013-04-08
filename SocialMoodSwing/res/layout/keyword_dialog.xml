@@ -72,6 +72,7 @@
         android:id="@+id/keywordsListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/addKeywordLayout" />
+        android:layout_below="@+id/addKeywordLayout"
+        android:scrollingCache="false" />
 
 </RelativeLayout>
