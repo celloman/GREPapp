@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -44,11 +46,14 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	List<Keyword> keywords = null;
 	boolean isNewTopic;
 	DatabaseHandler db;
+	boolean buttonHeightSet;
 		
 	//default constructor, for new topic
 	public TopicKeywordsDialogFragment()
 	{
 		this.isNewTopic = true;
+		this.buttonHeightSet = false;
+		
 	}
 		
 	public TopicKeywordsDialogFragment(int topicId, List<Keyword> keywords) 
@@ -57,6 +62,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		this.topicId = topicId;
 		this.keywords = keywords;
 		this.isNewTopic = false;
+		this.buttonHeightSet = false;
 	}
 	
 	@Override
@@ -155,26 +161,6 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
-
-		
-		/*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-builder.setMessage("Test for preventing dialog close");
-AlertDialog dialog = builder.create();
-dialog.show();
-//Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
-dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-      {            
-          @Override
-          public void onClick(View v)
-          {
-              Boolean wantToCloseDialog = false;
-              //Do stuff, possibly set wantToCloseDialog to true then...
-              if(wantToCloseDialog)
-                  dismiss();
-              //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
-          }
-      });
-*/
 		
 		//Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());		
@@ -183,7 +169,6 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setMessage("Topic Keywords")
 			.setView(view)
-			
 			// Add action buttons
 			.setPositiveButton("Save Topic", null)
 			.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -194,10 +179,26 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 			})
 			.setNegativeButton("Delete Topic", null);
 		
-		AlertDialog dialog = builder.create();
+		final AlertDialog dialog = builder.create();		
 		dialog.show();
 		
-		//set up the action for when the save topic button is clicked
+		//used to set all dialog fragment buttons to the same height, it's the button with most text
+		final Button deleteTopicButton = (Button) dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+		
+		//set the height of the dialog fragment buttons to all be the same
+		deleteTopicButton.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+	        @Override
+	        public void onGlobalLayout() {
+	            if (!buttonHeightSet) {
+	                // Here button is already laid out and measured for the first time, so we can use height to set other buttons
+	            	dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setHeight(deleteTopicButton.getHeight());
+	            	dialog.getButton(AlertDialog.BUTTON_POSITIVE).setHeight(deleteTopicButton.getHeight());
+	            	buttonHeightSet = true;
+	                
+	            }
+	        }
+	    });
+
 		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v)
@@ -205,11 +206,13 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 				//TODO need to do something special depending on if this is a new topic or not? like only saving vs updating
 				String topicText = topicTitle.getText().toString();
 
+				//if no topic name provided, highlight textedit and show warning message
 				if (topicText.isEmpty()) {
 					topicTitle.setHintTextColor(getResources().getColor(R.color.red));
 					Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
 				}
 				else {		
+					//if no keywords provided, highlight textedit and show warning message
 					if (rows.isEmpty()) {
 						newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
 						Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
@@ -250,7 +253,7 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 				TopicKeywordsDialogFragment.this.getDialog().cancel();
 			}
 		});
-		
+
 		return dialog;
 	}		
 }
