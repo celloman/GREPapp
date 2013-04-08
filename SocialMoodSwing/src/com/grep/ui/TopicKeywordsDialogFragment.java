@@ -39,7 +39,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	EditText topicTitle;
 	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
-	static List<ListItem> rows = new ArrayList<ListItem>();;
+	static List<ListItem> rows = new ArrayList<ListItem>();
 	int topicId;
 	List<Keyword> keywords = null;
 	boolean isNewTopic;
@@ -192,19 +192,17 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 					TopicKeywordsDialogFragment.this.getDialog().cancel();
 				}
 			})
-			.setNegativeButton("Delete Topic", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) 
-				{
-					TopicKeywordsDialogFragment.this.getDialog().cancel();
-				}
-			});
+			.setNegativeButton("Delete Topic", null);
 		
 		AlertDialog dialog = builder.create();
 		dialog.show();
+		
+		//set up the action for when the save topic button is clicked
 		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v)
 			{
+				//TODO need to do something special depending on if this is a new topic or not? like only saving vs updating
 				String topicText = topicTitle.getText().toString();
 
 				if (topicText.isEmpty()) {
@@ -226,7 +224,33 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 				}
 	         }
 		});
-
+		
+		//set up the action for when the delete topic button is clicked
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v)
+			{
+				//if not a new topic (we are editing existing topic) we need to actually delete it; if new topic just cancel w/out saving 
+				if(!isNewTopic) {
+					//TODO should we pop up a warning dialog confirming that they want to delete the topic?
+					//delete topic from the database
+					db.deleteTopic(topicId);
+					
+					//delete topic from the topics listview and update the listview
+					for(int i = 0; i < TopicListActivity.rows.size(); i++)
+					{
+						if (TopicListActivity.rows.get(i).getItemId() == topicId) {
+							TopicListActivity.rows.remove(i);
+							TopicListActivity.adapter.notifyDataSetChanged();
+							break;
+						}
+					}
+				}
+				
+				TopicKeywordsDialogFragment.this.getDialog().cancel();
+			}
+		});
+		
 		return dialog;
 	}		
 }
