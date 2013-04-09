@@ -6,6 +6,8 @@ import java.util.List;
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
+import com.grep.ui.ListItemAdapter.KeywordListItemHolder;
+import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -268,14 +270,16 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 										//if the keyword is found, see if the text was edited
 										if (keywords.get(i).getId() == rows.get(j).getItemId()) {
 											found = true;
-											System.out.println("stored: " + keywords.get(i).getKeyword());
-											System.out.println("textedit: " + rows.get(j).getText());
+											
+											//get the corresponding EditText for this keyword item in the listview in order to get the current text
+											KeywordListItemHolder holder = (KeywordListItemHolder) keywordsListView.getChildAt(j).getTag();
+											EditText keywordEdit = (EditText) holder.textEdit;
+											String keywordText = keywordEdit.getText().toString();
 											
 											//if text is different, update the keyword in the database
-											//TODO this if statement below check compares keyword text with original text upon loading listview, need to getText() from edittext here
-											if (!keywords.get(i).getKeyword().equals(rows.get(j).getText())) {
+											if (!keywords.get(i).getKeyword().equals(keywordText)) {
 												Keyword keyword = db.getKeyword(keywordId);
-												keyword.setKeyword(rows.get(j).getText());
+												keyword.setKeyword(keywordText);
 												db.updateKeyword(keyword);
 											}
 											

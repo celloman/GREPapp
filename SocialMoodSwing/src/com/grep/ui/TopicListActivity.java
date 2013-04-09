@@ -146,40 +146,15 @@ public class TopicListActivity extends FragmentActivity {
     
 	/**
 	 * Upon tapping delete keyword button, get the position of
-	 * the button in the list, remove it, and update the listview.
+	 * the button in the list, remove it, and update the listview. 
+	 * The database will be updated upon clicking Save Topic
 	 */
 	public void onClickDeleteKeywordButton(View v)
 	{
-		//TODO is there better/safer way to delete a keyword that has been added within dialog instance and has id==0
 		int buttonRow = (Integer) v.getTag();
-		//int button_row = (Integer) v.getTag(0);
-		//int keywordId = (Integer) v.getTag(1);
-		//String keywordText = (String) v.getTag(2);
+
 		TopicKeywordsDialogFragment.rows.remove(buttonRow);
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
-		
-		//if the keyword was added within dialog instance it will have Id of 0, and just needs removed from keywordTracker
-		/*
-		if (keywordId == 0) {
-			for (int i = 0; i < TopicKeywordsDialogFragment.keywordTracker.size(); i++)
-			{
-				//if found the keyword that needs removed, remove it
-				if (TopicKeywordsDialogFragment.keywordTracker.get(i).getKeyword().equals(keywordText) && keywordId == 0) {
-					TopicKeywordsDialogFragment.keywordTracker.remove(i);
-					break; 
-				}
-			}
-		}
-		//if keyword existed previously and was loaded in from db, need to set id negative in keywordTracker and remove later
-		else {		
-			for (int i = 0; i < TopicKeywordsDialogFragment.keywordTracker.size(); i++)
-			{
-				//if found the keyword in the tracker, change its id to negative of the current id value
-				if (TopicKeywordsDialogFragment.keywordTracker.get(i).getKeywordTopicId() == keywordId) {
-					TopicKeywordsDialogFragment.keywordTracker.get(i).setKeywordTopicId(-1*keywordId);
-				}
-			}
-		}*/
 	}	
 	
 
@@ -191,17 +166,11 @@ public class TopicListActivity extends FragmentActivity {
 	{
 		String keywordText = TopicKeywordsDialogFragment.newKeywordEditText.getText().toString(); 
 		if(!keywordText.isEmpty()) {
-			//TODO I am currently giving the keyword an itemID of 0 as the last param to my constructor, need to change this
+			//the last arg of the ListItem constructor is the keyword id, for new keywords set it to 0 initially
 			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
 			TopicKeywordsDialogFragment.newKeywordEditText.setText("");
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
 			TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
-			
-			//add the keyword to my keywordTracker, set its keywordId to 0 so I have some sort of flag to know it's a new keyword
-			//Keyword keyword = new Keyword();
-			//keyword.setId(0);
-			//keyword.setKeyword(keywordText);
-			//TopicKeywordsDialogFragment.keywordTracker.add(keyword);
 		}
 		else {
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
