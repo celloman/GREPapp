@@ -7,7 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
-import android.webkit.WebSettings.RenderPriority;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 import com.grep.gaugebackend.Gauge;
@@ -44,11 +44,12 @@ public class GaugeActivity extends FragmentActivity {
 		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
 		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, popularTweets, gaugeValues, 30000);
+		GaugeBackend.start(keywords, popularTweets, gaugeValues, 300000);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
+		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setRenderPriority(RenderPriority.HIGH);
+		webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
 		webView.loadUrl("file:///android_asset/gauge.html");
 		
 		// start another thread to process gauge values TODO add another to process
