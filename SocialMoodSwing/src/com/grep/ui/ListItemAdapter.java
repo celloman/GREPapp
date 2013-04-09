@@ -7,17 +7,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnFocusChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-//TODO I am passing in an id into each ListItem, I need to use this ID to settag for my different listview elements
 //adapts our list to fit a specific list type (list of keywords with delete icon or topics with edit icon)
-public class ListItemAdapter extends ArrayAdapter<ListItem>{
-	
+public class ListItemAdapter extends ArrayAdapter<ListItem>
+{	
 	public enum listItemType {TOPIC, KEYWORD};
 	
 	Context context;        	     //current context (activity/state of app)
@@ -39,7 +36,8 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
     	int itemId;
     }
        
-    public ListItemAdapter(Context context, int layoutResourceId, List<ListItem> listItems, listItemType type) {
+    public ListItemAdapter(Context context, int layoutResourceId, List<ListItem> listItems, listItemType type)
+    {
         super(context, layoutResourceId, listItems);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -47,9 +45,10 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
         this.type = type;
     }
 
-    //gets called to determine how the adapter will fill the listView
+    //gets called to determine what type of view will be used to fill the listView
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) 
+    {
         View row = convertView;
 
         //determine the type of list we are dealing with and set it up accordingly
@@ -78,16 +77,16 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
             holder.editIcon = (ImageView)row.findViewById(R.id.imgIcon);
             holder.textView = (TextView)row.findViewById(R.id.txtTitle);
             
-            row.setTag(holder);// TODO may still want this, but testing below with an id as the tag
+            row.setTag(holder);
         }
-        else
-        {
-            holder = (TopicListItemHolder)row.getTag();
+        else {
+            holder = (TopicListItemHolder) row.getTag();
         }
         
         ListItem item = listItems.get(position);
+        
         holder.textView.setText(item.getText());
-        holder.editIcon.setTag(holder.textView.getText());
+        holder.editIcon.setTag(item.getItemId());
         holder.editIcon.setImageResource(item.getIcon());
         holder.itemId = item.getItemId();
         
@@ -101,7 +100,6 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
         
         if(row == null)
         {
-        	//LayoutInflater basically inflates the xml into View objects or in this case a row
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false); 
             
@@ -111,36 +109,21 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>{
             
             row.setTag(holder);
         }
-        else
-        {
-            holder = (KeywordListItemHolder)row.getTag();
+        else {
+            holder = (KeywordListItemHolder) row.getTag();
         }
         
         ListItem item = listItems.get(position);
         
-        //set values for our holder and give the icon a Tag id to which it can associate w/ topic String
         holder.textEdit.setText(item.getText());
+        
         holder.deleteIcon.setImageResource(item.getIcon());
-        //TODO figure out what we are going to setTag()'s to for the list items
-        holder.deleteIcon.setTag(position);
+        holder.deleteIcon.setTag(R.id.list_item_position, position);
+        holder.deleteIcon.setTag(R.id.list_item_id, item.getItemId());
+        holder.deleteIcon.setTag(R.id.list_item_text, item.getText());
+        
         holder.itemId = item.getItemId();
         
-        /*
-		holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-			    EditText keyword = (EditText) v;
-				if(hasFocus) {
-			        if (position == 0)
-			        	Toast.makeText(context, "gained focus" + keyword.getText(), Toast.LENGTH_SHORT).show();
-			    }else
-			    	if (position == 0)
-			    		Toast.makeText(context, "lost focus" + keyword.getText(), Toast.LENGTH_SHORT).show();
-			    }
-			});
-		*/
-        
     	return row;
-    }
-    
+    }   
 }

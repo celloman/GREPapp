@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -39,30 +41,41 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	EditText topicTitle;
 	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
-	static List<ListItem> rows;
-	Keyword [] keywords = null;
+	static List<ListItem> rows = new ArrayList<ListItem>();
+	static int topicId;
+	List<Keyword> keywords = new ArrayList<Keyword>();
+	static List<Keyword> keywordTracker = new ArrayList<Keyword>();
 	boolean isNewTopic;
 	DatabaseHandler db;
+	boolean buttonHeightSet;
 		
-	public TopicKeywordsDialogFragment() {
+	//default constructor, for new topic
+	public TopicKeywordsDialogFragment()
+	{
 		this.isNewTopic = true;
-		//default constructor, for new topic
+		this.buttonHeightSet = false;
 	}
 		
-	public TopicKeywordsDialogFragment(Keyword [] keywords /* contains all keywords of topic */) {
+	public TopicKeywordsDialogFragment(int topicId, List<Keyword> keywords) 
+	{
 		//overloaded constructor, for editing existing topic
+		this.topicId = topicId;
 		this.keywords = keywords;
+		this.keywordTracker = keywords;
 		this.isNewTopic = false;
+		this.buttonHeightSet = false;	
 	}
 	
 	@Override
-	public void onResume(){
+	public void onResume()
+	{
 		super.onResume();
 		db.open();
 	}
 	
 	@Override
-	public void onPause(){
+	public void onPause()
+	{
 		super.onPause();
 		db.close();
 	}
@@ -71,19 +84,20 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
 		db = new DatabaseHandler(getActivity());
-		
-		rows = new ArrayList<ListItem>();
-		
-		// Build the dialog and set up the button click handlers
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
-		// Get the layout inflater
+		db.open(); //do I have to call this here as well, was getting null pointer exceptions with database when this wasn't here
+				
+		//Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 	        
-		// Get view from inflater
+		//Get view from inflater
 		final View view = inflater.inflate(R.layout.keyword_dialog, null);
 		
+		
+		//listview of keywords we will populate, edittext for the topic title, edittext for new keywords
+		keywordsListView   = (ListView) view.findViewById(R.id.keywordsListView);
+		topicTitle         = (EditText) view.findViewById(R.id.topicEditText);
 		newKeywordEditText = (EditText) view.findViewById(R.id.newKeywordEditText);
+		
 		/* 		
 	    newKeywordEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
 
@@ -127,46 +141,30 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	        }
 	    });
 		 */		
-		//populate the keywords list with the keywords for this topic
+		
+		//since rows is static, it may need to be cleared if there were existing keyword rows left over from last view of activity
+		rows.clear();
+			
+		//if existing topic, populate the keywords list with the keywords for this topic
 	    if (!isNewTopic) {
-			for (int i = 0; i < keywords.length; i++)
-		    {
-		      rows.add(new ListItem(R.drawable.delete_x, keywords[i].getKeyword(), keywords[i].getId() )); //TODO do some testing to make sure this keyword id is correct
-		    }	
+	    	topicTitle.setText(db.getTopic(this.topicId).getTopicName());
+	    	
+			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
+				for (int i = 0; i < keywords.size(); i++)
+		    	{
+		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword(), keywords.get(i).getId() ));
+		    	}
+			}		    	
 	    }
    
 		//create an adapter which defines the data/format of each element of our listview
 		adapter = new ListItemAdapter(view.getContext(), R.layout.keywords_item_row, rows, ListItemAdapter.listItemType.KEYWORD);
-	              
-		//listview we will populate
-		keywordsListView = (ListView)view.findViewById(R.id.keywordsListView);
-		topicTitle = (EditText)view.findViewById(R.id.topicEditText);
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
-
 		
-		/*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-builder.setMessage("Test for preventing dialog close");
-AlertDialog dialog = builder.create();
-dialog.show();
-//Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
-dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-      {            
-          @Override
-          public void onClick(View v)
-          {
-              Boolean wantToCloseDialog = false;
-              //Do stuff, possibly set wantToCloseDialog to true then...
-              if(wantToCloseDialog)
-                  dismiss();
-              //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
-          }
-      });
-*/
-		
-		
-		
+		//Build the dialog and set up the button click handlers
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());		
 		
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
@@ -174,69 +172,122 @@ dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClic
 			.setView(view)
 			// Add action buttons
 			.setPositiveButton("Save Topic", null)
-			/*.setPositiveButton("Save Topic", new DialogInterface.OnClickListener() {    
-				@Override
-				public void onClick(DialogInterface dialog, int id) {
-					//TODO save the topic and keywords as is
-					String topicText = topicTitle.getText().toString();
-
-					if (topicText.isEmpty()) {
-						topicTitle.setHintTextColor(getResources().getColor(R.color.red));//Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
-					}
-					
-					else {
-						Topic topic = new Topic(topicTitle.getText().toString());
-						db.addTopic(topic);
-						TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
-						//TODO get string value from topic title text edit, if no topic pop warning, else save topic
-						TopicListActivity.adapter.notifyDataSetChanged();
-						TopicKeywordsDialogFragment.this.getDialog().cancel();						
-					}
-				}
-			})*/
 			.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
+				public void onClick(DialogInterface dialog, int id)
+				{
 					TopicKeywordsDialogFragment.this.getDialog().cancel();
 				}
 			})
-			.setNegativeButton("Delete Topic", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					TopicKeywordsDialogFragment.this.getDialog().cancel();
-				}
-			});
-		AlertDialog dialog = builder.create();
+			.setNegativeButton("Delete Topic", null);
+		
+		final AlertDialog dialog = builder.create();		
 		dialog.show();
-		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-	      {            
-	          @Override
-	          public void onClick(View v)
-	          {
-	        	//TODO save the topic and keywords as is
-					String topicText = topicTitle.getText().toString();
+		
+		//used to set all dialog fragment buttons to the same height, it's the button with most text
+		final Button deleteTopicButton = (Button) dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+		
+		//set the height of the dialog fragment buttons to all be the same
+		deleteTopicButton.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+	        @Override
+	        public void onGlobalLayout() {
+	            if (!buttonHeightSet) {
+	                // Here button is already laid out and measured for the first time, so we can use height to set other buttons
+	            	dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setHeight(deleteTopicButton.getHeight());
+	            	dialog.getButton(AlertDialog.BUTTON_POSITIVE).setHeight(deleteTopicButton.getHeight());
+	            	buttonHeightSet = true;
+	                
+	            }
+	        }
+	    });
 
-					if (topicText.isEmpty()) {
-						topicTitle.setHintTextColor(getResources().getColor(R.color.red));
-						Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
-					}
-					
+		//onClick for Save Topic button
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v)
+			{
+				//TODO need to do something special depending on if this is a new topic or not? like only saving vs updating
+				String topicText = topicTitle.getText().toString();
+
+				//if no topic name provided, highlight textedit and show warning message
+				if (topicText.isEmpty()) {
+					topicTitle.setHintTextColor(getResources().getColor(R.color.red));
+					Toast.makeText(view.getContext(), "You need to specify a topic title!", Toast.LENGTH_SHORT).show();
+				}
+				else {		
+					//if no keywords provided, highlight textedit and show warning message
+					if (rows.isEmpty()) {
+						newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
+						Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
+					}	
 					else {
-						
-						if (rows.isEmpty()) {
-							newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
-							Toast.makeText(view.getContext(), "You must add at least one keyword!", Toast.LENGTH_SHORT).show();
+						//if editing an existing topic
+						if (!isNewTopic) {
+							Topic topic = db.getTopic(topicId);
+							
+							//if topic name has been changed in the dialog, update in db and in TopicListActivity listview
+							if (!topic.getTopicName().equals(topicText)) {
+								for(int i = 0; i < TopicListActivity.rows.size(); i++)
+								{
+									//find the changed topic by topicId in the TopicActivity listview
+									if (TopicListActivity.rows.get(i).getItemId() == topicId) {
+										TopicListActivity.rows.get(i).setText(topicText);
+										break;
+									}								
+								}
+								topic.setTopicName(topicText);
+								//update all edits to this topic
+								db.updateTopic(topic);
+								TopicListActivity.adapter.notifyDataSetChanged();
+							}
+							
+							TopicKeywordsDialogFragment.this.getDialog().cancel();
 						}
-						
 						else {
+							//if new topic, add to db and update TopicListActivity listview
 							Topic topic = new Topic(topicTitle.getText().toString());
 							int topic_id = db.addTopic(topic);
+							
+							for (int i = 0; i < rows.size(); i++)
+							{
+								Keyword keyword = new Keyword(topic_id, rows.get(i).getText());
+								db.addKeyword(keyword);
+							}
+														
 							TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
 							TopicListActivity.adapter.notifyDataSetChanged();
-							TopicKeywordsDialogFragment.this.getDialog().cancel();			
+							TopicKeywordsDialogFragment.this.getDialog().cancel();	
 						}
 					}
-	          }
-	      });
-		//return builder.create();
+				}
+	         }
+		});
+		
+		//set up the action for when the delete topic button is clicked
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v)
+			{
+				//if not a new topic (we are editing existing topic) we need to actually delete it; if new topic just cancel w/out saving 
+				if(!isNewTopic) {
+					//TODO should we pop up a warning dialog confirming that they want to delete the topic?
+					//delete topic from the database
+					db.deleteTopic(topicId);
+					
+					//delete topic from the topics listview and update the listview
+					for(int i = 0; i < TopicListActivity.rows.size(); i++)
+					{
+						if (TopicListActivity.rows.get(i).getItemId() == topicId) {
+							TopicListActivity.rows.remove(i);
+							TopicListActivity.adapter.notifyDataSetChanged();
+							break;
+						}
+					}
+				}
+				
+				TopicKeywordsDialogFragment.this.getDialog().cancel();
+			}
+		});
+
 		return dialog;
 	}		
 }

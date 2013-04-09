@@ -42,8 +42,10 @@ public class TopicActivity extends FragmentActivity {
 		setTitle(R.string.title_activity_topic);
 		
 		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-		int topic_id = getIntent().getIntExtra("topicId", -1);//savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
-
+		
+		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
+		int topic_id = getIntent().getIntExtra("topicId", -1);
+		
 		System.out.println("topic id: " + topic_id);
 
 		if (topic_id == -1) {
