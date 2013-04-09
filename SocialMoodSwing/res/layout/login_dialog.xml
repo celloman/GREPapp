@@ -2,32 +2,18 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <EditText
-        android:id="@+id/username"
-        android:inputType="textEmailAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:hint="username" >
-        
-        <requestFocus />
-    </EditText>
 
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/oauth_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif"
-        android:hint="password"
-        android:inputType="textPassword" >
+        android:text="Twitter Authentication" />
 
-    </EditText>
+    <TextView
+        android:id="@+id/twitter_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:autoLink="web"
+        android:text="twitter.com" />
 
 </LinearLayout>

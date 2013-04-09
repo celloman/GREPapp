@@ -42,10 +42,11 @@ public class TopicActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
-		
-		int topic_id = getIntent().getIntExtra("topicId", -1);
-		
+
 		dh.open();
+
+		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
+		int topic_id = getIntent().getIntExtra("topicId", -1);
 		
 		System.out.println("topic id: " + topic_id);
 

@@ -52,7 +52,7 @@
     
     	<ImageView
         	android:id="@+id/addKeywordIcon"
-         	android:src="@drawable/delete_x"
+         	android:src="@drawable/right_arrow"
          	android:contentDescription="Image to be placed at end of add keyword edittext."
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
@@ -72,6 +72,7 @@
         android:id="@+id/keywordsListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/addKeywordLayout" />
+        android:layout_below="@+id/addKeywordLayout"
+        android:scrollingCache="false" />
 
 </RelativeLayout>

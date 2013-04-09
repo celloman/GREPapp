@@ -1,6 +1,6 @@
 package com.grep.ui;
 
-//defines what a single row of a list will contain 
+//Defines what a single list item will contain 
 public class ListItem {
 	private int icon;    //an icon to display (either an edit icon, or delete icon), references a resource
 	private String text; //text item to display (either a TextView string or an EditText field)
@@ -20,6 +20,11 @@ public class ListItem {
     public String getText()
     {
     	return this.text;
+    }
+    
+    public void setText(String text)
+    {
+    	this.text = text;
     }
     
     public int getItemId()

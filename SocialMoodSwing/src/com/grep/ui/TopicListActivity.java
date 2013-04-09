@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.grep.database.DatabaseHandler;
+import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 
@@ -15,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
@@ -29,12 +29,13 @@ import android.widget.Toast;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
-public class TopicListActivity extends FragmentActivity {
-	ListView topicsListView = null;
-	static ListItemAdapter adapter = null;
+public class TopicListActivity extends FragmentActivity
+{
+	ListView topicsListView;
+	static ListItemAdapter adapter;
 	static List<ListItem> rows = new ArrayList<ListItem>();
-	List<Topic> topics = null;
-	DatabaseHandler db = null;
+	List<Topic> topics = new ArrayList<Topic>();
+	DatabaseHandler db;
 	
 	@Override
 	protected void onResume()
@@ -51,11 +52,13 @@ public class TopicListActivity extends FragmentActivity {
 	}
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		
 		db = new DatabaseHandler(this);
-				
+		db.open();
+		
 		setContentView(R.layout.activity_topic_list);
 		setTitle(R.string.title_activity_topic_list);
 
@@ -79,25 +82,23 @@ public class TopicListActivity extends FragmentActivity {
             }
         });
         
-		db.open();
+        //since rows is static, it may need to be cleared if there were existing topic rows left over from last view of activity
 		rows.clear();
-		
 		topics = db.getAllTopics();
 		
-		if(topics != null)
-			for(int i=0;i< topics.size();i++)
+		if(topics != null) {
+			for(int i=0; i< topics.size(); i++)
 			{
 				rows.add(new ListItem(R.drawable.edit_pencil, topics.get(i).getTopicName(), topics.get(i).getId()));
-				adapter.notifyDataSetChanged(); //TODO this duplicates adding items to list for every onResume call
-				//Toast.makeText(this, "toast", Toast.LENGTH_SHORT).show();
-				//db.deleteTopic(topics.get(i));
+				adapter.notifyDataSetChanged();
 			}
-		
+		}	
 	}
 	
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_topic_list, menu);
 		return true;
@@ -105,9 +106,11 @@ public class TopicListActivity extends FragmentActivity {
 	
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
 	    // Handle item selection
-	    switch (item.getItemId()) {
+	    switch (item.getItemId())
+	    {
 	        case R.id.menu_login:
 	            showLoginDialog();
 	            return true;
@@ -118,16 +121,16 @@ public class TopicListActivity extends FragmentActivity {
 
 	
 	/**
-	 * Upon Edit Button (pencil) being clicked, create an
-	 * instance of the keywords dialog fragment for the
-	 * user to add a new topic name with new keywords.
+	 * Upon Edit Button (pencil) being clicked, get the topicId
+	 * associated with that button and create an instance of the
+	 * keywords dialog fragment with associated topic name and
+	 * keywords loaded into the dialog fragment.
 	 */
     public void onClickEditTopicButton(View v)
     {
-    	launchExistingTopicKeywordsDialog(); //TODO should be calling version that takes list
-    	//v.getTag() returns the topic for the edit button that was clicked, Tag is set in *Adapter.java class
-    	//TODO add logic for launching the edit topic dialogue
-    	//do we need a separate action from when someone hits the add topic button?
+    	//the edit button has a tag set in the background corresponding to the topicId for the listview topic element
+    	int topicId = (Integer) v.getTag();
+    	launchExistingTopicKeywordsDialog(topicId);
     }
 
 	
@@ -139,22 +142,20 @@ public class TopicListActivity extends FragmentActivity {
     public void onClickAddTopicButton(View v)
     {
     	launchNewTopicKeywordsDialog();
-		//Topic topic = new Topic("myTopic");
-		//db.addTopic(topic);
-		//rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName()));
-		//adapter.notifyDataSetChanged();
-    	//TODO add logic for launching the new topic dialogue
-    	//do we need a separate action from when someone hits the edit topic button?
     }
     
-	/**
-	 * TODO add comment, also would prbly be safer to pass the view in as a button not generic view
-	 */
     
+	/**
+	 * Upon tapping delete keyword button, get the position of
+	 * the button in the list, remove it, and update the listview. 
+	 * The database will be updated upon clicking Save Topic
+	 */
 	public void onClickDeleteKeywordButton(View v)
 	{
-		int button_row = (Integer) v.getTag();
-		TopicKeywordsDialogFragment.rows.remove(button_row);
+		//the delete keyword button has a tag set in the background for identifying which position in the listview it is
+		int buttonRow = (Integer) v.getTag();
+
+		TopicKeywordsDialogFragment.rows.remove(buttonRow);
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
 	}	
 	
@@ -163,12 +164,13 @@ public class TopicListActivity extends FragmentActivity {
 	 * When add keyword button is clicked, validate that there is a keyword to add. If no keyword, provide notification
 	 * to the user. If keyword is provided, add it to the beginning of the keywords listview, and update the display.
 	 */
-    
 	public void onClickAddKeywordButton(View v)
 	{
-		if(!TopicKeywordsDialogFragment.newKeywordEditText.getText().toString().isEmpty()) {
-			//TODO I am currently giving the keyword an itemID of 0 as the last param to my constructor, need to change this
-			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, TopicKeywordsDialogFragment.newKeywordEditText.getText().toString(), 0));
+		String keywordText = TopicKeywordsDialogFragment.newKeywordEditText.getText().toString(); 
+		
+		if(!keywordText.isEmpty()) {
+			//the last arg of the ListItem constructor is the keyword id, for new keywords set it to 0 initially
+			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
 			TopicKeywordsDialogFragment.newKeywordEditText.setText("");
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
 			TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
@@ -177,24 +179,15 @@ public class TopicListActivity extends FragmentActivity {
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
 			Toast.makeText(this, "Please enter a keyword to add to the list!", Toast.LENGTH_SHORT).show();
 		}
-
 	}		
-
-	/**
-	 * TODO remove function below
-	 */
-    
-	public void getEditTextString(View v)
-	{
-		EditText keyword = (EditText) v;
-		Toast.makeText(this, keyword.getText(), Toast.LENGTH_SHORT).show();
-	}	
+	
 
     /**
 	 * Creates an instance of the Login dialog fragment for the user to
 	 * enter Twitter authentication credentials.
 	 */
-	public void showLoginDialog() {
+	public void showLoginDialog()
+	{
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new LoginDialogFragment();
         dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
@@ -205,8 +198,9 @@ public class TopicListActivity extends FragmentActivity {
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
 	 * may create a new topic.
 	 */
-	public void launchNewTopicKeywordsDialog() {
-		// Create an instance of the dialog fragment and show it
+	public void launchNewTopicKeywordsDialog()
+	{
+		//Create an instance of the dialog fragment and show it
         DialogFragment dialog = new TopicKeywordsDialogFragment();
         dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
 	}
@@ -216,26 +210,26 @@ public class TopicListActivity extends FragmentActivity {
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
 	 * may edit an existing topic.
 	 */
-	public void launchExistingTopicKeywordsDialog() {
+	public void launchExistingTopicKeywordsDialog(int topicId)
+	{
+		//get the keywords to pass into the constructor
+		List<Keyword> keywords = db.getAllKeywords(topicId);
+		
 		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment();
+        DialogFragment dialog = new TopicKeywordsDialogFragment(topicId, keywords);
         dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
 	}
 	
 
 	/**
 	 * Creates an intent to change to the Topic activity corresponding to the
-	 * topic selected in the list.
+	 * topic selected in the list. Pass the topicId to the next intent so that
+	 * it can load in the session info for that topic.
 	 */
-	public void goToTopicActivity(int topicId){	
-		//Toast.makeText(this, topicId.toString(), Toast.LENGTH_LONG).show();
+	public void goToTopicActivity(int topicId)
+	{	
 		Intent intent = new Intent(this, TopicActivity.class);
-		
-		//adding topic id to bundle
-		//Bundle bundle = new Bundle();
-		//bundle.putInt("topic", topicId);
 		intent.putExtra("topicId", topicId);
-		
 		startActivity(intent);
 	}
 }
