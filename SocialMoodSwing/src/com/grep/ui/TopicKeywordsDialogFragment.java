@@ -234,10 +234,60 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 										break;
 									}								
 								}
-								topic.setTopicName(topicText);
+								
 								//update all edits to this topic
+								topic.setTopicName(topicText);
 								db.updateTopic(topic);
 								TopicListActivity.adapter.notifyDataSetChanged();
+							}
+							
+							//check for newly added keywords
+							for (int i = 0; i < rows.size(); i++)
+							{
+								int keywordId = rows.get(i).getItemId();
+								if (keywordId == 0) {
+									Keyword keyword = new Keyword(topicId, rows.get(i).getText());
+									db.addKeyword(keyword);
+								}
+							}
+							
+							//check for edited or deleted keywords
+							if (keywords != null) {
+								boolean found;
+								int keywordId;
+								
+								//for every keyword initially loaded see if it was edited or deleted
+								for(int i = 0; i < keywords.size(); i++)
+								{
+									found = false;
+								
+									for (int j = 0; j < rows.size(); j++)
+									{
+										keywordId = keywords.get(i).getId();
+
+										//if the keyword is found, see if the text was edited
+										if (keywords.get(i).getId() == rows.get(j).getItemId()) {
+											found = true;
+											System.out.println("stored: " + keywords.get(i).getKeyword());
+											System.out.println("textedit: " + rows.get(j).getText());
+											
+											//if text is different, update the keyword in the database
+											//TODO this if statement below check compares keyword text with original text upon loading listview, need to getText() from edittext here
+											if (!keywords.get(i).getKeyword().equals(rows.get(j).getText())) {
+												Keyword keyword = db.getKeyword(keywordId);
+												keyword.setKeyword(rows.get(j).getText());
+												db.updateKeyword(keyword);
+											}
+											
+											break;
+										}
+									}
+									
+									//if the keyword no longer exists in the listview, it must have been deleted so remove from db
+									if (!found) {
+										db.deleteKeyword(keywords.get(i).getId());
+									}
+								}
 							}
 							
 							TopicKeywordsDialogFragment.this.getDialog().cancel();

@@ -151,10 +151,11 @@ public class TopicListActivity extends FragmentActivity {
 	public void onClickDeleteKeywordButton(View v)
 	{
 		//TODO is there better/safer way to delete a keyword that has been added within dialog instance and has id==0
-		int button_row = (Integer) v.getTag(0);
-		int keywordId = (Integer) v.getTag(1);
-		String keywordText = (String) v.getTag(2);
-		TopicKeywordsDialogFragment.rows.remove(button_row);
+		int buttonRow = (Integer) v.getTag();
+		//int button_row = (Integer) v.getTag(0);
+		//int keywordId = (Integer) v.getTag(1);
+		//String keywordText = (String) v.getTag(2);
+		TopicKeywordsDialogFragment.rows.remove(buttonRow);
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
 		
 		//if the keyword was added within dialog instance it will have Id of 0, and just needs removed from keywordTracker
@@ -206,7 +207,6 @@ public class TopicListActivity extends FragmentActivity {
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
 			Toast.makeText(this, "Please enter a keyword to add to the list!", Toast.LENGTH_SHORT).show();
 		}
-
 	}		
 	
 

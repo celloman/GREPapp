@@ -118,9 +118,11 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         holder.textEdit.setText(item.getText());
         
         holder.deleteIcon.setImageResource(item.getIcon());
-        holder.deleteIcon.setTag(R.id.list_item_position, position);
-        holder.deleteIcon.setTag(R.id.list_item_id, item.getItemId());
-        holder.deleteIcon.setTag(R.id.list_item_text, item.getText());
+        //TODO if I'm not using the Resources below I should remove the tag Values xml
+        //holder.deleteIcon.setTag(R.id.list_item_position, position);
+        //holder.deleteIcon.setTag(R.id.list_item_id, item.getItemId());
+        //holder.deleteIcon.setTag(R.id.list_item_text, item.getText());
+        holder.deleteIcon.setTag(position);
         
         holder.itemId = item.getItemId();
         
