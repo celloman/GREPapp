@@ -8,8 +8,6 @@ package com.grep.database;
 
 import java.text.SimpleDateFormat;
 
-import android.text.format.DateFormat;
-
 /**
  * 	{@code public class Session}
  * 	<br><br>
