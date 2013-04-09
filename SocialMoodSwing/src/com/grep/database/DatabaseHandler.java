@@ -510,9 +510,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	// SQLite command to select all rows with t_keyword_id
     	String selectQuery = "SELECT * FROM " + SESSION_TABLE + " WHERE " 
     	+ SESSION_TOPIC_ID + "=" + t_session_id;
-    	
     	Cursor cursor = this.db.rawQuery(selectQuery, null);
-    	
     	// add all sessions with selected topic id's in session table to the session list
     	if(cursor.moveToFirst()) {
     		sessionList = new ArrayList<Session>();
@@ -526,7 +524,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     			sessionList.add(session);
     		} while(cursor.moveToNext());
     	}
-    	
     	return sessionList;
     }
     

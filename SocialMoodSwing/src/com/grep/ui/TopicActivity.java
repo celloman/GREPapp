@@ -35,15 +35,18 @@ import android.widget.Toast;
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
+
+	DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
 		
-		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-		int topic_id = getIntent().getIntExtra("topicId", -1);//savedInstanceState.getInt("topic"); // How are we going to get the current topic when this activity is open?
-
+		int topic_id = getIntent().getIntExtra("topicId", -1);
+		
+		dh.open();
+		
 		System.out.println("topic id: " + topic_id);
 
 		if (topic_id == -1) {
@@ -51,20 +54,22 @@ public class TopicActivity extends FragmentActivity {
 			//error we couldn't get the correct corresponding topic Id
 		}
 
+		// Create lists to pass to javascript of session values and session times (theoretically)
+		Random generator = new Random();
+		
 // 		Get a list of session values
 		System.out.println("Before getting sessions");
-		List<Session> analysisSessions = new ArrayList<Session>();//dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		System.out.println("After adding session");
+		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
 		System.out.println("After getting sessions");
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
 		
-		// Create lists to pass to javascript of session values and session times (theoretically)
-		Random generator = new Random();
-
 		// Create 40 random fake analysis sessions
-		for(int i = 0; i < 40; i++)
+/*		for(int i = 0; i < 40; i++)
 			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
-		
+	*/	
+		//Don't display a graph if there are no analysis sessions in history 
 		//Only show the last 15 analysis sessions
 		int length = 0;
 		if(analysisSessions.size() > 15)
@@ -91,6 +96,9 @@ public class TopicActivity extends FragmentActivity {
 				for(int i = 0; i < analysisValues.size(); i++){
 					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
 					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+				}
+				if(analysisValues.size() == 0){
+					historyGraphWebView.loadUrl("<h4>There are no analysis sessions in history</h4>");
 				}
 				
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
@@ -131,7 +139,7 @@ public class TopicActivity extends FragmentActivity {
 			info.setText("There are no analysis sessions in the database." +
 					" \n\nEnter a duration above and click \"To Gauge\"" +
 					" in order to begin an analysis session");
-		}
+	}
 
 	/*
 	@Override
@@ -141,6 +149,18 @@ public class TopicActivity extends FragmentActivity {
 		return true;
 	}
 	*/
+	
+	@Override
+	protected void onResume() {
+		dh.open();
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		dh.close();
+		super.onPause();
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
