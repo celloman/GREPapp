@@ -48,8 +48,10 @@ public class TopicActivity extends FragmentActivity {
 		topic_id = getIntent().getIntExtra("topicId", -1);
 		
 		if (topic_id == -1) {
-			//TODO below error
-			//error we couldn't get the correct corresponding topic Id
+			//Show user an error if the topic id is not properly retrieved... something went wrong
+			//Should not ever really get here
+			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
+			this.finish();
 		}
 
 	}
@@ -133,7 +135,7 @@ public class TopicActivity extends FragmentActivity {
 			info.setText("There are no analysis sessions in the database." +
 					" \n\nEnter a duration above and click \"To Gauge\"" +
 					" in order to begin an analysis session");
-	}
+	} // end drawGraph();
 
 	/*
 	@Override
