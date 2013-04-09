@@ -7,7 +7,6 @@ import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.KeywordListItemHolder;
-import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,13 +30,6 @@ import android.widget.Toast;
  *
  */
 
-//load original database into list (load id's), if I delete a keyword change the id tag to negative of that id
-//if I add a keyword, give it an id tag of 0
-//if I edit a keyword, leave it's id as it
-//in the end, loop through secondary list of keywords
-//	if negative, remove keyword from database
-//  if 0, add keyword to database
-//  if positive, compare with the keyword in the database with that id and see if the text has changed, if so update text
 public class TopicKeywordsDialogFragment extends DialogFragment {
 	ListView keywordsListView;
 	EditText topicTitle;
@@ -94,7 +86,6 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		//Get view from inflater
 		final View view = inflater.inflate(R.layout.keyword_dialog, null);
 		
-		
 		//listview of keywords we will populate, edittext for the topic title, edittext for new keywords
 		keywordsListView   = (ListView) view.findViewById(R.id.keywordsListView);
 		topicTitle         = (EditText) view.findViewById(R.id.topicEditText);
@@ -149,7 +140,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 			
 		//if existing topic, populate the keywords list with the keywords for this topic
 	    if (!isNewTopic) {
-	    	topicTitle.setText(db.getTopic(this.topicId).getTopicName());
+	    	topicTitle.setText(db.getTopic(topicId).getTopicName());
 	    	
 			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
 				for (int i = 0; i < keywords.size(); i++)
@@ -172,7 +163,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		// Pass null as the parent view because its going in the dialog layout
 		builder.setMessage("Topic Keywords")
 			.setView(view)
-			// Add action buttons
+			//Add action buttons
 			.setPositiveButton("Save Topic", null)
 			.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id)
@@ -207,7 +198,6 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View v)
 			{
-				//TODO need to do something special depending on if this is a new topic or not? like only saving vs updating
 				String topicText = topicTitle.getText().toString();
 
 				//if no topic name provided, highlight textedit and show warning message
@@ -316,7 +306,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	         }
 		});
 		
-		//set up the action for when the delete topic button is clicked
+		//onClick for Delete Topic button
 		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v)

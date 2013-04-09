@@ -29,7 +29,8 @@ import android.widget.Toast;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
-public class TopicListActivity extends FragmentActivity {
+public class TopicListActivity extends FragmentActivity
+{
 	ListView topicsListView;
 	static ListItemAdapter adapter;
 	static List<ListItem> rows = new ArrayList<ListItem>();
@@ -127,7 +128,7 @@ public class TopicListActivity extends FragmentActivity {
 	 */
     public void onClickEditTopicButton(View v)
     {
-    	//the edit button has a tag set in the background corresponding to the topicId for listview element
+    	//the edit button has a tag set in the background corresponding to the topicId for the listview topic element
     	int topicId = (Integer) v.getTag();
     	launchExistingTopicKeywordsDialog(topicId);
     }
@@ -151,6 +152,7 @@ public class TopicListActivity extends FragmentActivity {
 	 */
 	public void onClickDeleteKeywordButton(View v)
 	{
+		//the delete keyword button has a tag set in the background for identifying which position in the listview it is
 		int buttonRow = (Integer) v.getTag();
 
 		TopicKeywordsDialogFragment.rows.remove(buttonRow);
@@ -165,6 +167,7 @@ public class TopicListActivity extends FragmentActivity {
 	public void onClickAddKeywordButton(View v)
 	{
 		String keywordText = TopicKeywordsDialogFragment.newKeywordEditText.getText().toString(); 
+		
 		if(!keywordText.isEmpty()) {
 			//the last arg of the ListItem constructor is the keyword id, for new keywords set it to 0 initially
 			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
@@ -197,7 +200,7 @@ public class TopicListActivity extends FragmentActivity {
 	 */
 	public void launchNewTopicKeywordsDialog()
 	{
-		// Create an instance of the dialog fragment and show it
+		//Create an instance of the dialog fragment and show it
         DialogFragment dialog = new TopicKeywordsDialogFragment();
         dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
 	}

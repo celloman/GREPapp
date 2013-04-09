@@ -12,7 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-//adapts our list to fit a specific list type (list of keywords with delete icon or topics with edit icon)
+//Adapts our listview to be a list of custom views (a list of ListItem's behind the scences)
+//Each view (widget) within our listview will be either a TopicListItemHolder or KeywordListItemHolder
 public class ListItemAdapter extends ArrayAdapter<ListItem>
 {	
 	public enum listItemType {TOPIC, KEYWORD};
@@ -86,8 +87,8 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         ListItem item = listItems.get(position);
         
         holder.textView.setText(item.getText());
-        holder.editIcon.setTag(item.getItemId());
         holder.editIcon.setImageResource(item.getIcon());
+        holder.editIcon.setTag(item.getItemId());
         holder.itemId = item.getItemId();
         
         return row;
@@ -116,14 +117,8 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         ListItem item = listItems.get(position);
         
         holder.textEdit.setText(item.getText());
-        
         holder.deleteIcon.setImageResource(item.getIcon());
-        //TODO if I'm not using the Resources below I should remove the tag Values xml
-        //holder.deleteIcon.setTag(R.id.list_item_position, position);
-        //holder.deleteIcon.setTag(R.id.list_item_id, item.getItemId());
-        //holder.deleteIcon.setTag(R.id.list_item_text, item.getText());
         holder.deleteIcon.setTag(position);
-        
         holder.itemId = item.getItemId();
         
     	return row;
