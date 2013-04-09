@@ -48,8 +48,6 @@ public class TopicActivity extends FragmentActivity {
 		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
 		int topic_id = getIntent().getIntExtra("topicId", -1);
 		
-		System.out.println("topic id: " + topic_id);
-
 		if (topic_id == -1) {
 			//TODO below error
 			//error we couldn't get the correct corresponding topic Id
@@ -59,10 +57,7 @@ public class TopicActivity extends FragmentActivity {
 		Random generator = new Random();
 		
 // 		Get a list of session values
-		System.out.println("Before getting sessions");
-		System.out.println("After adding session");
 		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
-		System.out.println("After getting sessions");
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
 		
@@ -75,10 +70,7 @@ public class TopicActivity extends FragmentActivity {
 		int length = 0;
 		if(analysisSessions.size() > 15)
 			length = analysisSessions.size() - 15;
-		
 		for(int i = length; i < analysisSessions.size(); i++) {
-/*			analysisTimes.add("label" + i);
-			analysisValues.add(generator.nextInt() % 100);*/
 			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
 			
 			// Are we storing negative sentiment as a negative number?

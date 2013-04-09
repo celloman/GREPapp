@@ -505,7 +505,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @return	sessionList
      */
     public List<Session> getAllSessions(int t_session_id) {    	
-    	List<Session> sessionList = null;
+    	List<Session> sessionList = new ArrayList<Session>();
     	
     	// SQLite command to select all rows with t_keyword_id
     	String selectQuery = "SELECT * FROM " + SESSION_TABLE + " WHERE " 
@@ -513,7 +513,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	Cursor cursor = this.db.rawQuery(selectQuery, null);
     	// add all sessions with selected topic id's in session table to the session list
     	if(cursor.moveToFirst()) {
-    		sessionList = new ArrayList<Session>();
     		do {
     			Session session = new Session(Integer.parseInt(cursor.getString(0)),
     	        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), Integer.parseInt(cursor.getString(3)), 
