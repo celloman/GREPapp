@@ -42,10 +42,13 @@ public class TopicActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
-		setTitle(R.string.title_activity_topic);
 
+		dh.open();
+		
 		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
 		topic_id = getIntent().getIntExtra("topicId", -1);
+
+		setTitle(getResources().getString(R.string.title_activity_topic) + " - " + dh.getTopic(topic_id).getTopicName());
 		
 		if (topic_id == -1) {
 			//Show user an error if the topic id is not properly retrieved... something went wrong
