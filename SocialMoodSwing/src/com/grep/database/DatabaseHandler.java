@@ -156,7 +156,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void clean() {
     	List<Topic> tList = this.getAllTopics();
     	
-    	if(tList != null) {
+    	if(tList.size() > 0) {
     		for (Topic t: tList) {
     			this.deleteTopic(t.getId());
     		}
@@ -297,7 +297,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @return topicList
      */
     public List<Topic> getAllTopics() { 	
-    	List<Topic> topicList = null;
+    	List<Topic> topicList = new ArrayList<Topic>();
     	
     	// SQLite command for select all
     	String selectQuery = "SELECT * FROM " + TOPIC_TABLE;
@@ -305,7 +305,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     	// add all topics in topic table to topic list
     	if(cursor.moveToFirst()) {
-    		topicList =  new ArrayList<Topic>();
     		do {
     			Topic topic = new Topic(Integer.parseInt(cursor.getString(0)),
     					cursor.getString(1));
@@ -396,7 +395,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @return keywordList
      */
     public List<Keyword> getAllKeywords(int t_keyword_id) {    	
-    	List<Keyword> keywordList = null;
+    	List<Keyword> keywordList = new ArrayList<Keyword>();
     	
     	// SQLite command to select all rows with t_keyword_id
     	String selectQuery = "SELECT * FROM " + KEYWORD_TABLE + " WHERE " 
@@ -406,7 +405,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	
     	// add all keywords with selected topic id's in keyword table to the keyword list
     	if(cursor.moveToFirst()) {
-    		keywordList = new ArrayList<Keyword>();
     		do {
     			Keyword keyword = new Keyword(Integer.parseInt(cursor.getString(0)),
     					Integer.parseInt(cursor.getString(2)), cursor.getString(1));
@@ -505,17 +503,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @return	sessionList
      */
     public List<Session> getAllSessions(int t_session_id) {    	
-    	List<Session> sessionList = null;
+    	List<Session> sessionList = new ArrayList<Session>();
     	
     	// SQLite command to select all rows with t_keyword_id
     	String selectQuery = "SELECT * FROM " + SESSION_TABLE + " WHERE " 
     	+ SESSION_TOPIC_ID + "=" + t_session_id;
-    	
     	Cursor cursor = this.db.rawQuery(selectQuery, null);
-    	
     	// add all sessions with selected topic id's in session table to the session list
     	if(cursor.moveToFirst()) {
-    		sessionList = new ArrayList<Session>();
     		do {
     			Session session = new Session(Integer.parseInt(cursor.getString(0)),
     	        		Integer.parseInt(cursor.getString(1)), cursor.getString(2), Integer.parseInt(cursor.getString(3)), 
@@ -526,7 +521,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     			sessionList.add(session);
     		} while(cursor.moveToNext());
     	}
-    	
     	return sessionList;
     }
     

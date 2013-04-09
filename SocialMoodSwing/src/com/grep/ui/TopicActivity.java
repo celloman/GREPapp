@@ -35,46 +35,49 @@ import android.widget.Toast;
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
+
+	DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+	int topic_id = -1;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
 		setTitle(R.string.title_activity_topic);
-		
-		DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
-		
-		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
-		int topic_id = getIntent().getIntExtra("topicId", -1);
-		
-		System.out.println("topic id: " + topic_id);
 
+		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
+		topic_id = getIntent().getIntExtra("topicId", -1);
+		
 		if (topic_id == -1) {
-			//TODO below error
-			//error we couldn't get the correct corresponding topic Id
+			//Show user an error if the topic id is not properly retrieved... something went wrong
+			//Should not ever really get here
+			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
+			this.finish();
 		}
 
-// 		Get a list of session values
-		System.out.println("Before getting sessions");
-		List<Session> analysisSessions = new ArrayList<Session>();//dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
-		System.out.println("After getting sessions");
-		final List<Integer> analysisValues = new ArrayList<Integer>();
-		final List<String> analysisTimes = new ArrayList<String>();
-		
+	}
+
+	private void drawGraph() {
 		// Create lists to pass to javascript of session values and session times (theoretically)
 		Random generator = new Random();
-
-		// Create 40 random fake analysis sessions
-		for(int i = 0; i < 40; i++)
-			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
 		
+		dh.open();
+		
+// 		Get a list of session values
+		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		final List<Integer> analysisValues = new ArrayList<Integer>();
+		final List<String> analysisTimes = new ArrayList<String>();
+				
+		// Create 40 random fake analysis sessions
+/*		for(int i = 0; i < 40; i++)
+			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
+	*/
+		//Don't display a graph if there are no analysis sessions in history 
 		//Only show the last 15 analysis sessions
 		int length = 0;
 		if(analysisSessions.size() > 15)
 			length = analysisSessions.size() - 15;
 		
 		for(int i = length; i < analysisSessions.size(); i++) {
-/*			analysisTimes.add("label" + i);
-			analysisValues.add(generator.nextInt() % 100);*/
 			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
 			
 			// Are we storing negative sentiment as a negative number?
@@ -83,9 +86,8 @@ public class TopicActivity extends FragmentActivity {
 			else
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 		}
-		System.out.println("Before creating webview");
 		final WebView historyGraphWebView = (WebView) findViewById(R.id.graph);
-		System.out.println("After creating webview");
+
 		historyGraphWebView.setWebViewClient(new WebViewClient() {  
 		    @Override  
 		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
@@ -133,7 +135,7 @@ public class TopicActivity extends FragmentActivity {
 			info.setText("There are no analysis sessions in the database." +
 					" \n\nEnter a duration above and click \"To Gauge\"" +
 					" in order to begin an analysis session");
-		}
+	} // end drawGraph();
 
 	/*
 	@Override
@@ -143,6 +145,18 @@ public class TopicActivity extends FragmentActivity {
 		return true;
 	}
 	*/
+	
+	@Override
+	protected void onResume() {
+		drawGraph();
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		dh.close();
+		super.onPause();
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
