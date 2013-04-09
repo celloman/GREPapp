@@ -40,8 +40,8 @@ public class GetTweets implements Runnable {
 		// login info
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setUser("vikings383")
-                .setPassword("383vikings");
+                .setUser("greshamschlect")
+                .setPassword("saxon93g");
     	
 		// create the stream
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
@@ -57,7 +57,7 @@ public class GetTweets implements Runnable {
         	
             @Override
             public void onStatus(Status status) {
-				System.out.println(String.format("getter thread running... %d", this.queue.size()));
+				//System.out.println(String.format("getter thread running... %d", this.queue.size()));
 				
                 try {
 					this.queue.put(new Tweet(status));

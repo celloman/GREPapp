@@ -36,7 +36,7 @@ public class GetSentiment implements Runnable {
 	public void run() {
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			System.out.println(String.format("sentiment thread: (%d, %d)", this.m_inQueue.size(), this.m_outQueue.size()));
+			//System.out.println(String.format("sentiment thread: (%d, %d)", this.m_inQueue.size(), this.m_outQueue.size()));
 			
 			
 			try {

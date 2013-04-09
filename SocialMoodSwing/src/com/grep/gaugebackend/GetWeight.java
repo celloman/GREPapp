@@ -21,7 +21,7 @@ public class GetWeight implements Runnable {
 	// keywords that we are searching for
 	protected String[] m_Keywords = null;
 	// queue to hold previously seen tweet ids
-	protected CircularFifoBuffer m_seenIDs = new CircularFifoBuffer(25);
+	protected CircularFifoBuffer m_seenIDs = new CircularFifoBuffer(10);
 	
 	/**
 	 * Constructor
@@ -68,7 +68,7 @@ public class GetWeight implements Runnable {
 	public void run() {
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			System.out.println(String.format("weighting thread: (%d, %d)", this.m_inQueue.size(), this.m_outQueue.size()));
+			//System.out.println(String.format("weighting thread: (%d, %d)", this.m_inQueue.size(), this.m_outQueue.size()));
 			
 			try {
 				// get from prev module

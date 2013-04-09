@@ -44,7 +44,7 @@ public class GaugeActivity extends FragmentActivity {
 		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
 		BlockingQueue<Tweet> popularTweets = new ArrayBlockingQueue<Tweet>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, popularTweets, gaugeValues, 60);
+		GaugeBackend.start(keywords, popularTweets, gaugeValues, 30000);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setJavaScriptEnabled(true);
