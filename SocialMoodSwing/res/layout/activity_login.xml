@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/oauth_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login" 
+        android:onClick="startOAuth"/>
+
+    <TextView
+        android:id="@+id/twitter_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:autoLink="web"
+        android:text="twitter.com" />
+
+</LinearLayout>
