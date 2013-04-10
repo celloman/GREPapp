@@ -7,7 +7,7 @@ package com.grep.ui;
 
 import android.webkit.WebView;
 import com.grep.gaugebackend.Gauge;
-import com.grep.gaugebackend.Tweet;
+import com.grep.gaugebackend.WebToast;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -18,7 +18,7 @@ public class GaugeConsumer implements Runnable {
 	// incoming gauge values queue
 	protected BlockingQueue<Gauge> m_inQueueGauge = null;
 	// incoming popular tweets queue
-	protected BlockingQueue<Tweet> m_inQueueTweets = null;
+	protected BlockingQueue<WebToast> m_inWebToasts = null;
 	// app context
 	protected GaugeActivity m_activity = null;
 	// webview that needs updating
@@ -28,9 +28,9 @@ public class GaugeConsumer implements Runnable {
 	 * Constructor
 	 * @param inQueue (BlockingQueue<Tweet>)
 	 */
-	public GaugeConsumer(BlockingQueue<Gauge> inQueueGauge, BlockingQueue<Tweet> inQueueTweets, GaugeActivity a, WebView wv) {
+	public GaugeConsumer(BlockingQueue<Gauge> inQueueGauge, BlockingQueue<WebToast> inWebToasts, GaugeActivity a, WebView wv) {
 		m_inQueueGauge = inQueueGauge;
-		m_inQueueTweets = inQueueTweets;
+		m_inWebToasts = inWebToasts;
 		m_activity = a;
 		m_wv = wv;
 	}
@@ -58,11 +58,12 @@ public class GaugeConsumer implements Runnable {
 				));
 				
 				// check for popular tweets, toast if we have one
-				Tweet t = m_inQueueTweets.poll();
+				WebToast t = m_inWebToasts.poll();
 				if(t != null) {
 					//m_activity.showToast(t.text);
-					m_wv.loadUrl( String.format("javascript:toastr.info('%s')",
-						t.text
+					m_wv.loadUrl( String.format("javascript:toastr.%s('%s')",
+						t.m_type,
+						t.m_message
 					));
 				}
 				

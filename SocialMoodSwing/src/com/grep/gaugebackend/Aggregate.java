@@ -16,7 +16,7 @@ public class Aggregate implements Runnable {
 	// incoming queue of tweets
 	protected BlockingQueue<Tweet> m_inQueue = null;
 	// outgoing queue of popular tweets
-	protected BlockingQueue<Tweet> m_outPopularQueue = null;
+	protected BlockingQueue<WebToast> m_webToasts = null;
 	// outgoing queue of gauge values
 	protected BlockingQueue<Gauge> m_outGauge = null;
 	// internal queue of latest tweets (tweet wave)
@@ -34,10 +34,10 @@ public class Aggregate implements Runnable {
 	 * @param outPopularQueue (BlockingQueue<Tweet>)
 	 */
 	public Aggregate(	BlockingQueue<Tweet> inQueue, 
-						BlockingQueue<Tweet> outPopularQueue,
+						BlockingQueue<WebToast> outWebToasts,
 						BlockingQueue<Gauge> outGauge ) {
 		m_inQueue = inQueue;
-		m_outPopularQueue = outPopularQueue;
+		m_webToasts = outWebToasts;
 		m_outGauge = outGauge;
 	}
 	
@@ -67,8 +67,9 @@ public class Aggregate implements Runnable {
 				saveTweet(t);
 				// check for popular tweets
 				if(t.weight > 1000) {
-					// use offer(), not put() so that it won't block
-					m_outPopularQueue.offer(t);
+					// use offer(), not put() so that it won't block, because this
+					// isn't exactly mission critical
+					m_webToasts.offer(new WebToast("info", t.text));
 				}
 				
 				// once our tweet wave is full, get aggregating

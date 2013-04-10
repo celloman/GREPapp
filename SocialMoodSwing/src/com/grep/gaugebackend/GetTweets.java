@@ -8,8 +8,6 @@ package com.grep.gaugebackend;
 
 import twitter4j.*;
 import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
@@ -19,6 +17,8 @@ public class GetTweets implements Runnable {
 	
 	// outgoing m_outQueue of tweets
 	protected BlockingQueue<Tweet> m_outQueue = null;
+	// outgoing m_outQueue of tweets
+	protected BlockingQueue<WebToast> m_webToasts = null;
 	// m_Keywords to search for
 	protected String[] m_Keywords = null;
 	
@@ -27,8 +27,9 @@ public class GetTweets implements Runnable {
 	 * @param m_outQueue (BlockingQueue<Tweet>)
 	 * @param m_Keywords (String[])
 	 */
-	public GetTweets(BlockingQueue<Tweet> queue, String[] keywords) {
+	public GetTweets(BlockingQueue<Tweet> queue, BlockingQueue<WebToast> webToasts, String[] keywords) {
 		m_outQueue = queue;
+		m_webToasts = webToasts;
 		m_Keywords = keywords;
 	}
 	
@@ -40,8 +41,8 @@ public class GetTweets implements Runnable {
 		// login info
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setUser("vikings383")
-                .setPassword("383vikings");
+                .setUser("greshamschlect")
+                .setPassword("saxon93g");
     	
 		// create the stream
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
@@ -91,6 +92,12 @@ public class GetTweets implements Runnable {
             public void onException(Exception ex) {
 				Thread.currentThread().interrupt();
             	System.out.println(ex.toString());
+				try {
+					m_webToasts.put(new WebToast("error", "Looks like your internet connection is sketch... we'll keep trying."));
+				} catch (InterruptedException e) {
+					// re-interrupt
+					Thread.currentThread().interrupt();
+				}
             }
         };
 
@@ -99,6 +106,7 @@ public class GetTweets implements Runnable {
 		// add the keyword filtering
         twitterStream.filter(new FilterQuery(0, null, this.m_Keywords));
 		
+		// wait until the thread is interrupted
 		while(!Thread.currentThread().isInterrupted()) {
 			try {
 				Thread.sleep(2000L);
@@ -108,6 +116,7 @@ public class GetTweets implements Runnable {
 			}
 		}
 		
+		// stop the twitter stream
 		twitterStream.cleanUp();
 		twitterStream.shutdown();
     }

@@ -21,17 +21,17 @@ public class GaugeBackend {
 	static protected Thread m_sentimenterThread;
 	static protected Thread m_aggregatorThread;
 
-	public static void start(String[] keywords, BlockingQueue<Tweet> popularTweets, BlockingQueue<Gauge> gaugeValues, long duration) {
+	public static void start(String[] keywords, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues, long duration) {
 		// interprocess communication structures
 		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(5);
 		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(5);
 		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
 		
 		// create the threads
-		GetTweets getter = new GetTweets(fetchQueue, keywords);
+		GetTweets getter = new GetTweets(fetchQueue, webToasts, keywords);
 		GetWeight weighter = new GetWeight(fetchQueue, weightQueue, keywords);
 		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue);
-		Aggregate aggregator = new Aggregate(sentimentQueue, popularTweets, gaugeValues);
+		Aggregate aggregator = new Aggregate(sentimentQueue, webToasts, gaugeValues);
 		
 		m_getterThread = new Thread(getter);
 		m_weighterThread = new Thread(weighter);
