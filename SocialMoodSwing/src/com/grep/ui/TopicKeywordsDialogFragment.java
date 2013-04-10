@@ -7,7 +7,6 @@ import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.KeywordListItemHolder;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -31,7 +30,7 @@ import android.widget.Toast;
  */
 
 public class TopicKeywordsDialogFragment extends DialogFragment {
-	ListView keywordsListView;
+	static ListView keywordsListView;
 	EditText topicTitle;
 	static EditText newKeywordEditText;
 	static ListItemAdapter adapter;
@@ -40,7 +39,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	List<Keyword> keywords = new ArrayList<Keyword>();
 	static List<Keyword> keywordTracker = new ArrayList<Keyword>();
 	boolean isNewTopic;
-	DatabaseHandler db;
+	DatabaseHandler dh;
 	boolean buttonHeightSet;
 		
 	//default constructor, for new topic
@@ -64,21 +63,23 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	public void onResume()
 	{
 		super.onResume();
-		db.open();
+		dh.open();
 	}
 	
 	@Override
 	public void onPause()
 	{
 		super.onPause();
-		db.close();
+		dh.close();
 	}
 		
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
-		db = new DatabaseHandler(getActivity());
-		db.open(); //do I have to call this here as well, was getting null pointer exceptions with database when this wasn't here
+		//TODO play around with this a bit more trying to get dialog to fill 90% of screen without being behind title bar
+		//getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dh = new DatabaseHandler(getActivity());
+		dh.open(); //do I have to call this here as well, was getting null pointer exceptions with database when this wasn't here
 				
 		//Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -140,7 +141,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 			
 		//if existing topic, populate the keywords list with the keywords for this topic
 	    if (!isNewTopic) {
-	    	topicTitle.setText(db.getTopic(topicId).getTopicName());
+	    	topicTitle.setText(dh.getTopic(topicId).getTopicName());
 	    	
 			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
 				for (int i = 0; i < keywords.size(); i++)
@@ -214,7 +215,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 					else {
 						//if editing an existing topic
 						if (!isNewTopic) {
-							Topic topic = db.getTopic(topicId);
+							Topic topic = dh.getTopic(topicId);
 							
 							//if topic name has been changed in the dialog, update in db and in TopicListActivity listview
 							if (!topic.getTopicName().equals(topicText)) {
@@ -229,7 +230,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 								
 								//update all edits to this topic
 								topic.setTopicName(topicText);
-								db.updateTopic(topic);
+								dh.updateTopic(topic);
 								TopicListActivity.adapter.notifyDataSetChanged();
 							}
 							
@@ -239,7 +240,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 								int keywordId = rows.get(i).getItemId();
 								if (keywordId == 0) {
 									Keyword keyword = new Keyword(topicId, rows.get(i).getText());
-									db.addKeyword(keyword);
+									dh.addKeyword(keyword);
 								}
 							}
 							
@@ -268,9 +269,9 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 											
 											//if text is different, update the keyword in the database
 											if (!keywords.get(i).getKeyword().equals(keywordText)) {
-												Keyword keyword = db.getKeyword(keywordId);
+												Keyword keyword = dh.getKeyword(keywordId);
 												keyword.setKeyword(keywordText);
-												db.updateKeyword(keyword);
+												dh.updateKeyword(keyword);
 											}
 											
 											break;
@@ -279,7 +280,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 									
 									//if the keyword no longer exists in the listview, it must have been deleted so remove from db
 									if (!found) {
-										db.deleteKeyword(keywords.get(i).getId());
+										dh.deleteKeyword(keywords.get(i).getId());
 									}
 								}
 							}
@@ -289,16 +290,17 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 						else {
 							//if new topic, add to db and update TopicListActivity listview
 							Topic topic = new Topic(topicTitle.getText().toString());
-							int topic_id = db.addTopic(topic);
+							int topic_id = dh.addTopic(topic);
 							
 							for (int i = 0; i < rows.size(); i++)
 							{
 								Keyword keyword = new Keyword(topic_id, rows.get(i).getText());
-								db.addKeyword(keyword);
+								dh.addKeyword(keyword);
 							}
 														
 							TopicListActivity.rows.add(new ListItem(R.drawable.edit_pencil, topic.getTopicName(), topic_id));
 							TopicListActivity.adapter.notifyDataSetChanged();
+							TopicListActivity.topicsListView.smoothScrollToPosition(TopicListActivity.topicsListView.getCount());
 							TopicKeywordsDialogFragment.this.getDialog().cancel();	
 						}
 					}
@@ -315,7 +317,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 				if(!isNewTopic) {
 					//TODO should we pop up a warning dialog confirming that they want to delete the topic?
 					//delete topic from the database
-					db.deleteTopic(topicId);
+					dh.deleteTopic(topicId);
 					
 					//delete topic from the topics listview and update the listview
 					for(int i = 0; i < TopicListActivity.rows.size(); i++)

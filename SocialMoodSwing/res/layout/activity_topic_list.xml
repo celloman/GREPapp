@@ -8,7 +8,6 @@
 
     <ListView
         android:id="@+id/topicsListView"
-        android:transcriptMode="alwaysScroll"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/add_topic"
