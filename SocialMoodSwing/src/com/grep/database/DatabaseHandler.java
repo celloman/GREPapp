@@ -198,16 +198,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * {@code public Credentials getCredentials}
      * <br><br>
-     * Retrieve credentials from authentication table
-     * @param id	(int)
+     * Retrieve first credential from authentication table
+     * 
      * @return credentials
      */
-    public Credentials getCredentials(int id) {
+    public Credentials getCredentials() {
     	Credentials credentials = null;
     	
+    	// SQLite command for select first row
+    	String selectQuery = "SELECT * FROM " + AUTH_TABLE + " LIMIT 1";
+    	Cursor cursor = this.db.rawQuery(selectQuery, null);
+    	/*
     	Cursor cursor = this.db.query(AUTH_TABLE, new String[] { USER_KEY_ID,
                 CONSUMER_KEY, CONSUMER_SECRET }, USER_KEY_ID + " =?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
+    	*/
     	if (cursor.getCount() > 0) {
             cursor.moveToFirst();
     	

@@ -110,7 +110,7 @@ public class TopicListActivity extends FragmentActivity
 	    switch (item.getItemId())
 	    {
 	        case R.id.menu_login:
-	            showLoginDialog();
+	        	showLoginActivity();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -181,15 +181,13 @@ public class TopicListActivity extends FragmentActivity
 	}		
 	
 
-    /**
-	 * Creates an instance of the Login dialog fragment for the user to
+	/**
+	 * Creates an instance of the Login Activity for the user to
 	 * enter Twitter authentication credentials.
 	 */
-	public void showLoginDialog()
-	{
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new LoginDialogFragment();
-        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
+	public void showLoginActivity() {
+		Intent intent = new Intent(this, LoginActivity.class);
+		startActivity(intent);
     }
 		
 	
