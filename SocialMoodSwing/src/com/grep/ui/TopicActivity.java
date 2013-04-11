@@ -202,9 +202,16 @@ public class TopicActivity extends FragmentActivity {
 		EditText hoursEntry = (EditText) findViewById(R.id.hours);
 		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
 		
-		if(hoursEntry.getText() != null || minutesEntry.getText() != null) {
-			int hours = Integer.parseInt(hoursEntry.getText().toString());
-			int minutes = Integer.parseInt(minutesEntry.getText().toString());
+		int hours = 0;
+		int minutes = 0;
+		
+		if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0) {
+			if(hoursEntry.getText().length() != 0) {
+				hours = Integer.parseInt(hoursEntry.getText().toString());
+			}
+			if(minutesEntry.getText().length() != 0) {
+				minutes = Integer.parseInt(minutesEntry.getText().toString());
+			}
 			int time = hours * 3600 + minutes * 60;
 			
 			Intent intent = new Intent(this, GaugeActivity.class);
