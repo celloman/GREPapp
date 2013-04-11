@@ -19,19 +19,18 @@ public class GaugeConsumer implements Runnable {
 	protected BlockingQueue<Gauge> m_inQueueGauge = null;
 	// incoming popular tweets queue
 	protected BlockingQueue<WebToast> m_inWebToasts = null;
-	// app context
-	protected GaugeActivity m_activity = null;
 	// webview that needs updating
 	protected WebView m_wv = null;
+	// latest gauge values
+	public Gauge m_latestGauge = null;
 	
 	/**
 	 * Constructor
 	 * @param inQueue (BlockingQueue<Tweet>)
 	 */
-	public GaugeConsumer(BlockingQueue<Gauge> inQueueGauge, BlockingQueue<WebToast> inWebToasts, GaugeActivity a, WebView wv) {
+	public GaugeConsumer(BlockingQueue<Gauge> inQueueGauge, BlockingQueue<WebToast> inWebToasts, WebView wv) {
 		m_inQueueGauge = inQueueGauge;
 		m_inWebToasts = inWebToasts;
-		m_activity = a;
 		m_wv = wv;
 	}
 	
@@ -44,6 +43,7 @@ public class GaugeConsumer implements Runnable {
 			
 			try {
 				Gauge g = m_inQueueGauge.take();
+				m_latestGauge = g;
 				Integer gaugeVal = 50;
 				
 				if((g.m_Positive - g.m_Negative) != 0)

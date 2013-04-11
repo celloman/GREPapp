@@ -41,9 +41,9 @@ public class WarningDialogFragment extends DialogFragment {
             	   public void onClick(DialogInterface dialog, int id) {
 					   // stop the threads (hopefully...)
 					   GaugeBackend.stop();
-					   GaugeActivity.m_gaugeConsumer.interrupt();
+					   GaugeActivity.m_gaugeConsumerThread.interrupt();
 					   try {
-						   GaugeActivity.m_gaugeConsumer.join();
+						   GaugeActivity.m_gaugeConsumerThread.join();
 					   } catch (InterruptedException ex) {
 						   System.out.println("something went wrong while killing the gauge consumer thread");
 						   //Logger.getLogger(WarningDialogFragment.class.getName()).log(Level.SEVERE, null, ex);

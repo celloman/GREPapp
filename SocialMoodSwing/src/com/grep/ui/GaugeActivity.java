@@ -25,7 +25,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class GaugeActivity extends FragmentActivity {
 	
-	static public Thread m_gaugeConsumer;
+	static public Thread m_gaugeConsumerThread;
+	protected GaugeConsumer m_gaugeConsumer = null;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -40,11 +41,13 @@ public class GaugeActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
 		setTitle(R.string.title_activity_gauge);
+		
+		int duration = getIntent().getIntExtra("analysisDuration", 10);
 	
 		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, webToasts, gaugeValues, 300000);
+		GaugeBackend.start(keywords, webToasts, gaugeValues, duration);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -54,8 +57,17 @@ public class GaugeActivity extends FragmentActivity {
 		
 		// start another thread to process gauge values TODO add another to process
 		// the popular Tweets
-		m_gaugeConsumer = new Thread(new GaugeConsumer(gaugeValues, webToasts, this, webView));
-		m_gaugeConsumer.start();
+		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
+		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
+		m_gaugeConsumerThread.start();
+	}
+	
+	@Override
+	public void onDestroy() {
+		// get latest gauge value from consumer and save to database
+		//if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+			
+		//}
 	}
 
 	@Override

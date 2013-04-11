@@ -63,6 +63,10 @@
 				color: #1f1f1f;
 			}
 			
+			#gauge-wrapper {
+				text-align: center;
+			}
+			
 			#gauge {
 				width: 300px;
 				height: 150px;
@@ -112,7 +116,7 @@
 		
 	</head>
 	<body>
-		<canvas id='gauge'></canvas>
+		<div id='gauge-wrapper'><canvas id='gauge'></canvas></div>
 		<div id='tag'>50:50</div>
 		<div id='labels'>
 			<div>Tweets Processed:<span id='count'>0</span></div>

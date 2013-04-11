@@ -69,7 +69,6 @@ public class GaugeBackend {
 			m_sentimenterThread.join();
 			m_aggregatorThread.join();
 			
-			
 		} catch (InterruptedException ex) {
 			System.out.println("something went wrong while killing the threads");
 		}
