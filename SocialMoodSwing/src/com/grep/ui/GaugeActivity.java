@@ -26,7 +26,7 @@ import java.util.concurrent.BlockingQueue;
 public class GaugeActivity extends FragmentActivity {
 	
 	static public Thread m_gaugeConsumerThread;
-	protected GaugeConsumer m_gaugeConsumer = null;
+	static protected GaugeConsumer m_gaugeConsumer = null;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -60,6 +60,17 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
+	}
+	
+	static public void stopGauge() {
+	   // stop the threads (hopefully...)
+	   GaugeBackend.stop();
+	   GaugeActivity.m_gaugeConsumerThread.interrupt();
+	   try {
+		   GaugeActivity.m_gaugeConsumerThread.join();
+	   } catch (InterruptedException ex) {
+		   System.out.println("something went wrong while killing the gauge consumer thread");
+	   }
 	}
 	
 	@Override
