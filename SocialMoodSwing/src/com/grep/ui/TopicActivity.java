@@ -36,7 +36,7 @@ import android.widget.Toast;
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
 
-	DatabaseHandler dh = new DatabaseHandler(this); // Is this how to initiate the database in an activity?
+	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +216,7 @@ public class TopicActivity extends FragmentActivity {
 			
 			Intent intent = new Intent(this, GaugeActivity.class);
 			intent.putExtra("analysisDuration", time);
+			intent.putExtra("topicId", topic_id);
 			startActivity(intent);
 		}
 		else {

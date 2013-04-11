@@ -1,6 +1,8 @@
 package com.grep.ui;
 
+import com.grep.database.Keyword;
 import com.grep.gaugebackend.GaugeBackend;
+import com.grep.database.DatabaseHandler;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -12,6 +14,8 @@ import android.webkit.WebView;
 import android.widget.Toast;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
+
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -27,6 +31,8 @@ public class GaugeActivity extends FragmentActivity {
 	
 	static public Thread m_gaugeConsumerThread;
 	static protected GaugeConsumer m_gaugeConsumer = null;
+	DatabaseHandler dh = new DatabaseHandler(this);
+	int topic_id = -1;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -42,9 +48,25 @@ public class GaugeActivity extends FragmentActivity {
 		setContentView(R.layout.activity_gauge);
 		setTitle(R.string.title_activity_gauge);
 		
+		dh.open();
+		topic_id = getIntent().getIntExtra("topicId", -1);
+		
+		if (topic_id == -1) {
+			//Show user an error if the topic id is not properly retrieved... something went wrong
+			//Should not ever really get here
+			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
+			this.finish();
+		}
+		
 		int duration = getIntent().getIntExtra("analysisDuration", 10);
 	
-		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
+		//Create keyword list from database
+		final List<Keyword> keywordList = dh.getAllKeywords(topic_id);
+		String[] keywords = new String[keywordList.size()];//{"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
+		for(int i = 0; i < keywordList.size(); i++) {
+			keywords[i] = keywordList.get(i).getKeyword();
+			System.out.println("Keyword: " + keywordList.get(i).getKeyword());
+		}
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
 		GaugeBackend.start(keywords, webToasts, gaugeValues, duration, this);
@@ -71,6 +93,7 @@ public class GaugeActivity extends FragmentActivity {
 	   } catch (InterruptedException ex) {
 		   System.out.println("something went wrong while killing the gauge consumer thread");
 	   }
+	   dh.close();
 	   finish();
 	}
 	
