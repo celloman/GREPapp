@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,7 +33,7 @@ public class LoginActivity extends Activity {
     
     //for database interaction
     private DatabaseHandler dh = new DatabaseHandler(this);
-	
+    
 	/**
 	 * Constructor
 	 */
@@ -103,11 +104,11 @@ public class LoginActivity extends Activity {
 
 	            // Save user_key and user_secret in database
 	            Credentials c = new Credentials(user_key, user_secret);
-	            Toast.makeText(this, "Key: " + c.getConsumerKey() + "; Secret: " + c.getConsumerSecret(), Toast.LENGTH_LONG).show();
+	            dh.open();
 	            dh.addCredentials(c);
 
 	        } catch(Exception e){
-
+	        	Log.e("OAuth", "OAuth Fail" + e.getMessage());
 	        }
 	    } else {
 	        // Do something if the callback comes from elsewhere
@@ -124,5 +125,20 @@ public class LoginActivity extends Activity {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse("http://twitter.com"));
 		startActivity(intent);
+	}
+	
+	/**
+	 * Test function on toast button for testing retrieving
+	 * credentials from twitter oauth site. Can be removed
+	 * when successfull.
+	 * @param v
+	 */
+	public void toastCredentials(View v) {
+		Credentials c = dh.getCredentials();
+		if(c==null) {
+			Toast.makeText(this, "No credentials in database!" , Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(this, "Key: " + c.getConsumerKey() + "; Secret: " + c.getConsumerSecret() , Toast.LENGTH_LONG).show();
+		}	
 	}
 }
