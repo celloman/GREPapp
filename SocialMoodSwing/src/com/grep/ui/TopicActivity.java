@@ -220,6 +220,8 @@ public class TopicActivity extends FragmentActivity {
 		}
 		else {
 			Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
+			hoursEntry.setBackgroundColor(getResources().getColor(R.color.red));
+			minutesEntry.setBackgroundColor(getResources().getColor(R.color.red));
 		}
 	}
 }
