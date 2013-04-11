@@ -112,8 +112,6 @@ public class TopicActivity extends FragmentActivity {
 		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph?
 		historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling
 		
-//		EditText hours = (EditText) findViewById(R.id.hours);
-//		EditText minutes = (EditText) findViewById(R.id.minutes);
 		EditText info = (EditText) findViewById(R.id.topicInfo);
 		
 		int totalTweets = 0;
@@ -201,7 +199,20 @@ public class TopicActivity extends FragmentActivity {
 	 * current topic.
 	 */
 	public void goToGaugeActivity(View v) {
-		Intent intent = new Intent(this, GaugeActivity.class);
-		startActivity(intent);
+		EditText hoursEntry = (EditText) findViewById(R.id.hours);
+		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
+		
+		if(hoursEntry.getText() != null || minutesEntry.getText() != null) {
+			int hours = Integer.parseInt(hoursEntry.getText().toString());
+			int minutes = Integer.parseInt(minutesEntry.getText().toString());
+			int time = hours * 3600 + minutes * 60;
+			
+			Intent intent = new Intent(this, GaugeActivity.class);
+			intent.putExtra("analysisDuration", time);
+			startActivity(intent);
+		}
+		else {
+			Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
+		}
 	}
 }
