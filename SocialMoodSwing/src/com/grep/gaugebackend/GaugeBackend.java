@@ -6,7 +6,11 @@
 
 package com.grep.gaugebackend;
 
+import android.widget.TextView;
+
 import com.grep.ui.GaugeActivity;
+import com.grep.ui.R;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;

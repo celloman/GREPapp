@@ -11,11 +11,14 @@ import android.view.Menu;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -58,7 +61,7 @@ public class GaugeActivity extends FragmentActivity {
 			this.finish();
 		}
 		
-		int duration = getIntent().getIntExtra("analysisDuration", 10);
+		final int duration = getIntent().getIntExtra("analysisDuration", 10);
 	
 		//Create keyword list from database
 		final List<Keyword> keywordList = dh.getAllKeywords(topic_id);
@@ -82,6 +85,28 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
+		System.out.println("Before timing");
+/*		Timer refreshTime = new Timer();
+		refreshTime.schedule(new TimerTask() {
+			int remainingTime = duration;
+			@Override
+			public void run() {
+				System.out.println("Timing");
+				refreshTime(remainingTime);
+				remainingTime--;
+			}
+		}, 0, 1000);
+		refreshTime(duration);*/
+	}
+	
+	public void refreshTime(int remainingTime) {
+		final TextView textView = (TextView) findViewById(R.id.time_left);
+		if(remainingTime > 3600) // If duration is greater than an hour
+			textView.setText(remainingTime/3600 + " hours " + (remainingTime - (remainingTime/3600)*3600)/60 + " minutes remaining");
+		else if(remainingTime > 60) // If duration is greater than a minute (but less than an hour)
+			textView.setText(remainingTime/60 + " minutes " + (remainingTime- (remainingTime/60)*60) + " seconds remaining");
+		else
+			textView.setText(remainingTime + " seconds remaining");
 	}
 	
 	public void stopGauge() {
