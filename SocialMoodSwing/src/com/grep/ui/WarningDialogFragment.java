@@ -39,11 +39,11 @@ public class WarningDialogFragment extends DialogFragment {
         	   	// Add action buttons
                .setPositiveButton("Stop", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
-					   GaugeActivity.stopGauge();
+					   GaugeActivity a = (GaugeActivity) WarningDialogFragment.this.getActivity();
 					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
-            		   WarningDialogFragment.this.getActivity().finish();
+            		   a.stopGauge();
                    }
                })
                .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {

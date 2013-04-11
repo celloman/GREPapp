@@ -6,6 +6,7 @@
 
 package com.grep.gaugebackend;
 
+import com.grep.ui.GaugeActivity;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
@@ -21,7 +22,7 @@ public class GaugeBackend {
 	static protected Thread m_sentimenterThread;
 	static protected Thread m_aggregatorThread;
 
-	public static void start(String[] keywords, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues, long duration) {
+	public static void start(String[] keywords, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues, long duration, final GaugeActivity a) {
 		// interprocess communication structures
 		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(5);
 		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(5);
@@ -49,7 +50,7 @@ public class GaugeBackend {
 		t.schedule(new TimerTask() {          
 			@Override
 			public void run() {
-				stop();
+				a.stopGauge();
 			}
 		}, duration*1000);
 	}

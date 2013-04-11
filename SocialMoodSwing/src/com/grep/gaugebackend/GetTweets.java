@@ -41,8 +41,8 @@ public class GetTweets implements Runnable {
 		// login info
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setUser("greshamschlect")
-                .setPassword("saxon93g");
+                .setUser("vikings383")
+                .setPassword("383vikings");
     	
 		// create the stream
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();

@@ -47,7 +47,7 @@ public class GaugeActivity extends FragmentActivity {
 		String[] keywords = {"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, webToasts, gaugeValues, duration);
+		GaugeBackend.start(keywords, webToasts, gaugeValues, duration, this);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -62,7 +62,7 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumerThread.start();
 	}
 	
-	static public void stopGauge() {
+	public void stopGauge() {
 	   // stop the threads (hopefully...)
 	   GaugeBackend.stop();
 	   GaugeActivity.m_gaugeConsumerThread.interrupt();
@@ -71,6 +71,7 @@ public class GaugeActivity extends FragmentActivity {
 	   } catch (InterruptedException ex) {
 		   System.out.println("something went wrong while killing the gauge consumer thread");
 	   }
+	   finish();
 	}
 	
 	@Override

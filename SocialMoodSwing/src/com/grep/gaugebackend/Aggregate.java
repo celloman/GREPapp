@@ -73,7 +73,7 @@ public class Aggregate implements Runnable {
 				}
 				
 				// once our tweet wave is full, get aggregating
-				if(m_tweetWaveQueue.size() == 10) {
+				if(m_tweetWaveQueue.size() > 0) {
 					// calculate gauge values
 					Gauge g = new Gauge(m_tweetWaveQueue, m_Positive, m_Negative, m_tweetCount);
 					
