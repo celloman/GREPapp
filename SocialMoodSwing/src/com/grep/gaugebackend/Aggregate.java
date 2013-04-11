@@ -16,11 +16,11 @@ public class Aggregate implements Runnable {
 	// incoming queue of tweets
 	protected BlockingQueue<Tweet> m_inQueue = null;
 	// outgoing queue of popular tweets
-	protected BlockingQueue<Tweet> m_outPopularQueue = null;
+	protected BlockingQueue<WebToast> m_webToasts = null;
 	// outgoing queue of gauge values
 	protected BlockingQueue<Gauge> m_outGauge = null;
 	// internal queue of latest tweets (tweet wave)
-	protected CircularFifoBuffer m_tweetWaveQueue = new CircularFifoBuffer(25);
+	protected CircularFifoBuffer m_tweetWaveQueue = new CircularFifoBuffer(10);
 	// total number of tweets processed
 	protected int m_tweetCount = 0;
 	// total positive value
@@ -34,10 +34,10 @@ public class Aggregate implements Runnable {
 	 * @param outPopularQueue (BlockingQueue<Tweet>)
 	 */
 	public Aggregate(	BlockingQueue<Tweet> inQueue, 
-						BlockingQueue<Tweet> outPopularQueue,
+						BlockingQueue<WebToast> outWebToasts,
 						BlockingQueue<Gauge> outGauge ) {
 		m_inQueue = inQueue;
-		m_outPopularQueue = outPopularQueue;
+		m_webToasts = outWebToasts;
 		m_outGauge = outGauge;
 	}
 	
@@ -56,7 +56,7 @@ public class Aggregate implements Runnable {
 		// loop while the thread isn't interrupted
 		while(!Thread.currentThread().isInterrupted()) {
 			
-			//System.out.println("aggregator thread running...");
+			//System.out.println(String.format("aggregate thread: (%d, %d)", this.m_inQueue.size(), this.m_outGauge.size()));
 			
 			try {
 				// get from prev module
@@ -67,17 +67,21 @@ public class Aggregate implements Runnable {
 				saveTweet(t);
 				// check for popular tweets
 				if(t.weight > 1000) {
-					m_outPopularQueue.put(t);
+					// use offer(), not put() so that it won't block, because this
+					// isn't exactly mission critical
+					m_webToasts.offer(new WebToast("info", t.text));
 				}
 				
 				// once our tweet wave is full, get aggregating
-				if(m_tweetWaveQueue.size() == 25) {
+				if(m_tweetWaveQueue.size() > 0) {
 					// calculate gauge values
 					Gauge g = new Gauge(m_tweetWaveQueue, m_Positive, m_Negative, m_tweetCount);
 					
 					// update positive and negative session totals
 					m_Positive += g.m_Positive;
 					m_Negative += g.m_Negative;
+					
+					System.out.println(String.format("%d, %d", m_Positive, m_Negative));
 					
 					// send the gauge values out
 					m_outGauge.put(g);

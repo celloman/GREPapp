@@ -6,6 +6,9 @@
 
 package com.grep.gaugebackend;
 
+import com.grep.ui.GaugeActivity;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 
 /**
@@ -19,17 +22,17 @@ public class GaugeBackend {
 	static protected Thread m_sentimenterThread;
 	static protected Thread m_aggregatorThread;
 
-	public static void start(String[] keywords, BlockingQueue<Tweet> popularTweets, BlockingQueue<Gauge> gaugeValues) {
+	public static void start(String[] keywords, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues, long duration, final GaugeActivity a) {
 		// interprocess communication structures
-		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(100);
-		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(100);
-		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(100);
+		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(5);
+		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(5);
+		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
 		
 		// create the threads
-		GetTweets getter = new GetTweets(fetchQueue, keywords);
+		GetTweets getter = new GetTweets(fetchQueue, webToasts, keywords);
 		GetWeight weighter = new GetWeight(fetchQueue, weightQueue, keywords);
 		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue);
-		Aggregate aggregator = new Aggregate(sentimentQueue, popularTweets, gaugeValues);
+		Aggregate aggregator = new Aggregate(sentimentQueue, webToasts, gaugeValues);
 		
 		m_getterThread = new Thread(getter);
 		m_weighterThread = new Thread(weighter);
@@ -41,6 +44,15 @@ public class GaugeBackend {
 		m_weighterThread.start();
 		m_sentimenterThread.start();
 		m_aggregatorThread.start();
+		
+		// the analysis duration timer
+		Timer t = new Timer();
+		t.schedule(new TimerTask() {          
+			@Override
+			public void run() {
+				a.stopGauge();
+			}
+		}, duration*1000);
 	}
 	
 	public static void stop() {
@@ -57,6 +69,7 @@ public class GaugeBackend {
 			m_weighterThread.join();
 			m_sentimenterThread.join();
 			m_aggregatorThread.join();
+			
 		} catch (InterruptedException ex) {
 			System.out.println("something went wrong while killing the threads");
 		}

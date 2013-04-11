@@ -39,19 +39,11 @@ public class WarningDialogFragment extends DialogFragment {
         	   	// Add action buttons
                .setPositiveButton("Stop", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
-					   // stop the threads (hopefully...)
-					   GaugeBackend.stop();
-					   GaugeActivity.m_gaugeConsumer.interrupt();
-					   try {
-						   GaugeActivity.m_gaugeConsumer.join();
-					   } catch (InterruptedException ex) {
-						   System.out.println("something went wrong while killing the gauge consumer thread");
-						   //Logger.getLogger(WarningDialogFragment.class.getName()).log(Level.SEVERE, null, ex);
-					   }
+					   GaugeActivity a = (GaugeActivity) WarningDialogFragment.this.getActivity();
 					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
-            		   WarningDialogFragment.this.getActivity().finish();          		   
+            		   a.stopGauge();
                    }
                })
                .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {

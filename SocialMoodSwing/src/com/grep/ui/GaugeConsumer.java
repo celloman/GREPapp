@@ -7,6 +7,7 @@ package com.grep.ui;
 
 import android.webkit.WebView;
 import com.grep.gaugebackend.Gauge;
+import com.grep.gaugebackend.WebToast;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -15,19 +16,21 @@ import java.util.concurrent.BlockingQueue;
 public class GaugeConsumer implements Runnable {
 	
 	// incoming gauge values queue
-	protected BlockingQueue<Gauge> m_inQueue = null;
-	// app context
-	protected GaugeActivity m_activity = null;
+	protected BlockingQueue<Gauge> m_inQueueGauge = null;
+	// incoming popular tweets queue
+	protected BlockingQueue<WebToast> m_inWebToasts = null;
 	// webview that needs updating
 	protected WebView m_wv = null;
+	// latest gauge values
+	public Gauge m_latestGauge = null;
 	
 	/**
 	 * Constructor
 	 * @param inQueue (BlockingQueue<Tweet>)
 	 */
-	public GaugeConsumer(BlockingQueue<Gauge> inQueue, GaugeActivity a, WebView wv) {
-		m_inQueue = inQueue;
-		m_activity = a;
+	public GaugeConsumer(BlockingQueue<Gauge> inQueueGauge, BlockingQueue<WebToast> inWebToasts, WebView wv) {
+		m_inQueueGauge = inQueueGauge;
+		m_inWebToasts = inWebToasts;
 		m_wv = wv;
 	}
 	
@@ -39,7 +42,8 @@ public class GaugeConsumer implements Runnable {
 			//System.out.println("gauge consumer thread running...");
 			
 			try {
-				Gauge g = m_inQueue.take();
+				Gauge g = m_inQueueGauge.take();
+				m_latestGauge = g;
 				Integer gaugeVal = 50;
 				
 				if((g.m_Positive - g.m_Negative) != 0)
@@ -47,13 +51,21 @@ public class GaugeConsumer implements Runnable {
 				
 				System.out.println("tweet count: " + Integer.toString(g.m_tweetCount));
 				
-				m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.2f)",
+				m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.1f)",
 					gaugeVal,
 					g.m_tweetCount,
 					g.m_sessionAverage*100
 				));
 				
-				//m_activity.showToast(Integer.toString(gaugeVal));
+				// check for popular tweets, toast if we have one
+				WebToast t = m_inWebToasts.poll();
+				if(t != null) {
+					//m_activity.showToast(t.text);
+					m_wv.loadUrl( String.format("javascript:toastr.%s('%s')",
+						t.m_type,
+						t.m_message
+					));
+				}
 				
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();

@@ -122,5 +122,5 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         holder.itemId = item.getItemId();
         
     	return row;
-    }   
+    }
 }

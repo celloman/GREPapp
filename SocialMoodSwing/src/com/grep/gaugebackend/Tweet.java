@@ -14,25 +14,25 @@ import twitter4j.Status;
 public class Tweet {
 	
 	// the id of the tweet
-	long id;
+	public long id;
 	// if this is a retweet, the id of the original tweet
-	long originalID;
+	public long originalID;
 	// the text of the tweet
-	String text;
+	public String text;
 	// the keyword in the tweet
-	String keyword;
+	public String keyword;
 	// the weight of the tweet
-	long weight;
+	public long weight;
 	// the sentiment of the tweet
-	int sentiment;
+	public int sentiment;
 	// the number of followers of the user who tweeted this
-	int followers;
+	public int followers;
 	// the number of retweets this tweet has
-	long retweets;
+	public long retweets;
 	// whether or not this tweet is a retweet
-	boolean isRetweet;
+	public boolean isRetweet;
 	// the language code of the user who tweeted this
-	String lang;
+	public String lang;
 	
 	/**
 	 * Copy Constructor
