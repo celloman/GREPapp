@@ -75,6 +75,7 @@ public class GaugeActivity extends FragmentActivity {
 	
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		// get latest gauge value from consumer and save to database
 		//if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
 			
