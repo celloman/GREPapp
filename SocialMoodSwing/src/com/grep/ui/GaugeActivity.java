@@ -101,7 +101,7 @@ public class GaugeActivity extends FragmentActivity {
 			      			remainingTime--;
 			      		}
 			        });
-			        Thread.sleep(1000);
+			        Thread.sleep(1000); // This should possibly be more like 997... It loses ~1 sec every 5 mins
 			      }
 			    } catch (InterruptedException e) {
 			    }
@@ -114,11 +114,11 @@ public class GaugeActivity extends FragmentActivity {
 	public void refreshTime(int remainingTime) {
 		TextView textView = (TextView) findViewById(R.id.time_left);
 		if(remainingTime > 3600) // If duration is greater than an hour
-			textView.setText(remainingTime/3600 + " hours " + (remainingTime - (remainingTime/3600)*3600)/60 + " minutes remaining");
+			textView.setText(String.format("%02d", remainingTime/3600) + ":" + String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else if(remainingTime > 60) // If duration is greater than a minute (but less than an hour)
-			textView.setText(remainingTime/60 + " minutes " + (remainingTime- (remainingTime/60)*60) + " seconds remaining");
+			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else
-			textView.setText(remainingTime + " seconds remaining");
+			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
 	}
 	
 	public void stopGauge() {
