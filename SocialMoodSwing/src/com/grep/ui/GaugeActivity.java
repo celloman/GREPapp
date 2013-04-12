@@ -5,6 +5,7 @@ import com.grep.gaugebackend.GaugeBackend;
 import com.grep.database.DatabaseHandler;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -85,18 +86,7 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
-		System.out.println("Before timing");
-/*		Timer refreshTime = new Timer();
-		refreshTime.schedule(new TimerTask() {
-			int remainingTime = duration;
-			@Override
-			public void run() {
-				System.out.println("Timing");
-				refreshTime(remainingTime);
-				remainingTime--;
-			}
-		}, 0, 1000);
-		refreshTime(duration);*/
+		refreshTime(duration);
 	}
 	
 	public void refreshTime(int remainingTime) {

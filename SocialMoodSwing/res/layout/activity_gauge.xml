@@ -14,6 +14,8 @@
         android:id="@+id/stop_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:textSize="20sp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@color/button_red"
