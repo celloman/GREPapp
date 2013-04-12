@@ -5,6 +5,7 @@ import com.grep.gaugebackend.GaugeBackend;
 import com.grep.database.DatabaseHandler;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -36,6 +37,7 @@ public class GaugeActivity extends FragmentActivity {
 	static protected GaugeConsumer m_gaugeConsumer = null;
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
+	Thread countdown;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -85,28 +87,38 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
-		System.out.println("Before timing");
-/*		Timer refreshTime = new Timer();
-		refreshTime.schedule(new TimerTask() {
+		
+		countdown = new Thread() {
 			int remainingTime = duration;
-			@Override
-			public void run() {
-				System.out.println("Timing");
-				refreshTime(remainingTime);
-				remainingTime--;
-			}
-		}, 0, 1000);
-		refreshTime(duration);*/
+			  @Override
+			  public void run() {
+			    try {
+			      while (!isInterrupted()) {
+			        runOnUiThread(new Runnable() {
+			      		@Override
+			      		public void run() {
+			      			refreshTime(remainingTime);
+			      			remainingTime--;
+			      		}
+			        });
+			        Thread.sleep(1000); // This should possibly be more like 997... It loses ~1 sec every 5 mins
+			      }
+			    } catch (InterruptedException e) {
+			    }
+			  }
+			};
+
+		countdown.start();
 	}
 	
 	public void refreshTime(int remainingTime) {
-		final TextView textView = (TextView) findViewById(R.id.time_left);
+		TextView textView = (TextView) findViewById(R.id.time_left);
 		if(remainingTime > 3600) // If duration is greater than an hour
-			textView.setText(remainingTime/3600 + " hours " + (remainingTime - (remainingTime/3600)*3600)/60 + " minutes remaining");
+			textView.setText(String.format("%02d", remainingTime/3600) + ":" + String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else if(remainingTime > 60) // If duration is greater than a minute (but less than an hour)
-			textView.setText(remainingTime/60 + " minutes " + (remainingTime- (remainingTime/60)*60) + " seconds remaining");
+			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else
-			textView.setText(remainingTime + " seconds remaining");
+			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
 	}
 	
 	public void stopGauge() {
@@ -125,6 +137,7 @@ public class GaugeActivity extends FragmentActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		countdown.interrupt();
 		// get latest gauge value from consumer and save to database
 		//if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
 			
