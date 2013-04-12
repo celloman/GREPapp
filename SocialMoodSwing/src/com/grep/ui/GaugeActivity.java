@@ -37,6 +37,7 @@ public class GaugeActivity extends FragmentActivity {
 	static protected GaugeConsumer m_gaugeConsumer = null;
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
+	Thread countdown;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -86,11 +87,32 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
-		refreshTime(duration);
+		
+		countdown = new Thread() {
+			int remainingTime = duration;
+			  @Override
+			  public void run() {
+			    try {
+			      while (!isInterrupted()) {
+			        runOnUiThread(new Runnable() {
+			      		@Override
+			      		public void run() {
+			      			refreshTime(remainingTime);
+			      			remainingTime--;
+			      		}
+			        });
+			        Thread.sleep(1000);
+			      }
+			    } catch (InterruptedException e) {
+			    }
+			  }
+			};
+
+		countdown.start();
 	}
 	
 	public void refreshTime(int remainingTime) {
-		final TextView textView = (TextView) findViewById(R.id.time_left);
+		TextView textView = (TextView) findViewById(R.id.time_left);
 		if(remainingTime > 3600) // If duration is greater than an hour
 			textView.setText(remainingTime/3600 + " hours " + (remainingTime - (remainingTime/3600)*3600)/60 + " minutes remaining");
 		else if(remainingTime > 60) // If duration is greater than a minute (but less than an hour)
@@ -115,6 +137,7 @@ public class GaugeActivity extends FragmentActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		countdown.interrupt();
 		// get latest gauge value from consumer and save to database
 		//if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
 			
