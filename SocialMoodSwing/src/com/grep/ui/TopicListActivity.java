@@ -154,6 +154,7 @@ public class TopicListActivity extends FragmentActivity
 		int buttonRow = (Integer) v.getTag();
 
 		TopicKeywordsDialogFragment.rows.remove(buttonRow);
+		ListItemAdapter.keywordDeleted = true;
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
 	}	
 	

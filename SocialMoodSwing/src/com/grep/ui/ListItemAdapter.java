@@ -19,6 +19,7 @@ import android.widget.TextView;
 //Each view (widget) within our listview will be either a TopicListItemHolder or KeywordListItemHolder
 public class ListItemAdapter extends ArrayAdapter<ListItem>
 {
+	static boolean keywordDeleted = false;
 	int textTrackerId = 1; //id for me to use to keep track of keyword text
 	public enum listItemType {TOPIC, KEYWORD};
 	
@@ -155,9 +156,11 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus){
-                    
-                    final EditText edittext = (EditText) v;
-                    listItems.get(position).setText(edittext.getText().toString());
+                	if (!keywordDeleted) {
+                		final EditText edittext = (EditText) v;
+                		listItems.get(position).setText(edittext.getText().toString());
+                	}
+                	keywordDeleted = false;
                 }
             }
         });
