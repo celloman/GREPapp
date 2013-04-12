@@ -18,7 +18,8 @@ import android.widget.TextView;
 //Adapts our listview to be a list of custom views (a list of ListItem's behind the scences)
 //Each view (widget) within our listview will be either a TopicListItemHolder or KeywordListItemHolder
 public class ListItemAdapter extends ArrayAdapter<ListItem>
-{	
+{
+	int textTrackerId = 1; //id for me to use to keep track of keyword text
 	public enum listItemType {TOPIC, KEYWORD};
 	
 	Context context;        	     //current context (activity/state of app)
@@ -38,6 +39,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     	EditText textEdit;
     	ImageView deleteIcon;
     	int itemId;
+    	int textTrackerId;
     }
        
     public ListItemAdapter(Context context, int layoutResourceId, List<ListItem> listItems, listItemType type)
@@ -110,11 +112,25 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
             holder = new KeywordListItemHolder();
             holder.deleteIcon = (ImageView)row.findViewById(R.id.imgIcon);
             holder.textEdit = (EditText)row.findViewById(R.id.txtTitle);
+            holder.textTrackerId = this.textTrackerId;
+            listItems.get(position).textTrackerId = this.textTrackerId;
+            this.textTrackerId++; //special id that I can use for lookup later when wanting to save off the text of the string before recycling the view
             
             row.setTag(holder);
         }
         else {
             holder = (KeywordListItemHolder) row.getTag();
+            int index = getIndexByTextTrackerId(holder.textTrackerId);
+            
+            if(index == -1) {
+            	//Error should never get here
+            }
+            else {
+            	listItems.get(index).setText(holder.textEdit.getText().toString());
+                listItems.get(index).textTrackerId = -1;
+                listItems.get(position).textTrackerId = holder.textTrackerId;
+            }
+        
             //listItems.get(position).setText(holder.textEdit.getText().toString());
         }
         
@@ -122,15 +138,17 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
 
         holder.textEdit.addTextChangedListener(new TextWatcher() {
         	public void afterTextChanged(Editable s) {
-        		
+        		listItems.get(position).setText(editText.getText().toString());
         	}
         	public void beforeTextChanged(CharSequence s, int start, int count, int after){
         	}
         	public void onTextChanged(CharSequence s, int start, int before, int count) {
-        		listItems.get(position).setText(editText.getText().toString());
+        		//listItems.get(position).setText(editText.getText().toString());
         	}
         });        
-*/       
+*/
+        
+//Need to just play around with what I have more, but this could possibly be fixed with current code       
         
 // This almost works all the time of saving text changes to item.text
         //we need to update adapter once we finish with editing
@@ -144,6 +162,8 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
             }
         });
         
+        
+        
         ListItem item = listItems.get(position);
         
         holder.textEdit.setText(item.getText());
@@ -152,5 +172,16 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         holder.itemId = item.getItemId();
         
     	return row;
+    }
+    
+    private int getIndexByTextTrackerId(int targetTextTrackerId)
+    {
+    	for(int i = 0; i < listItems.size(); i++)
+    	{
+    		if(listItems.get(i).textTrackerId == targetTextTrackerId) {
+    			return i;
+    		}
+    	}
+    	return -1;
     }
 }
