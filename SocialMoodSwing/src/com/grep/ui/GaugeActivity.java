@@ -51,11 +51,10 @@ public class GaugeActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
-		setTitle(R.string.title_activity_gauge);
 		
 		dh.open();
 		topic_id = getIntent().getIntExtra("topicId", -1);
-		
+		setTitle(getResources().getString(R.string.title_activity_gauge) + " - " + dh.getTopic(topic_id).getTopicName());
 		if (topic_id == -1) {
 			//Show user an error if the topic id is not properly retrieved... something went wrong
 			//Should not ever really get here
@@ -130,7 +129,6 @@ public class GaugeActivity extends FragmentActivity {
 	   } catch (InterruptedException ex) {
 		   System.out.println("something went wrong while killing the gauge consumer thread");
 	   }
-	   dh.close();
 	   finish();
 	}
 	
@@ -138,6 +136,7 @@ public class GaugeActivity extends FragmentActivity {
 	public void onDestroy() {
 		super.onDestroy();
 		countdown.interrupt();
+		dh.close();
 		// get latest gauge value from consumer and save to database
 		//if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
 			
