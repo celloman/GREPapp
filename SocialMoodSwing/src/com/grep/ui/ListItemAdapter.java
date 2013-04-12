@@ -4,8 +4,11 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -95,7 +98,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     }
     
     //set up the holder and give it values for a list of keyword items
-    private View setUpKeywordListItemHolder(View row, int position, ViewGroup parent)
+    private View setUpKeywordListItemHolder(View row, final int position, ViewGroup parent)
     {
         KeywordListItemHolder holder = null;
         
@@ -112,7 +115,34 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         }
         else {
             holder = (KeywordListItemHolder) row.getTag();
+            //listItems.get(position).setText(holder.textEdit.getText().toString());
         }
+        
+/*        final EditText editText = holder.textEdit;
+
+        holder.textEdit.addTextChangedListener(new TextWatcher() {
+        	public void afterTextChanged(Editable s) {
+        		
+        	}
+        	public void beforeTextChanged(CharSequence s, int start, int count, int after){
+        	}
+        	public void onTextChanged(CharSequence s, int start, int before, int count) {
+        		listItems.get(position).setText(editText.getText().toString());
+        	}
+        });        
+*/       
+        
+// This almost works all the time of saving text changes to item.text
+        //we need to update adapter once we finish with editing
+        holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    
+                    final EditText edittext = (EditText) v;
+                    listItems.get(position).setText(edittext.getText().toString());
+                }
+            }
+        });
         
         ListItem item = listItems.get(position);
         

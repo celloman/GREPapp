@@ -263,9 +263,14 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 											found = true;
 											
 											//get the corresponding EditText for this keyword item in the listview in order to get the current text
-											KeywordListItemHolder holder = (KeywordListItemHolder) keywordsListView.getChildAt(j).getTag();
-											EditText keywordEdit = (EditText) holder.textEdit;
-											String keywordText = keywordEdit.getText().toString();
+											ListItem item = (ListItem) keywordsListView.getItemAtPosition(j);
+											//EditText keywordEdit = (EditText) holder.textEdit;
+											String keywordText = item.getText();
+											
+											//////////////what I have done
+											//Change the listview from getChildAt() to getItemAtPosition() so we are pulling form rows
+											//change the text to be item.getText()
+											//
 											
 											//if text is different, update the keyword in the database
 											if (!keywords.get(i).getKeyword().equals(keywordText)) {
