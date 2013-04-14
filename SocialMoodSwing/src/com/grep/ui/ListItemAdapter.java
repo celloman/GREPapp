@@ -109,6 +109,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     }
     
     //set up the holder and give it values for a list of keyword items
+    //things are a bit more complex here because keywords can be edited, added, deleted dynamically during viewing
     private View setUpKeywordListItemHolder(View row, final int position, ViewGroup parent)
     {
         KeywordListItemHolder holder = null;
@@ -150,17 +151,16 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus){ //if lost focus, save off the text in case changes were made
-                	System.out.println(((Integer)position).toString() + "focus lost");
                 	//if the keyword lost focus (not due to a deletion of the keyword), then save the contents of the EditText
                 	final EditText edittext = (EditText) v;
             		
+                	//if keyword just added, need to update the text but to at listItems[position+1] b/c new keyword
+                	//was added at beginning of list, pushing keyword for listItem[position] down the list one element
                 	if (keywordJustAdded) {
             			listItems.get(position + 1).setText(edittext.getText().toString());
             		}
-                	
             		else if (keywordDeleted != position) {
-                		
-                		//decide to update the listItems list based off what just happened
+                		//decide how to update the listItems list based off whether or not a keyword was deleted, and where it was if it was deleted
                 		if(keywordDeleted < position && keywordDeleted != -1) {
                 			listItems.get(position-1).setText(edittext.getText().toString());
                 		}
@@ -168,8 +168,6 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
                 			listItems.get(position).setText(edittext.getText().toString());
                 		}
                 	}
-                	
-
                 }
             }
         });
