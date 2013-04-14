@@ -9,12 +9,16 @@ import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.KeywordListItemHolder;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -91,6 +95,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		keywordsListView   = (ListView) view.findViewById(R.id.keywordsListView);
 		topicTitle         = (EditText) view.findViewById(R.id.topicEditText);
 		newKeywordEditText = (EditText) view.findViewById(R.id.newKeywordEditText);
+		
 		
 		/* 		
 	    newKeywordEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
@@ -342,3 +347,4 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		return dialog;
 	}		
 }
+

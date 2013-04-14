@@ -4,8 +4,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -19,9 +17,14 @@ import android.widget.TextView;
 //Each view (widget) within our listview will be either a TopicListItemHolder or KeywordListItemHolder
 public class ListItemAdapter extends ArrayAdapter<ListItem>
 {
-	static boolean keywordDeleted = false;
-	int textTrackerId = 1; //id for me to use to keep track of keyword text
 	public enum listItemType {TOPIC, KEYWORD};
+	
+	//keeps track of whether a keyword was just deleted or not, required for bug fix #26, set true right after keyword is deleted
+	static int keywordDeleted = -1;
+	static boolean keywordJustAdded = false;
+	
+	//id counter for me to use to keep track of keyword text, incremented each time a new id is given out
+	int textTrackerId = 1; 
 	
 	Context context;        	     //current context (activity/state of app)
     int layoutResourceId;            //xml layout to use to populate a single row of list    
@@ -56,6 +59,11 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     @Override
     public View getView(int position, View convertView, ViewGroup parent) 
     {
+        View currentFocus = ((Activity)context).getCurrentFocus();
+        if (currentFocus != null) {
+            currentFocus.clearFocus();
+        }
+        
         View row = convertView;
 
         //determine the type of list we are dealing with and set it up accordingly
@@ -114,59 +122,59 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
             holder.deleteIcon = (ImageView)row.findViewById(R.id.imgIcon);
             holder.textEdit = (EditText)row.findViewById(R.id.txtTitle);
             holder.textTrackerId = this.textTrackerId;
-            listItems.get(position).textTrackerId = this.textTrackerId;
+            listItems.get(position).setTextTrackerId(this.textTrackerId);
             this.textTrackerId++; //special id that I can use for lookup later when wanting to save off the text of the string before recycling the view
             
             row.setTag(holder);
         }
         else {
             holder = (KeywordListItemHolder) row.getTag();
+            
+            //index is the position in listItems where the ListItem previously occupying this row view can be found
+            //we will be recycling this row view and filling it with the data from the ListItem at listItems[position]
+            //index value of -1 is invalid
             int index = getIndexByTextTrackerId(holder.textTrackerId);
             
             if(index == -1) {
-            	//Error should never get here
+            	//TODO Error should never get here
             }
             else {
+            	//save the contents of the EditText to the ListItem previously occupying this row view, and update the textTrackerId's
             	listItems.get(index).setText(holder.textEdit.getText().toString());
-                listItems.get(index).textTrackerId = -1;
-                listItems.get(position).textTrackerId = holder.textTrackerId;
+                listItems.get(index).setTextTrackerId(-1);
+                listItems.get(position).setTextTrackerId(holder.textTrackerId);
             }
-        
-            //listItems.get(position).setText(holder.textEdit.getText().toString());
         }
         
-/*        final EditText editText = holder.textEdit;
-
-        holder.textEdit.addTextChangedListener(new TextWatcher() {
-        	public void afterTextChanged(Editable s) {
-        		listItems.get(position).setText(editText.getText().toString());
-        	}
-        	public void beforeTextChanged(CharSequence s, int start, int count, int after){
-        	}
-        	public void onTextChanged(CharSequence s, int start, int before, int count) {
-        		//listItems.get(position).setText(editText.getText().toString());
-        	}
-        });        
-*/
-        
-//Need to just play around with what I have more, but this could possibly be fixed with current code       
-        
-// This almost works all the time of saving text changes to item.text
-        //we need to update adapter once we finish with editing
+        //we need to update adapter with the new text, once editing is finished
         holder.textEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                	if (!keywordDeleted) {
-                		final EditText edittext = (EditText) v;
-                		listItems.get(position).setText(edittext.getText().toString());
+                if (!hasFocus){ //if lost focus, save off the text in case changes were made
+                	System.out.println(((Integer)position).toString() + "focus lost");
+                	//if the keyword lost focus (not due to a deletion of the keyword), then save the contents of the EditText
+                	final EditText edittext = (EditText) v;
+            		
+                	if (keywordJustAdded) {
+            			listItems.get(position + 1).setText(edittext.getText().toString());
+            		}
+                	
+            		else if (keywordDeleted != position) {
+                		
+                		//decide to update the listItems list based off what just happened
+                		if(keywordDeleted < position && keywordDeleted != -1) {
+                			listItems.get(position-1).setText(edittext.getText().toString());
+                		}
+                		else {
+                			listItems.get(position).setText(edittext.getText().toString());
+                		}
                 	}
-                	keywordDeleted = false;
+                	
+
                 }
             }
         });
         
-        
-        
+        //get the data from the ListItem at listItems[position] and use the data to update/populate the KeywordListItemHolder
         ListItem item = listItems.get(position);
         
         holder.textEdit.setText(item.getText());
@@ -174,17 +182,26 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         holder.deleteIcon.setTag(position);
         holder.itemId = item.getItemId();
         
+    	//reset special case flags
+    	keywordDeleted = -1;
+    	keywordJustAdded = false;
+        
     	return row;
+    	
+    	
     }
     
+    //given a textTrackerId, find the ListItem is listItems which contains this textTrackerId and return its index in listItems
     private int getIndexByTextTrackerId(int targetTextTrackerId)
     {
     	for(int i = 0; i < listItems.size(); i++)
     	{
-    		if(listItems.get(i).textTrackerId == targetTextTrackerId) {
+    		if(listItems.get(i).getTextTrackerId() == targetTextTrackerId) {
     			return i;
     		}
     	}
+    	
+    	//if not found (shouldn't happen), return index -1
     	return -1;
     }
 }
