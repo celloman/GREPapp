@@ -14,6 +14,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.grep.database.Credentials;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
 
@@ -74,7 +75,10 @@ public class GaugeActivity extends FragmentActivity {
 		}
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, webToasts, gaugeValues, duration, this);
+
+		Credentials c = dh.getCredentials();
+		
+		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues, duration, this);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
