@@ -125,12 +125,15 @@ public class TopicActivity extends FragmentActivity {
 			if(analysisSessions.get(i).getAvgPosSentiment() > (-1) * analysisSessions.get(i).getAvgNegSentiment())
 				avgSentiment += analysisSessions.get(i).getAvgPosSentiment();
 			else
-				avgSentiment -= analysisSessions.get(i).getAvgNegSentiment();
+				avgSentiment += analysisSessions.get(i).getAvgNegSentiment();
 		}
+		if(analysisSessions.size() > 0) {
+			avgSentiment = avgSentiment/analysisSessions.size();
 		
-		info.setText("Tweets Processed:\t" + totalTweets + "\n");
-		info.append("Hours Running:\t\t\t" + totalTime + "\n");
-		info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "\n");
+			info.setText("Tweets Processed:\t" + totalTweets + "\n");
+			info.append("Hours Running:\t\t\t" + totalTime + "\n");
+			info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n");
+		}
 		
 		if(analysisSessions.size() == 0)
 			info.setText("There are no analysis sessions in the database." +
