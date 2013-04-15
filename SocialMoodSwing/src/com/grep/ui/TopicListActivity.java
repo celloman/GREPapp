@@ -154,6 +154,7 @@ public class TopicListActivity extends FragmentActivity
 		int buttonRow = (Integer) v.getTag();
 
 		TopicKeywordsDialogFragment.rows.remove(buttonRow);
+		ListItemAdapter.keywordDeleted = buttonRow;
 		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
 	}	
 	
@@ -171,6 +172,7 @@ public class TopicListActivity extends FragmentActivity
 			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
 			TopicKeywordsDialogFragment.newKeywordEditText.setText("");
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
+			ListItemAdapter.keywordJustAdded = true;
 			TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
 			TopicKeywordsDialogFragment.keywordsListView.smoothScrollToPosition(0);
 		}

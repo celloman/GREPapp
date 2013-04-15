@@ -69,10 +69,10 @@ public class Aggregate implements Runnable {
 				if(t.weight > 1000) {
 					// use offer(), not put() so that it won't block, because this
 					// isn't exactly mission critical
-					m_webToasts.offer(new WebToast("info", t.text));
+					m_webToasts.offer(new WebToast("info", t.text, t.user, t.followers, (int)t.retweets, t.sentiment));
 				}
 				
-				// once our tweet wave is full, get aggregating
+				// once we get tweets start aggregating
 				if(m_tweetWaveQueue.size() > 0) {
 					// calculate gauge values
 					Gauge g = new Gauge(m_tweetWaveQueue, m_Positive, m_Negative, m_tweetCount);

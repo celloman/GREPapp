@@ -11,10 +11,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.grep.database.Credentials;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
 
@@ -77,12 +79,22 @@ public class GaugeActivity extends FragmentActivity {
 		}
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
-		GaugeBackend.start(keywords, webToasts, gaugeValues, duration, this);
+
+		Credentials c = dh.getCredentials();
+		
+		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues, duration, this);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+		webView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				return true;
+			}
+		});
+		webView.setLongClickable(false);
 		webView.loadUrl("file:///android_asset/gauge.html");
 		
 		// start another thread to process gauge values TODO add another to process

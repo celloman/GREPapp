@@ -78,7 +78,7 @@
         android:layout_height="fill_parent"
         android:layout_below="@+id/addKeywordLayout"
         android:divider="@null"
-        android:dividerHeight="0dp"
+        android:dividerHeight="0dp"	
         android:scrollingCache="false" />
 
 </RelativeLayout>

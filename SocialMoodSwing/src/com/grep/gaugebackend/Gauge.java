@@ -27,6 +27,7 @@ public class Gauge {
 	 * @param tweetWave (Queue<Tweet>)
 	 * @param prevPositive (int)
 	 * @param prevNegative  (int)
+	 * @param tweetCount (int)
 	 */
 	public Gauge(CircularFifoBuffer tweetWave, int prevPositive, int prevNegative, int tweetCount) {
 		// TODO assert that tweetWave size is correct
