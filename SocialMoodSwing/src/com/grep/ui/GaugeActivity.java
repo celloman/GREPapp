@@ -1,7 +1,6 @@
 package com.grep.ui;
 
 import com.grep.database.Keyword;
-import com.grep.database.Session;
 import com.grep.gaugebackend.GaugeBackend;
 import com.grep.database.DatabaseHandler;
 
@@ -41,7 +40,6 @@ public class GaugeActivity extends FragmentActivity {
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
 	Thread countdown;
-	int sessionDuration;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -68,8 +66,7 @@ public class GaugeActivity extends FragmentActivity {
 		}
 		
 		final int duration = getIntent().getIntExtra("analysisDuration", 10);
-		sessionDuration = duration;
-		
+	
 		//Create keyword list from database
 		final List<Keyword> keywordList = dh.getAllKeywords(topic_id);
 		String[] keywords = new String[keywordList.size()];//{"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
@@ -130,7 +127,7 @@ public class GaugeActivity extends FragmentActivity {
 		TextView textView = (TextView) findViewById(R.id.time_left);
 		if(remainingTime > 3600) // If duration is greater than an hour
 			textView.setText(String.format("%02d", remainingTime/3600) + ":" + String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
-		else if(remainingTime >= 60) // If duration is greater than a minute (but less than an hour)
+		else if(remainingTime > 60) // If duration is greater than a minute (but less than an hour)
 			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else
 			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
@@ -145,37 +142,18 @@ public class GaugeActivity extends FragmentActivity {
 	   } catch (InterruptedException ex) {
 		   System.out.println("something went wrong while killing the gauge consumer thread");
 	   }
+	   dh.close();
 	   finish();
 	}
 	
 	@Override
 	public void onDestroy() {
-		countdown.interrupt();
 		super.onDestroy();
-	}
-	
-	@Override
-	public void onPause() {
-		dh.open();
+		countdown.interrupt();
 		// get latest gauge value from consumer and save to database
-		System.out.println("Values: " + m_gaugeConsumer + m_gaugeConsumer.m_latestGauge);
-		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
-			if(m_gaugeConsumer.m_latestGauge.m_sessionAverage > 0) {
-				dh.addSession(new Session(topic_id, 
-						sessionDuration, 
-						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
-						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100), 
-						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage - 1) * 100))); // Need to figure out these numbers
-			} else {
-				dh.addSession(new Session(topic_id, 
-						sessionDuration, 
-						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
-						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage + 1) * 100), 
-						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100))); // Need to figure out these numbers
-			}
-		}
-		dh.close();
-		super.onPause();
+		//if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+			
+		//}
 	}
 
 	@Override

@@ -66,6 +66,7 @@
 		    android:ems="10"
 		    android:inputType="textMultiLine"
 		    android:scrollHorizontally="false"
+		    android:text="@string/temporary"
 		    android:gravity="center_vertical"/>
         
 		<WebView
