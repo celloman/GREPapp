@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -84,6 +85,13 @@ public class GaugeActivity extends FragmentActivity {
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+		webView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				return true;
+			}
+		});
+		webView.setLongClickable(false);
 		webView.loadUrl("file:///android_asset/gauge.html");
 		
 		// start another thread to process gauge values TODO add another to process
