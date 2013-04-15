@@ -61,8 +61,6 @@ public class TopicActivity extends FragmentActivity {
 
 	private void drawGraph() {
 		// Create lists to pass to javascript of session values and session times (theoretically)
-		Random generator = new Random();
-		
 		dh.open();
 		
 // 		Get a list of session values
@@ -70,10 +68,6 @@ public class TopicActivity extends FragmentActivity {
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
 				
-		// Create 40 random fake analysis sessions
-/*		for(int i = 0; i < 40; i++)
-			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
-	*/
 		//Don't display a graph if there are no analysis sessions in history 
 		//Only show the last 15 analysis sessions
 		int length = 0;
@@ -96,10 +90,9 @@ public class TopicActivity extends FragmentActivity {
 		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
 		    {  
 				for(int i = 0; i < analysisValues.size(); i++){
-					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
-					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");
+					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");
 				}
-				
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
 		});
@@ -125,12 +118,14 @@ public class TopicActivity extends FragmentActivity {
 			if(analysisSessions.get(i).getAvgPosSentiment() > (-1) * analysisSessions.get(i).getAvgNegSentiment())
 				avgSentiment += analysisSessions.get(i).getAvgPosSentiment();
 			else
-				avgSentiment -= analysisSessions.get(i).getAvgNegSentiment();
+				avgSentiment += analysisSessions.get(i).getAvgNegSentiment();
 		}
-		
-		info.setText("Tweets Processed:\t" + totalTweets + "\n");
-		info.append("Hours Running:\t\t\t" + totalTime + "\n");
-		info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "\n");
+		if(analysisSessions.size() > 0) {
+			avgSentiment = avgSentiment / analysisSessions.size();
+			info.setText("Tweets Processed:\t" + totalTweets + "\n");
+			info.append("Hours Running:\t\t\t" + String.format("%.2f", (float)totalTime/3600) + "\n");
+			info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "\n");
+		}
 		
 		if(analysisSessions.size() == 0)
 			info.setText("There are no analysis sessions in the database." +
@@ -149,8 +144,8 @@ public class TopicActivity extends FragmentActivity {
 	
 	@Override
 	protected void onResume() {
-		drawGraph();
 		super.onResume();
+		drawGraph();
 	}
 	
 	@Override
