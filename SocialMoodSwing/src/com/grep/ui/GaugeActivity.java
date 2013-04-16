@@ -55,10 +55,11 @@ public class GaugeActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
-		setTitle(R.string.title_activity_gauge);
-		
+
 		dh.open();
 		topic_id = getIntent().getIntExtra("topicId", -1);
+		
+		setTitle(getResources().getString(R.string.title_activity_gauge) + " - " + dh.getTopic(topic_id).getTopicName());
 		
 		if (topic_id == -1) {
 			//Show user an error if the topic id is not properly retrieved... something went wrong
@@ -72,7 +73,7 @@ public class GaugeActivity extends FragmentActivity {
 		
 		//Create keyword list from database
 		final List<Keyword> keywordList = dh.getAllKeywords(topic_id);
-		String[] keywords = new String[keywordList.size()];//{"doma", "defense of marriage act", "traditional marriage", "marriage", "conservative marriage", "biblical marriage"};
+		String[] keywords = new String[keywordList.size()];
 		for(int i = 0; i < keywordList.size(); i++) {
 			keywords[i] = keywordList.get(i).getKeyword();
 			System.out.println("Keyword: " + keywordList.get(i).getKeyword());
@@ -81,7 +82,7 @@ public class GaugeActivity extends FragmentActivity {
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
 
 		Credentials c = dh.getCredentials();
-		
+
 		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues, duration, this);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
@@ -116,13 +117,12 @@ public class GaugeActivity extends FragmentActivity {
 			      			remainingTime--;
 			      		}
 			        });
-			        Thread.sleep(1000); // This should possibly be more like 997... It loses ~1 sec every 5 mins
+			        Thread.sleep(997); // This should possibly be more like 997... It loses ~1 sec every 5 mins
 			      }
 			    } catch (InterruptedException e) {
 			    }
 			  }
 			};
-
 		countdown.start();
 	}
 	
