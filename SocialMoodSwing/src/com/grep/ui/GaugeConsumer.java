@@ -61,9 +61,13 @@ public class GaugeConsumer implements Runnable {
 				WebToast t = m_inWebToasts.poll();
 				if(t != null) {
 					//m_activity.showToast(t.text);
-					m_wv.loadUrl( String.format("javascript:toastr.%s('%s')",
+					m_wv.loadUrl( String.format("javascript:makeToast('%s','%s','%s', %d, %d, %d)",
 						t.m_type,
-						t.m_message
+						t.m_message,
+						t.m_heading,
+						t.m_data1,
+						t.m_data2,
+						t.m_data3
 					));
 				}
 				

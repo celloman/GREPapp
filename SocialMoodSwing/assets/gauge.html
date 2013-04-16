@@ -5,21 +5,9 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<script src="js/gauge.min.js"></script>
 		<script src="js/jquery.min.js"></script>
-		<script src="js/toastr.min.js"></script>
-		
-		<link href="css/toastr.min.css" rel="stylesheet" />
+		<script src="js/toast.js"></script>
 	
 		<script type='text/javascript'>
-			
-			toastr.options = {
-				"debug": false,
-				"positionClass": "toast-bottom-full-width",
-				"onclick": null,
-				"fadeIn": 300,
-				"fadeOut": 1000,
-				"timeOut": 6000,
-				"extendedTimeOut": 1000
-			}
 
 			$(document).ready(function(){
 		
@@ -43,6 +31,10 @@
 				gauge.maxValue = 100;
 				gauge.animationSpeed = 32;
 				gauge.set(50);
+				
+				$('.modal').on('click', function(){
+					$('.modal').fadeOut();
+				});
 			
 			});
 			
@@ -50,6 +42,7 @@
 				gauge.set(val);
 				$('#tag').text(val+':'+(100-val));
 				$('#count').text(count);
+				if(isNaN(avg)) avg = 50;
 				$('#avg')
 					.text((avg > 0 ? '+' : '')+avg+'%')
 					.css('color', (avg > 0 ? '#00b71b' : '#e00000'));
@@ -69,7 +62,7 @@
 			
 			#gauge {
 				width: 300px;
-				height: 150px;
+				height: 153px;
 				margin-left: auto;
 				margin-right: auto;
 				z-index: 0;
@@ -112,15 +105,118 @@
 			#labels > div {
 				height: 25px;
 			}
+			
+			.toast {
+				font-size: 12px;
+				border-left: solid lightgrey 12px;
+				border-right: solid lightgrey 12px;
+				border-top: solid lightgrey 6px;
+				border-bottom: solid lightgrey 5px;
+				width: 85%;
+				margin: auto;
+				margin-top: 5px;
+				background-color: gray;
+				line-height: 15px;
+				max-height: 45px;
+				word-wrap: break-word;
+				text-overflow: ellipsis;
+				overflow: hidden;
+			}
+			
+			.toast.info {
+				background-color: lightgrey;
+				border-color: lightgrey;
+			}
+			
+			.toast.error {
+				background-color: #e00000;
+				border-color: #e00000;
+			}
+			
+			#toast-container {
+				position: absolute;
+				bottom: 0px;
+				width: 99%;
+			}
+			
+			#modal-background {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: white;
+				opacity: .60;
+				-webkit-opacity: .6;
+				-moz-opacity: .6;
+				filter: alpha(opacity=60);
+				z-index: 1000;
+			}
+			
+			#modal-wrapper {
+				position: absolute;
+				top: 10%;
+				left: 6%;
+				right: 4%;
+				z-index: 1000;
+				display: none;
+			}
+    
+			#modal-content {
+				display: none;
+				background-color: lightgrey;
+				z-index: 1000;
+				font-size: 12px;
+				border-left: solid lightgrey 12px;
+				border-right: solid lightgrey 12px;
+				border-top: solid lightgrey 20px;
+				border-bottom: solid lightgrey 15px;
+				-webkit-box-shadow: 0px 3px 8px #6B6B6B;
+				box-shadow: 0px 3px 8px #6B6B6B;
+			}
+			
+			.handle {
+				font-weight: bold;
+				padding-bottom: 10px;
+				display: inline-block;
+				font-size: 13px;
+			}
+			
+			.tweet-content {
+				padding-bottom: 10px;
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+			
+			.followers, .retweets, .sentiment {
+				float: right;
+				font-weight: bold;
+			}
+			
+			.sentiment.positive {
+				color: #00b71b;
+			}
+			
+			.sentiment.negative {
+				color: #e00000;
+			}
+			
 		</style>
 		
 	</head>
 	<body>
+		<div class='modal' id='modal-background'></div>
+		<div class='modal' id='modal-wrapper'>
+			<div class='modal' id='modal-content'></div>
+		</div>
+		
 		<div id='gauge-wrapper'><canvas id='gauge'></canvas></div>
 		<div id='tag'>50:50</div>
 		<div id='labels'>
 			<div>Tweets Processed:<span id='count'>0</span></div>
 			<div>Average Sentiment:<span id='avg'>50%</span></div>
 		</div>
+		<div id='toast-container'></div>
 	</body>
 </html>

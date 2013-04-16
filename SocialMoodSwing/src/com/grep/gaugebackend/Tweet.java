@@ -15,6 +15,8 @@ public class Tweet {
 	
 	// the id of the tweet
 	public long id;
+	// the username of the author
+	public String user;
 	// if this is a retweet, the id of the original tweet
 	public long originalID;
 	// the text of the tweet
@@ -49,6 +51,7 @@ public class Tweet {
 		sentiment = another.sentiment;
 		weight = another.weight;
 		originalID = another.originalID;
+		user = another.user;
 	}
 	
 	/**
@@ -63,6 +66,7 @@ public class Tweet {
 		isRetweet = status.isRetweet();
 		lang = status.getUser().getLang();
 		followers = status.getUser().getFollowersCount();
+		user = status.getUser().getScreenName();
 		keyword = "";
 		
 		// sentiment and weight will get filled in later

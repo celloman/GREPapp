@@ -21,16 +21,22 @@ public class GetTweets implements Runnable {
 	protected BlockingQueue<WebToast> m_webToasts = null;
 	// m_Keywords to search for
 	protected String[] m_Keywords = null;
+	// access token
+	protected String m_accessToken;
+	// access token secret
+	protected String m_accessTokenSecret;
 	
 	/**
 	 * Constructor
 	 * @param m_outQueue (BlockingQueue<Tweet>)
 	 * @param m_Keywords (String[])
 	 */
-	public GetTweets(BlockingQueue<Tweet> queue, BlockingQueue<WebToast> webToasts, String[] keywords) {
+	public GetTweets(BlockingQueue<Tweet> queue, BlockingQueue<WebToast> webToasts, String[] keywords, String accessToken, String accessTokenSecret) {
 		m_outQueue = queue;
 		m_webToasts = webToasts;
 		m_Keywords = keywords;
+		m_accessToken = accessToken;
+		m_accessTokenSecret = accessTokenSecret;
 	}
 	
 	/**
@@ -41,8 +47,10 @@ public class GetTweets implements Runnable {
 		// login info
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setUser("vikings383")
-                .setPassword("383vikings");
+                .setOAuthAccessToken(m_accessToken)
+				.setOAuthAccessTokenSecret(m_accessTokenSecret)
+				.setOAuthConsumerKey("2RKMlxcy1cf1WGFfHJvpg")
+				.setOAuthConsumerSecret("35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA");
     	
 		// create the stream
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
