@@ -27,7 +27,7 @@ function makeToast(type, message, handle, followers, retweets, sentiment){
 		$newToast.fadeOut('normal', function(){
 			$(this).remove();
 		});
-	}, 6000 );
+	}, 7000 );
 }
 
 function makeModal(handle, tweet, followers, retweets, sentiment){

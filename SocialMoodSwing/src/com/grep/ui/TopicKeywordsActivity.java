@@ -113,7 +113,7 @@ public class TopicKeywordsActivity extends FragmentActivity {
 			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
 				for (int i = 0; i < keywords.size(); i++)
 		    	{
-		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword(), keywords.get(i).getId() ));
+		      		rows.add(new ListItem(R.drawable.x, keywords.get(i).getKeyword(), keywords.get(i).getId() ));
 		    	}
 			}		    	
 	    }
@@ -321,7 +321,7 @@ public class TopicKeywordsActivity extends FragmentActivity {
 		
 		if(!keywordText.isEmpty()) {
 			//the last arg of the ListItem constructor is the keyword id, for new keywords set it to 0 initially
-			TopicKeywordsActivity.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
+			TopicKeywordsActivity.rows.add(0, new ListItem(R.drawable.x, keywordText, 0));
 			TopicKeywordsActivity.newKeywordEditText.setText("");
 			TopicKeywordsActivity.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
 			ListItemAdapter.keywordJustAdded = true;
