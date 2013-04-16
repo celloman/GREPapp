@@ -42,6 +42,7 @@
 				gauge.set(val);
 				$('#tag').text(val+':'+(100-val));
 				$('#count').text(count);
+				if(isNaN(avg)) avg = 50;
 				$('#avg')
 					.text((avg > 0 ? '+' : '')+avg+'%')
 					.css('color', (avg > 0 ? '#00b71b' : '#e00000'));
