@@ -2,17 +2,12 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -20,9 +15,6 @@ import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 /**
@@ -60,9 +52,7 @@ public class TopicActivity extends FragmentActivity {
 	}
 
 	private void drawGraph() {
-		// Create lists to pass to javascript of session values and session times (theoretically)
-		Random generator = new Random();
-		
+	
 		dh.open();
 		
 // 		Get a list of session values

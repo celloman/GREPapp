@@ -1,6 +1,5 @@
 package com.grep.ui;
 
-import com.grep.gaugebackend.GaugeBackend;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;

@@ -3,12 +3,10 @@ package com.grep.ui;
 import java.util.ArrayList;
 import java.util.List;
 import com.grep.database.DatabaseHandler;
-import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 
 /**
  * TopicListActivity displays a list of all of the topics created by the
@@ -159,7 +156,7 @@ public class TopicListActivity extends FragmentActivity
 	 */
 	public void launchNewTopicKeywordsDialog()
 	{
-		//Create an instance of the dialog fragment and show it
+		//create intent and pass in true for isNewTopic
         Intent intent = new Intent(this, TopicKeywordsActivity.class);
         intent.putExtra("isNewTopic", true);
         startActivity(intent);
@@ -172,17 +169,10 @@ public class TopicListActivity extends FragmentActivity
 	 */
 	public void launchExistingTopicKeywordsDialog(int topicId)
 	{
-		//get the keywords to pass into the constructor
-		//List<Keyword> keywords = dh.getAllKeywords(topicId);
-		
-		// Create an instance of the dialog fragment and show it
-        //DialogFragment dialog = new TopicKeywordsDialogFragment(topicId, keywords);
-        //dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
-        
+		//create intent and pass in false for isNewTopic, and the topicId
         Intent intent = new Intent(this, TopicKeywordsActivity.class);
         intent.putExtra("isNewTopic", false);
         intent.putExtra("topicId", topicId);
-        //intent.putExtra("keywords", keywords);
         startActivity(intent);
 	}
 	
