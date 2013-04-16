@@ -80,8 +80,6 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
-		//TODO play around with this a bit more trying to get dialog to fill 90% of screen without being behind title bar
-		//getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dh = new DatabaseHandler(getActivity());
 		dh.open(); //do I have to call this here as well, was getting null pointer exceptions with database when this wasn't here
 				
@@ -95,52 +93,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 		keywordsListView   = (ListView) view.findViewById(R.id.keywordsListView);
 		topicTitle         = (EditText) view.findViewById(R.id.topicEditText);
 		newKeywordEditText = (EditText) view.findViewById(R.id.newKeywordEditText);
-		
-		
-		/* 		
-	    newKeywordEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-	        @Override
-	        public void onFocusChange(View v, boolean hasFocus) {      	
-	        	//if we lost focus and there is text in the new keyword edit box, add the keyword to the list
-	        	if(!hasFocus && !newKeywordEditText.getText().toString().isEmpty()) {
-	        		rows.add(new ListItem(R.drawable.delete_x, newKeywordEditText.getText().toString()));
-	        		newKeywordEditText.setText("");
-	        		newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
-	        	}
-	        }
-	    });
-	    
-	    */
-	    
-	    //TODO this is not quite working, need to get this working or figure out a better way of doing
-	    //this, maybe a checkmark button or something. Also need to validate that at least one keyword
-	    //was given, else highlight new keyword in red and pop a toast
-	    //the below works on Jason's phone but listview items don't pop up until exiting keyboard
-
-		/* Use enter key to add keyword in addKeywordEditText to the keyword list, some issues
-		 Currently works to use enter to add keyword to list, but only for first two keywords, then has issues
-
-		newKeywordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-	        @Override
-	        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-	        	//if done button hit on keyboard
-	        	if(actionId == EditorInfo.IME_ACTION_DONE) { 
-		        	//if there is text in the new keyword edit box, add the keyword to the list
-		        	if(!newKeywordEditText.getText().toString().isEmpty()) {
-		        		rows.add(new ListItem(R.drawable.delete_x, newKeywordEditText.getText().toString()));
-		        		newKeywordEditText.setText("");
-		        		newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));		        		
-		        	}
-		        	
-
-	                return true;
-	            }
-	            return false;
-	        }
-	    });
-		 */		
-		
+				
 		//since rows is static, it may need to be cleared if there were existing keyword rows left over from last view of activity
 		rows.clear();
 			
@@ -151,7 +104,7 @@ public class TopicKeywordsDialogFragment extends DialogFragment {
 			if(keywords != null) { //shouldn't ever be null, but if this is the case, keywords.size() throws exception
 				for (int i = 0; i < keywords.size(); i++)
 		    	{
-		      		rows.add(new ListItem(R.drawable.delete_x, keywords.get(i).getKeyword(), keywords.get(i).getId() ));
+		      		rows.add(new ListItem(R.drawable.x, keywords.get(i).getKeyword(), keywords.get(i).getId() ));
 		    	}
 			}		    	
 	    }
