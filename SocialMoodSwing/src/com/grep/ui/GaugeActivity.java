@@ -5,8 +5,8 @@ import com.grep.database.Session;
 import com.grep.gaugebackend.GaugeBackend;
 import com.grep.database.DatabaseHandler;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -21,8 +21,6 @@ import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -51,6 +49,7 @@ public class GaugeActivity extends FragmentActivity {
 		});
 	}
 
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -136,26 +135,15 @@ public class GaugeActivity extends FragmentActivity {
 			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
 	}
 	
-	public void stopGauge() {
-	   // stop the threads (hopefully...)
-	   GaugeBackend.stop();
-	   GaugeActivity.m_gaugeConsumerThread.interrupt();
-	   try {
-		   GaugeActivity.m_gaugeConsumerThread.join();
-	   } catch (InterruptedException ex) {
-		   System.out.println("something went wrong while killing the gauge consumer thread");
-	   }
-	   finish();
+	public void dialogueChecked() {
+		
 	}
 	
-	@Override
-	public void onDestroy() {
-		countdown.interrupt();
-		super.onDestroy();
+	public void stopGauge(boolean isChecked) {
 		dh.open();
 		// get latest gauge value from consumer and save to database
 		System.out.println("Values: " + m_gaugeConsumer + m_gaugeConsumer.m_latestGauge);
-		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null && isChecked) {
 			if(m_gaugeConsumer.m_latestGauge.m_sessionAverage > 0) {
 				dh.addSession(new Session(topic_id, 
 						sessionDuration, 
@@ -171,6 +159,21 @@ public class GaugeActivity extends FragmentActivity {
 			}
 		}
 		dh.close();
+		// stop the threads (hopefully...)
+	   GaugeBackend.stop();
+	   GaugeActivity.m_gaugeConsumerThread.interrupt();
+	   try {
+		   GaugeActivity.m_gaugeConsumerThread.join();
+	   } catch (InterruptedException ex) {
+		   System.out.println("something went wrong while killing the gauge consumer thread");
+	   }
+	   finish();
+	}
+	
+	@Override
+	public void onDestroy() {
+		countdown.interrupt();
+		super.onDestroy();
 	}
 
 	@Override
@@ -184,6 +187,12 @@ public class GaugeActivity extends FragmentActivity {
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new WarningDialogFragment();
         dialog.show(getSupportFragmentManager(), "WarningDialogFragment");
+	}
+	
+	public void showEndSessionMessage() {
+		// Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new WarningDialogFragment();
+        dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
 	}
 	
 	@Override

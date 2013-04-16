@@ -18,9 +18,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  * @author Gresham, Ryan, Everett, Pierce 
  *
  */
-public class WarningDialogFragment extends DialogFragment {
+public class EndSessionDialogFragment extends DialogFragment {
 	
-	public WarningDialogFragment() {
+	public EndSessionDialogFragment() {
 		//default constructor, for new topic
 	}
 	
@@ -33,30 +33,20 @@ public class WarningDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         
         // Get view from inflater
-        final View view = inflater.inflate(R.layout.warning_dialog, null);
-        final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveCheckBox);
-/*        saveSession.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-        	public void onCheckedChanged(CompoundButton buttonView, boolean checkChanged) {
-        		isChecked = checkChanged;
-        	}
-        });*/
+        final View view = inflater.inflate(R.layout.end_session_dialog, null);
+        final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveSessionCheckBox);
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setMessage("WARNING!")
         	   .setView(view)
         	   	// Add action buttons
-               .setPositiveButton("Stop", new DialogInterface.OnClickListener() {    
+               .setPositiveButton("Continue", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
-					   GaugeActivity a = (GaugeActivity) WarningDialogFragment.this.getActivity();
+					   GaugeActivity a = (GaugeActivity) EndSessionDialogFragment.this.getActivity();
 					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
             		   a.stopGauge(saveSession.isChecked());
-                   }
-               })
-               .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                	   WarningDialogFragment.this.getDialog().cancel();
                    }
                });
         return builder.create();
