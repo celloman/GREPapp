@@ -169,9 +169,6 @@ public class TopicActivity extends FragmentActivity {
 	        case R.id.menu_login:
 	            showLoginActivity();
 	            return true;
-	        case R.id.menu_keywords:
-	        	showTopicKeywordsDialog();
-	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -185,16 +182,6 @@ public class TopicActivity extends FragmentActivity {
 		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
     }
-
-	/**
-	 * Creates an instance of the Topic Keywords dialog fragment so the user
-	 * may create a new topic, or edit a topic's keywords.
-	 */
-	public void showTopicKeywordsDialog() {
-		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment();
-        dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
-	}
 	
 	/**
 	 * Creates an intent to change to the Gauge activity corresponding to the

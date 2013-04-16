@@ -141,51 +141,7 @@ public class TopicListActivity extends FragmentActivity
     {
     	launchNewTopicKeywordsDialog();
     }
-    
-    
-	/**
-	 * Upon tapping delete keyword button, get the position of
-	 * the button in the list, remove it, and update the listview. 
-	 * The database will be updated upon clicking Save Topic
-	 */
-	public void onClickDeleteKeywordButton(View v)
-	{
-		//the delete keyword button has a tag set in the background for identifying which position in the listview it is
-		int buttonRow = (Integer) v.getTag();
 
-		TopicKeywordsDialogFragment.rows.remove(buttonRow);
-		System.out.println(((Integer)buttonRow).toString()+ "deleted" );
-		//ListItemAdapter.keywordDeleted = true;
-		ListItemAdapter.keywordDeleted = buttonRow;
-		TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
-		//ListItemAdapter.keywordDeleted = -1;
-	}	
-	
-
-	/**
-	 * When add keyword button is clicked, validate that there is a keyword to add. If no keyword, provide notification
-	 * to the user. If keyword is provided, add it to the beginning of the keywords listview, and update the display.
-	 */
-	public void onClickAddKeywordButton(View v)
-	{
-		String keywordText = TopicKeywordsDialogFragment.newKeywordEditText.getText().toString(); 
-		
-		if(!keywordText.isEmpty()) {
-			//the last arg of the ListItem constructor is the keyword id, for new keywords set it to 0 initially
-			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
-			TopicKeywordsDialogFragment.newKeywordEditText.setText("");
-			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
-			ListItemAdapter.keywordJustAdded = true;
-			TopicKeywordsDialogFragment.adapter.notifyDataSetChanged();
-			//ListItemAdapter.keywordJustAdded = false;
-			TopicKeywordsDialogFragment.keywordsListView.smoothScrollToPosition(0);
-		}
-		else {
-			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.red));
-			Toast.makeText(this, "Please enter a keyword to add to the list!", Toast.LENGTH_SHORT).show();
-		}
-	}		
-	
 
 	/**
 	 * Creates an instance of the Login Activity for the user to
@@ -204,8 +160,9 @@ public class TopicListActivity extends FragmentActivity
 	public void launchNewTopicKeywordsDialog()
 	{
 		//Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment();
-        dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
+        Intent intent = new Intent(this, TopicKeywordsActivity.class);
+        intent.putExtra("isNewTopic", true);
+        startActivity(intent);
 	}
 	
 	
@@ -216,11 +173,17 @@ public class TopicListActivity extends FragmentActivity
 	public void launchExistingTopicKeywordsDialog(int topicId)
 	{
 		//get the keywords to pass into the constructor
-		List<Keyword> keywords = dh.getAllKeywords(topicId);
+		//List<Keyword> keywords = dh.getAllKeywords(topicId);
 		
 		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment(topicId, keywords);
-        dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
+        //DialogFragment dialog = new TopicKeywordsDialogFragment(topicId, keywords);
+        //dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
+        
+        Intent intent = new Intent(this, TopicKeywordsActivity.class);
+        intent.putExtra("isNewTopic", false);
+        intent.putExtra("topicId", topicId);
+        //intent.putExtra("keywords", keywords);
+        startActivity(intent);
 	}
 	
 

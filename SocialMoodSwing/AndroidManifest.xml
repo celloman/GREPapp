@@ -32,6 +32,10 @@
 			android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="com.grep.ui.TopicKeywordsActivity"
+			android:screenOrientation="portrait" >
+        </activity>
+	    <activity
             android:name="com.grep.ui.GaugeActivity" 
 			android:screenOrientation="portrait" >
             android:screenOrientation="portrait"
