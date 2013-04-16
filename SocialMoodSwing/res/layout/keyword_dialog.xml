@@ -56,13 +56,13 @@
     
     	<ImageView
         	android:id="@+id/addKeywordIcon"
-         	android:src="@drawable/right_arrow"
+         	android:src="@drawable/check"
          	android:contentDescription="Image to be placed at end of add keyword edittext."
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
          	android:paddingBottom="10dp"
-         	android:paddingLeft="5dp"
-         	android:paddingRight="5dp"
+         	android:paddingLeft="7dp"
+         	android:paddingRight="6dp"
          	android:paddingTop="10dp"
          	android:layout_alignParentRight="true"
         	android:layout_centerVertical="true"

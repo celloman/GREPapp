@@ -172,7 +172,7 @@ public class TopicListActivity extends FragmentActivity
 		
 		if(!keywordText.isEmpty()) {
 			//the last arg of the ListItem constructor is the keyword id, for new keywords set it to 0 initially
-			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.delete_x, keywordText, 0));
+			TopicKeywordsDialogFragment.rows.add(0, new ListItem(R.drawable.x, keywordText, 0));
 			TopicKeywordsDialogFragment.newKeywordEditText.setText("");
 			TopicKeywordsDialogFragment.newKeywordEditText.setHintTextColor(getResources().getColor(R.color.black));
 			ListItemAdapter.keywordJustAdded = true;
