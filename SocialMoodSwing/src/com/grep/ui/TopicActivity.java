@@ -2,17 +2,12 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -20,9 +15,6 @@ import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 /**
@@ -169,9 +161,6 @@ public class TopicActivity extends FragmentActivity {
 	        case R.id.menu_login:
 	            showLoginActivity();
 	            return true;
-	        case R.id.menu_keywords:
-	        	showTopicKeywordsDialog();
-	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -185,16 +174,6 @@ public class TopicActivity extends FragmentActivity {
 		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
     }
-
-	/**
-	 * Creates an instance of the Topic Keywords dialog fragment so the user
-	 * may create a new topic, or edit a topic's keywords.
-	 */
-	public void showTopicKeywordsDialog() {
-		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment();
-        dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
-	}
 	
 	/**
 	 * Creates an intent to change to the Gauge activity corresponding to the

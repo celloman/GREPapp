@@ -77,8 +77,35 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/addKeywordLayout"
+        android:layout_above="@+id/deleteButton"
         android:divider="@null"
         android:dividerHeight="0dp"	
         android:scrollingCache="false" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Save Topic"
+        android:onClick="onClickSaveTopicButton" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Delete Topic"
+        android:onClick="onClickDeleteTopicButton" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Cancel"
+        android:onClick="onClickCancelButton" />
 
 </RelativeLayout>
