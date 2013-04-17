@@ -125,7 +125,7 @@ public class TopicListActivity extends FragmentActivity
     {
     	//the edit button has a tag set in the background corresponding to the topicId for the listview topic element
     	int topicId = (Integer) v.getTag();
-    	launchExistingTopicKeywordsDialog(topicId);
+    	launchExistingTopicKeywordsActivity(topicId);
     }
 
 	
@@ -136,7 +136,7 @@ public class TopicListActivity extends FragmentActivity
 	 */
     public void onClickAddTopicButton(View v)
     {
-    	launchNewTopicKeywordsDialog();
+    	launchNewTopicKeywordsActivity();
     }
 
 
@@ -154,7 +154,7 @@ public class TopicListActivity extends FragmentActivity
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
 	 * may create a new topic.
 	 */
-	public void launchNewTopicKeywordsDialog()
+	public void launchNewTopicKeywordsActivity()
 	{
 		//create intent and pass in true for isNewTopic
         Intent intent = new Intent(this, TopicKeywordsActivity.class);
@@ -167,7 +167,7 @@ public class TopicListActivity extends FragmentActivity
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
 	 * may edit an existing topic.
 	 */
-	public void launchExistingTopicKeywordsDialog(int topicId)
+	public void launchExistingTopicKeywordsActivity(int topicId)
 	{
 		//create intent and pass in false for isNewTopic, and the topicId
         Intent intent = new Intent(this, TopicKeywordsActivity.class);

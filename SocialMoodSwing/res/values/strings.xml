@@ -14,5 +14,7 @@
     <string name="title_activity_login">Twitter Login</string>
     <string name="text_save_session">Save this analysis session</string>
     <string name="analysis_session_ended">Analysis Session Ended</string>
+    <string name="title_activity_topic_keywords">Topic Keywords</string>
+    <string name="new_topic">New Topic</string>
 
 </resources>
