@@ -120,10 +120,15 @@ public class TopicActivity extends FragmentActivity {
 			avgSentiment = avgSentiment/analysisSessions.size();
 		
 			info.setText("Tweets Processed:\t" + totalTweets + "\n");
-			if(totalTime > 3600)
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime/3600) + "h " + String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m\n");//String.format("%.2f", (float)totalTime/3600) + "\n");
+			if(totalTime >= 3600)
+				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime/3600) + "h " 
+						+ String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
+						+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			else if(totalTime >= 60)
+				info.append("Time Running:\t\t\t\t" + String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
+				+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
 			else
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m\n");
+				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
 			info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n");
 		}
 		

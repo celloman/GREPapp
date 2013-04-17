@@ -129,9 +129,12 @@ public class GaugeActivity extends FragmentActivity {
 	public void refreshTime(int remainingTime) {
 		TextView textView = (TextView) findViewById(R.id.time_left);
 		if(remainingTime > 3600) // If duration is greater than an hour
-			textView.setText(String.format("%02d", remainingTime/3600) + ":" + String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
+			textView.setText(String.format("%02d", remainingTime/3600) + ":" 
+					+ String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" 
+					+ String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else if(remainingTime >= 60) // If duration is greater than a minute (but less than an hour)
-			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
+			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" 
+					+ String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else
 			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
 	}
@@ -147,13 +150,13 @@ public class GaugeActivity extends FragmentActivity {
 		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null && isChecked) {
 			if(m_gaugeConsumer.m_latestGauge.m_sessionAverage > 0) {
 				dh.addSession(new Session(topic_id, 
-						sessionDuration, 
+						elapsedTime, 
 						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
 						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100), 
 						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage - 1) * 100))); // Need to figure out these numbers
 			} else {
 				dh.addSession(new Session(topic_id, 
-						sessionDuration, 
+						elapsedTime, 
 						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
 						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage + 1) * 100), 
 						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100))); // Need to figure out these numbers
