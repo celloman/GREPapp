@@ -117,7 +117,7 @@ public class GaugeActivity extends FragmentActivity {
 			      			elapsedTime++;
 			      		}
 			        });
-			        Thread.sleep(997); // This should possibly be more like 997... It loses ~1 sec every 5 mins
+			        Thread.sleep(998); // This should possibly be more like 997... It loses ~1 sec every 5 mins
 			      }
 			    } catch (InterruptedException e) {
 			    }
@@ -128,7 +128,7 @@ public class GaugeActivity extends FragmentActivity {
 	
 	public void refreshTime(int remainingTime) {
 		TextView textView = (TextView) findViewById(R.id.time_left);
-		if(remainingTime > 3600) // If duration is greater than an hour
+		if(remainingTime >= 3600) // If duration is greater than an hour
 			textView.setText(String.format("%02d", remainingTime/3600) + ":" 
 					+ String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" 
 					+ String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
@@ -194,6 +194,7 @@ public class GaugeActivity extends FragmentActivity {
 	
 	public void showEndSessionMessage() {
 		countdown.interrupt();
+		elapsedTime = sessionDuration; // Ensure time added to db is what is expected
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new EndSessionDialogFragment();
         Bundle sessionValues = new Bundle();

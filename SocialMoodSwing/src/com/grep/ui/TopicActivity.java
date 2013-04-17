@@ -129,7 +129,10 @@ public class TopicActivity extends FragmentActivity {
 				+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
 			else
 				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
-			info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n");
+			if(avgSentiment > 0)
+				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%\n");
+			else
+				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n");
 		}
 		
 		if(analysisSessions.size() == 0)
