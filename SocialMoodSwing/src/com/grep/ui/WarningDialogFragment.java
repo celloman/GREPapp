@@ -35,11 +35,7 @@ public class WarningDialogFragment extends DialogFragment {
         // Get view from inflater
         final View view = inflater.inflate(R.layout.warning_dialog, null);
         final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveCheckBox);
-/*        saveSession.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-        	public void onCheckedChanged(CompoundButton buttonView, boolean checkChanged) {
-        		isChecked = checkChanged;
-        	}
-        });*/
+
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setMessage("WARNING!")

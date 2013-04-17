@@ -40,6 +40,7 @@ public class GaugeActivity extends FragmentActivity {
 	int topic_id = -1;
 	Thread countdown;
 	int sessionDuration;
+	int elapsedTime;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -75,7 +76,6 @@ public class GaugeActivity extends FragmentActivity {
 		String[] keywords = new String[keywordList.size()];
 		for(int i = 0; i < keywordList.size(); i++) {
 			keywords[i] = keywordList.get(i).getKeyword();
-			System.out.println("Keyword: " + keywordList.get(i).getKeyword());
 		}
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
@@ -114,6 +114,7 @@ public class GaugeActivity extends FragmentActivity {
 			      		public void run() {
 			      			refreshTime(remainingTime);
 			      			remainingTime--;
+			      			elapsedTime++;
 			      		}
 			        });
 			        Thread.sleep(997); // This should possibly be more like 997... It loses ~1 sec every 5 mins
@@ -172,7 +173,6 @@ public class GaugeActivity extends FragmentActivity {
 	
 	@Override
 	public void onDestroy() {
-		countdown.interrupt();
 		super.onDestroy();
 	}
 
@@ -190,8 +190,14 @@ public class GaugeActivity extends FragmentActivity {
 	}
 	
 	public void showEndSessionMessage() {
+		countdown.interrupt();
 		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new WarningDialogFragment();
+        DialogFragment dialog = new EndSessionDialogFragment();
+        Bundle sessionValues = new Bundle();
+        sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
+        sessionValues.putInt("runTime", sessionDuration);
+        sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
+        dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
 	}
 	

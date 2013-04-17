@@ -60,20 +60,13 @@ public class TopicActivity extends FragmentActivity {
 	}
 
 	private void drawGraph() {
-		// Create lists to pass to javascript of session values and session times (theoretically)
-		Random generator = new Random();
-		
 		dh.open();
 		
 // 		Get a list of session values
 		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
-				
-		// Create 40 random fake analysis sessions
-/*		for(int i = 0; i < 40; i++)
-			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
-	*/
+
 		//Don't display a graph if there are no analysis sessions in history 
 		//Only show the last 15 analysis sessions
 		int length = 0;
@@ -81,9 +74,7 @@ public class TopicActivity extends FragmentActivity {
 			length = analysisSessions.size() - 15;
 		
 		for(int i = length; i < analysisSessions.size(); i++) {
-			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
-			
-			// Are we storing negative sentiment as a negative number?
+			analysisTimes.add(analysisSessions.get(i).getStartTime());
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment())
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 			else
@@ -96,8 +87,14 @@ public class TopicActivity extends FragmentActivity {
 		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
 		    {  
 				for(int i = 0; i < analysisValues.size(); i++){
-					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
-					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+					// Values of 100 would throw the scale of the graph off, this makes 100's 99's ... can't tell diff on graph
+					if(analysisValues.get(i) >= 100)
+						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + 99 + ";");
+					else if(analysisValues.get(i) <= -100)
+						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + -99 + ";");
+					else
+						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");
+					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");
 				}
 				
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
