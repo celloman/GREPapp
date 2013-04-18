@@ -16,5 +16,6 @@
     <string name="analysis_session_ended">Analysis Session Ended</string>
     <string name="title_activity_topic_keywords">Topic Keywords</string>
     <string name="new_topic">New Topic</string>
+    <string name="title_activity_launch">LaunchActivity</string>
 
 </resources>

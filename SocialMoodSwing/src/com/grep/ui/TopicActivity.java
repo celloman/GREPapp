@@ -225,7 +225,7 @@ public class TopicActivity extends FragmentActivity {
 	 * enter Twitter authentication credentials.
 	 */
 	public void showLoginActivity() {
-		Intent intent = new Intent(this, LoginActivity.class);
+		Intent intent = new Intent(this, LoginDialogFragment.class);
 		startActivity(intent);
     }
 	

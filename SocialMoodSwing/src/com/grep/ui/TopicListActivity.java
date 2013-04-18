@@ -2,18 +2,29 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+
+import com.grep.database.Credentials;
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.TopicListItemHolder;
+import com.grep.ui.LoginDialogFragment.LoginDialogListener;
+
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewDebug.FlagToString;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
@@ -25,8 +36,16 @@ import android.widget.AdapterView.OnItemClickListener;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
-public class TopicListActivity extends FragmentActivity
+public class TopicListActivity extends FragmentActivity implements LoginDialogListener
 {
+	//OAuth variables
+	private CommonsHttpOAuthConsumer httpOauthConsumer;
+	private OAuthProvider httpOauthprovider;
+	public final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
+	public final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
+	private final String CALLBACKURL = "socialmoodswing://credentials";
+	
+	// ListView variables
 	static ListView topicsListView;
 	static ListItemAdapter adapter;
 	static List<ListItem> rows = new ArrayList<ListItem>();
@@ -38,15 +57,6 @@ public class TopicListActivity extends FragmentActivity
 	{
 		super.onResume();
 		dh.open();	
-		
-		// check database for credentials
-		if(dh.getCredentials() == null) {
-			// send user to Twitter login activity
-			Intent intent = new Intent(this, LoginActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-			intent.putExtra("change_credentials", true);
-			startActivity(intent);
-		}
 	}
 	
 	@Override
@@ -63,6 +73,13 @@ public class TopicListActivity extends FragmentActivity
 		
 		dh = new DatabaseHandler(this);
 		dh.open();
+		
+		// check database for credentials
+		if(dh.getCredentials() == null) {
+			// Display Twitter login dialog
+			DialogFragment dialog = new LoginDialogFragment();
+	        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
+		}
 		
 		setContentView(R.layout.activity_topic_list);
 		setTitle(R.string.title_activity_topic_list);
@@ -100,6 +117,42 @@ public class TopicListActivity extends FragmentActivity
 		}	
 	}
 	
+	/**
+	 * Captures return values from Twitter OAuth
+	 * 
+	 * @param intent
+	 */
+	@Override
+	protected void onNewIntent(Intent intent) {
+	    super.onNewIntent(intent);
+
+	    Uri uri = intent.getData();
+
+	    //Check if you got NewIntent event due to Twitter Call back only
+
+	    if (uri != null && uri.toString().startsWith(CALLBACKURL)) {
+
+	        String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
+
+	        try {
+	            // this will populate token and token_secret in consumer
+
+	            httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
+	            String user_key = httpOauthConsumer.getToken();
+	            String user_secret = httpOauthConsumer.getTokenSecret();
+
+	            // Save user_key and user_secret in database
+	            Credentials c = new Credentials(user_key, user_secret);
+	            dh.open();
+	            dh.addCredentials(c);
+
+	        } catch(Exception e){
+	        	Log.e("OAuth", "OAuth Fail" + e.getMessage());
+	        }
+	    } else {
+	        // Do something if the callback comes from elsewhere
+	    }
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -109,7 +162,6 @@ public class TopicListActivity extends FragmentActivity
 		return true;
 	}
 	
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -117,13 +169,43 @@ public class TopicListActivity extends FragmentActivity
 	    switch (item.getItemId())
 	    {
 	        case R.id.menu_login:
-	        	launchLoginActivity();
+	        	Credentials c = dh.getCredentials();
+	        	dh.deleteCredentials(c.getId());
+	        	this.recreate();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
 
+	/**
+	 * Method from Login dialog, when "OK" button is clicked it calls this.
+	 * This method calls startOAuth().
+	 */
+	public void onLoginDialogClick() {
+		startOAuth();
+	}
+	
+	/**
+	 * Starts user authentication using Twitter OAuth
+	 */
+	public void startOAuth() {
+		//Attempt to open Twitter OAuth in browser
+		try {
+		    httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+		    httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
+		                                            "https://api.twitter.com/oauth/access_token",
+		                                            "https://api.twitter.com/oauth/authorize");
+		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
+		    // Open the browser
+		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
+		    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+		    startActivity(intent);
+		} catch (Exception e) {
+		    Toast.makeText(this, "Cannot connect to Twitter, make sure your time is correct" +
+		    		" and you have internet access.", Toast.LENGTH_LONG).show();
+		}
+	}
 	
 	/**
 	 * Upon Edit Button (pencil) being clicked, get the topicId
@@ -147,18 +229,7 @@ public class TopicListActivity extends FragmentActivity
     public void onClickAddTopicButton(View v)
     {
     	launchNewTopicKeywordsActivity();
-    }
-
-
-	/**
-	 * Creates an instance of the Login Activity for the user to
-	 * enter Twitter authentication credentials.
-	 */
-	public void launchLoginActivity() {
-		Intent intent = new Intent(this, LoginActivity.class);
-		startActivity(intent);
-    }
-		
+    }	
 	
 	/**
 	 * Creates an instance of the Topic Keywords dialog fragment so the user
@@ -197,5 +268,20 @@ public class TopicListActivity extends FragmentActivity
 		Intent intent = new Intent(this, TopicActivity.class);
 		intent.putExtra("topicId", topicId);
 		startActivity(intent);
+	}
+	
+	/**
+	 * Test function on toast button for testing retrieving
+	 * credentials from twitter oauth site. Can be removed
+	 * when successful.
+	 * @param v
+	 */
+	public void toastCredentials(View v) {
+		Credentials c = dh.getCredentials();
+		if(c==null) {
+			Toast.makeText(this, "No credentials in database!" , Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(this, "Key: " + c.getConsumerKey() + "; Secret: " + c.getConsumerSecret() , Toast.LENGTH_LONG).show();
+		}	
 	}
 }

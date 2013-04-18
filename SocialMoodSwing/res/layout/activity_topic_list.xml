@@ -25,4 +25,13 @@
         android:text="Add Topic"
         android:onClick="onClickAddTopicButton" />
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="Toast" 
+        android:onClick="toastCredentials"/>
+
 </RelativeLayout>
