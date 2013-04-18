@@ -26,13 +26,21 @@ public class WarningDialogFragment extends DialogFragment {
         // Build the dialog and set up the button click handlers
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
      
+        // Determine if there are values to save to db, if not will disable saving option
+        Bundle arguments = this.getArguments();
+        
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         
         // Get view from inflater
         final View view = inflater.inflate(R.layout.warning_dialog, null);
         final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveCheckBox);
-
+        
+        if(!arguments.getBoolean("hasValues")) {
+        	saveSession.setChecked(false);
+        	saveSession.setEnabled(false);
+        }
+        
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setMessage("WARNING!")

@@ -199,6 +199,13 @@ public class GaugeActivity extends FragmentActivity {
 	public void showWarningMessage(View v) {
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new WarningDialogFragment();
+        Bundle sessionValues = new Bundle();
+        if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+        	sessionValues.putBoolean("hasValues", true);
+        } else {
+        	sessionValues.putBoolean("hasValues", false);
+        }
+        dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "WarningDialogFragment");
 	}
 	
