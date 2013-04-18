@@ -168,9 +168,9 @@
 				background-color: lightgrey;
 				z-index: 1000;
 				font-size: 12px;
-				border-left: solid lightgrey 12px;
-				border-right: solid lightgrey 12px;
-				border-top: solid lightgrey 20px;
+				padding-left: 12px;
+				padding-right: 12px;
+				padding-top: 20px;
 				border-bottom: solid lightgrey 15px;
 				-webkit-box-shadow: 0px 3px 8px #6B6B6B;
 				box-shadow: 0px 3px 8px #6B6B6B;
@@ -202,13 +202,18 @@
 				color: #e00000;
 			}
 			
+			#modal-content.warning {
+				border-top: solid orange 7px;
+				padding-top: 13px;
+			}
+			
 		</style>
 		
 	</head>
 	<body>
 		<div class='modal' id='modal-background'></div>
 		<div class='modal' id='modal-wrapper'>
-			<div class='modal' id='modal-content'></div>
+			<div class='modal warning' id='modal-content'></div>
 		</div>
 		
 		<div id='gauge-wrapper'><canvas id='gauge'></canvas></div>

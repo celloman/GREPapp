@@ -35,7 +35,7 @@ public class GaugeBackend {
 		// create the threads
 		GetTweets getter = new GetTweets(fetchQueue, webToasts, keywords, accessToken, accessTokenSecret);
 		GetWeight weighter = new GetWeight(fetchQueue, weightQueue, keywords);
-		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue);
+		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue, webToasts);
 		Aggregate aggregator = new Aggregate(sentimentQueue, webToasts, gaugeValues);
 		
 		m_getterThread = new Thread(getter);

@@ -19,15 +19,18 @@ public class GetSentiment implements Runnable {
 	protected BlockingQueue<Tweet> m_inQueue = null;
 	// outgoing queue of tweets
 	protected BlockingQueue<Tweet> m_outQueue = null;
+	// outgoing m_outQueue of tweets
+	protected BlockingQueue<WebToast> m_webToasts = null;
 	
 	/**
 	 * Constructor
 	 * @param inQueue (BlockingQueue<Tweet>)
 	 * @param outQueue (BlockingQueue<Tweet>)
 	 */
-	public GetSentiment(BlockingQueue<Tweet> inQueue, BlockingQueue<Tweet> outQueue) {
+	public GetSentiment(BlockingQueue<Tweet> inQueue, BlockingQueue<Tweet> outQueue, BlockingQueue<WebToast> webToasts) {
 		m_inQueue = inQueue;
 		m_outQueue = outQueue;
+		m_webToasts = webToasts;
 	}
 	
 	/**
@@ -73,6 +76,7 @@ public class GetSentiment implements Runnable {
 						@Override
 						public void onFailure(Throwable thrwbl, String string) {
 							System.out.println("sentiment request failed...");
+							m_webToasts.offer(new WebToast("warning", "Warning", "We're having some trouble talking to the sentiment server. We'll keep trying, but you might want to check your internet connection.", 0, 0, 0));
 						}
 					});
 				
