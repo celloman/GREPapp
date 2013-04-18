@@ -213,9 +213,14 @@ public class GaugeActivity extends FragmentActivity {
         DialogFragment dialog = new EndSessionDialogFragment();
         Bundle sessionValues = new Bundle();
         // Send values to be displayed to dialog
-        sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
-        sessionValues.putInt("runTime", sessionDuration);
-        sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
+        if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+        	sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
+        	sessionValues.putInt("runTime", sessionDuration);
+        	sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
+        	sessionValues.putBoolean("hasValues", true);
+        } else {
+        	sessionValues.putBoolean("hasValues", false);
+        }
         dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
 	}
