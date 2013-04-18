@@ -50,13 +50,13 @@ public class GaugeBackend {
 		m_aggregatorThread.start();
 		
 		// the analysis duration timer
-		Timer t = new Timer();
+/*		Timer t = new Timer();
 		t.schedule(new TimerTask() {          
 			@Override
 			public void run() {
 				a.showEndSessionMessage();
 			}
-		}, duration*1000);
+		}, duration*1000);*/
 	}
 	
 	public static void stop() {

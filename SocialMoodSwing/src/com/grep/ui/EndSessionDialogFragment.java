@@ -56,7 +56,7 @@ public class EndSessionDialogFragment extends DialogFragment {
 					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
-            		   a.stopGauge(saveSession.isChecked());
+            		   a.saveResults(saveSession.isChecked());
                    }
                });
         return builder.create();
