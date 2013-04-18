@@ -113,7 +113,12 @@ public class TopicActivity extends FragmentActivity {
 		}); // End of historyGraphWebView.setWebViewClient(...);
 		
 		// Load local html page (containing graph) into webview 
-		historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		if(analysisValues.size() > 1)
+			historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		else {
+			historyGraphWebView.loadData("<html><body>There is currently only one analysis session in this topic's history, a graph will" +
+					" display once there are at least two sessions in the database.</body></html>", "text/html", null);
+		}
 		// Prevent scrolling within webview
 		// TODO We may want to enable horizontal scrolling for better graph accessibility
 		historyGraphWebView.setHorizontalScrollBarEnabled(true);
