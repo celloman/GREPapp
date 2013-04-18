@@ -173,6 +173,9 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	        	dh.deleteCredentials(c.getId());
 	        	this.recreate();
 	            return true;
+	        case R.id.menu_help:
+	        	showHelpActivity();
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -230,6 +233,15 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
     {
     	launchNewTopicKeywordsActivity();
     }	
+
+	/**
+	 * Creates an instance of the Help Activity for the user to
+	 * view application help page
+	 */
+	public void showHelpActivity() {
+		Intent intent = new Intent(this, HelpActivity.class);
+		startActivity(intent);
+    }
 	
 	/**
 	 * Creates an instance of the Topic Keywords dialog fragment so the user

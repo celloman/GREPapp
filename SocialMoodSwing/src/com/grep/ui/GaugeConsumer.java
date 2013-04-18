@@ -49,8 +49,6 @@ public class GaugeConsumer implements Runnable {
 				if((g.m_Positive - g.m_Negative) != 0)
 					gaugeVal = (int)(g.m_Positive*100)/(g.m_Positive - g.m_Negative);
 				
-				System.out.println("tweet count: " + Integer.toString(g.m_tweetCount));
-				
 				m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.1f)",
 					gaugeVal,
 					g.m_tweetCount,
@@ -60,15 +58,28 @@ public class GaugeConsumer implements Runnable {
 				// check for popular tweets, toast if we have one
 				WebToast t = m_inWebToasts.poll();
 				if(t != null) {
-					//m_activity.showToast(t.text);
-					m_wv.loadUrl( String.format("javascript:makeToast('%s','%s','%s', %d, %d, %d)",
-						t.m_type,
-						t.m_message,
-						t.m_heading,
-						t.m_data1,
-						t.m_data2,
-						t.m_data3
-					));
+					if(t.m_type.equals("warning")){
+						//m_activity.showToast(t.text);
+						m_wv.loadUrl( String.format("javascript:makeModal('%s','%s','%s', %d, %d, %d)",
+							t.m_type,
+							t.m_heading,
+							t.m_message,
+							t.m_data1,
+							t.m_data2,
+							t.m_data3
+						));
+					}
+					else{
+						//m_activity.showToast(t.text);
+						m_wv.loadUrl( String.format("javascript:makeToast('%s','%s','%s', %d, %d, %d)",
+							t.m_type,
+							t.m_message,
+							t.m_heading,
+							t.m_data1,
+							t.m_data2,
+							t.m_data3
+						));
+					}
 				}
 				
 			} catch (InterruptedException ex) {

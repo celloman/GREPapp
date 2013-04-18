@@ -2,14 +2,15 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -30,8 +31,8 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	static List<ListItem> rows = new ArrayList<ListItem>();
 	List<Keyword> keywords = new ArrayList<Keyword>();
 	EditText topicTitle;
-	boolean isNewTopic;
-	DatabaseHandler dh;
+	static boolean isNewTopic;
+	static DatabaseHandler dh;
 	boolean buttonHeightSet = false;
 	static int topicId = -1;
 	static List<Keyword> keywordTracker = new ArrayList<Keyword>();
@@ -106,10 +107,21 @@ public class TopicKeywordsActivity extends FragmentActivity {
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
 		
-		//bring the keyboard up ready to type for new topic, not for existing topic
-		if (!isNewTopic) {
-			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		}
+		//get screen width
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+		//set cancel button width to 0.3*screenwidth
+		double cancelWidth = metrics.widthPixels*.3;
+		Button cancelButton = (Button) findViewById(R.id.cancelButton);
+		cancelButton.setWidth((int)cancelWidth);
+		
+		//set save and delete button width to 0.35*screenwidth
+		double otherWidth = metrics.widthPixels*.35;
+		Button saveButton = (Button) findViewById(R.id.saveButton);
+		Button deleteButton = (Button) findViewById(R.id.deleteButton);
+		saveButton.setWidth((int)otherWidth);
+		deleteButton.setWidth((int)otherWidth);
 	}
 	
 	
@@ -171,10 +183,16 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	 */
 	public void onClickDeleteTopicButton(View v)
 	{
+		//Create an instance of the delete topic warning dialog fragment and show it
+		DialogFragment dialog = new DeleteTopicWarningDialogFragment();
+		dialog.show(getSupportFragmentManager(), "DeleteTopicWarningDialogFragment");
+	}
+	
+	public static void DeleteTopic()
+	{
 		//if not a new topic (we are editing existing topic) we need to actually delete it; if new topic just cancel w/out saving 
 		if(!isNewTopic) {
 			
-			//TODO should we pop up a warning dialog confirming that they want to delete the topic?
 			//delete topic from the database
 			dh.deleteTopic(topicId);
 			
@@ -189,8 +207,11 @@ public class TopicKeywordsActivity extends FragmentActivity {
 			}
 		}
 		
-		TopicKeywordsActivity.this.finish();
+		//TopicKeywordsActivity.this.finish();
 	}
+	
+	
+
 		
 	
 	/**

@@ -17,9 +17,9 @@ function makeToast(type, message, handle, followers, retweets, sentiment){
 	
 	$newToast.hide().delay(500).fadeIn();
 	
-	if(handle != undefined){
+	if(handle !== undefined){
 		$newToast.click(function(){
-			makeModal(handle, message, followers, retweets, sentiment);
+			makeModal('tweet', '@'+handle, message, followers, retweets, sentiment);
 		});
 	}
 	
@@ -27,21 +27,29 @@ function makeToast(type, message, handle, followers, retweets, sentiment){
 		$newToast.fadeOut('normal', function(){
 			$(this).remove();
 		});
-	}, 7000 );
+	}, 6000 );
 }
 
-function makeModal(handle, tweet, followers, retweets, sentiment){
-	var mood = "";
-	if(sentiment > 0) mood = "<span class='sentiment positive'>positive</span>";
-	if(sentiment === 0) mood = "<span class='sentiment neutral'>neutral</span>";
-	if(sentiment < 0) mood = "<span class='sentiment negative'>negative</span>";
+function makeModal(type, handle, tweet, followers, retweets, sentiment){
+
+	var html = "<span class='handle'>"+handle+"</span>"+
+			"<div class='tweet-content'>"+tweet+"</div>";
 	
-	var html = "<span class='handle'>@"+handle+"</span>"+
-			"<div class='tweet-content'>"+tweet+"</div>"+
-			"<div>Followers: <span class='followers'>"+followers+"</span></div>"+
-			"<div>Retweets: <span class='retweets'>"+retweets+"</span></div>"+
-			"<div>Sentiment: "+mood+"</div>";
-	
-	$('#modal-content').html(html);
+	if(type === 'tweet'){
+		var mood = "";
+		if(sentiment > 0) mood = "<span class='sentiment positive'>positive</span>";
+		if(sentiment === 0) mood = "<span class='sentiment neutral'>neutral</span>";
+		if(sentiment < 0) mood = "<span class='sentiment negative'>negative</span>";
+
+		html += "<div>Followers: <span class='followers'>"+followers+"</span></div>"+
+				"<div>Retweets: <span class='retweets'>"+retweets+"</span></div>"+
+				"<div>Sentiment: "+mood+"</div>";
+	}
+
+	$('#modal-content')
+			.removeClass('tweet')
+			.removeClass('warning')
+			.addClass(type)
+			.html(html);
 	$('.modal').fadeIn();
 }

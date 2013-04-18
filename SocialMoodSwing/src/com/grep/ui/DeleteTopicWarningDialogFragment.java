@@ -1,5 +1,6 @@
 package com.grep.ui;
 
+import com.grep.ui.TopicKeywordsActivity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -7,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 
 /**
  * WarningDialogFragment displays a warning to the user.
@@ -15,11 +15,7 @@ import android.widget.CheckBox;
  * @author Gresham, Ryan, Everett, Pierce 
  *
  */
-public class WarningDialogFragment extends DialogFragment {
-	
-	public WarningDialogFragment() {
-		//default constructor, for new topic
-	}
+public class DeleteTopicWarningDialogFragment extends DialogFragment {
 	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -30,27 +26,22 @@ public class WarningDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         
         // Get view from inflater
-        final View view = inflater.inflate(R.layout.warning_dialog, null);
-        final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveCheckBox);
+        final View view = inflater.inflate(R.layout.delete_topic_warning_dialog, null);
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setMessage("WARNING!")
+        builder.setMessage("Deleting Topic")
         	   .setView(view)
         	   	// Add action buttons
-               .setPositiveButton("Stop", new DialogInterface.OnClickListener() {    
+               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {    
             	   public void onClick(DialogInterface dialog, int id) {
-					   GaugeActivity a = (GaugeActivity) WarningDialogFragment.this.getActivity();
-					   
-            		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
-            		   //this activity where results from session need to be stored in database
-            		   a.saveResults(saveSession.isChecked());
-            		   a.stopGaugeThreads();
+					   TopicKeywordsActivity.DeleteTopic();//GaugeActivity a = (GaugeActivity) DeleteTopicWarningDialogFragment.this.getActivity();
+					   DeleteTopicWarningDialogFragment.this.getActivity().finish();
                    }
                })
-               .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {
+               .setNegativeButton("No", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	   WarningDialogFragment.this.getDialog().cancel();
+                	   DeleteTopicWarningDialogFragment.this.getDialog().cancel();
                    }
                });
         return builder.create();

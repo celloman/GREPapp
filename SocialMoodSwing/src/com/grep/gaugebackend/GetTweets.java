@@ -84,6 +84,7 @@ public class GetTweets implements Runnable {
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
                 System.out.println("Got track limitation notice:" + numberOfLimitedStatuses);
+				m_webToasts.offer(new WebToast("warning", "Warning", "Twitter is telling us that one of your keywords might be too broad. Try narrowing it down for better results.", 0, 0, 0));
             }
 
             @Override

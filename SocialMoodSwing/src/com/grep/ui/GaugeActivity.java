@@ -82,7 +82,7 @@ public class GaugeActivity extends FragmentActivity {
 
 		Credentials c = dh.getCredentials();
 
-		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues, duration, this);
+		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues);
 
 		WebView webView = (WebView) findViewById(R.id.webview);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -113,8 +113,13 @@ public class GaugeActivity extends FragmentActivity {
 			      		@Override
 			      		public void run() {
 			      			refreshTime(remainingTime);
-			      			remainingTime--;
-			      			elapsedTime++;
+			      			// Don't allow counter to go below 0
+			      			if(remainingTime > 0) {
+			      				remainingTime--;
+			      				elapsedTime++;
+			      			} else if (remainingTime <= 0) {
+			      				showEndSessionMessage();
+			      			}
 			      		}
 			        });
 			        Thread.sleep(998); // This should possibly be more like 997... It loses ~1 sec every 5 mins
@@ -143,7 +148,7 @@ public class GaugeActivity extends FragmentActivity {
 		
 	}
 	
-	public void stopGauge(boolean isChecked) {
+	public void saveResults(boolean isChecked) {
 		dh.open();
 		// get latest gauge value from consumer and save to database
 		System.out.println("Values: " + m_gaugeConsumer + m_gaugeConsumer.m_latestGauge);
@@ -163,20 +168,25 @@ public class GaugeActivity extends FragmentActivity {
 			}
 		}
 		dh.close();
-		// stop the threads (hopefully...)
-	   GaugeBackend.stop();
-	   GaugeActivity.m_gaugeConsumerThread.interrupt();
-	   try {
-		   GaugeActivity.m_gaugeConsumerThread.join();
-	   } catch (InterruptedException ex) {
-		   System.out.println("something went wrong while killing the gauge consumer thread");
-	   }
-	   finish();
+		finish();
+	}
+
+	public void stopGaugeThreads() {
+		GaugeBackend.stop();
+		GaugeActivity.m_gaugeConsumerThread.interrupt();
+		try {
+			GaugeActivity.m_gaugeConsumerThread.join();
+		} catch (InterruptedException ex) {
+			System.out.println("something went wrong while killing the gauge consumer thread");
+		}
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		// Make sure to end countdown thread (when ending early) so doesn't crash topic activity
+		if(countdown.isAlive())
+			countdown.interrupt();
 	}
 
 	@Override
@@ -193,11 +203,16 @@ public class GaugeActivity extends FragmentActivity {
 	}
 	
 	public void showEndSessionMessage() {
-		countdown.interrupt();
+		countdown.interrupt(); // Stop timer in background
 		elapsedTime = sessionDuration; // Ensure time added to db is what is expected
+
+		// Stop the gauge threads so gauge does not continue running in background
+		stopGaugeThreads();
+
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new EndSessionDialogFragment();
         Bundle sessionValues = new Bundle();
+        // Send values to be displayed to dialog
         sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
         sessionValues.putInt("runTime", sessionDuration);
         sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
