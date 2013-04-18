@@ -5,14 +5,6 @@
  */
 
 package com.grep.gaugebackend;
-
-import android.widget.TextView;
-
-import com.grep.ui.GaugeActivity;
-import com.grep.ui.R;
-
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.*;
 
 /**
@@ -26,7 +18,7 @@ public class GaugeBackend {
 	static protected Thread m_sentimenterThread;
 	static protected Thread m_aggregatorThread;
 
-	public static void start(String[] keywords, String accessToken, String accessTokenSecret, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues, long duration, final GaugeActivity a) {
+	public static void start(String[] keywords, String accessToken, String accessTokenSecret, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues) {
 		// interprocess communication structures
 		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(5);
 		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(5);
@@ -48,15 +40,6 @@ public class GaugeBackend {
 		m_weighterThread.start();
 		m_sentimenterThread.start();
 		m_aggregatorThread.start();
-		
-		// the analysis duration timer
-/*		Timer t = new Timer();
-		t.schedule(new TimerTask() {          
-			@Override
-			public void run() {
-				a.showEndSessionMessage();
-			}
-		}, duration*1000);*/
 	}
 	
 	public static void stop() {
