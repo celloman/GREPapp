@@ -81,8 +81,6 @@ public class Aggregate implements Runnable {
 					m_Positive += g.m_Positive;
 					m_Negative += g.m_Negative;
 					
-					System.out.println(String.format("%d, %d", m_Positive, m_Negative));
-					
 					// send the gauge values out
 					m_outGauge.put(g);
 				}

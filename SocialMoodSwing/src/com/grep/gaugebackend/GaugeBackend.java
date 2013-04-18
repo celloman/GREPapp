@@ -35,7 +35,7 @@ public class GaugeBackend {
 		// create the threads
 		GetTweets getter = new GetTweets(fetchQueue, webToasts, keywords, accessToken, accessTokenSecret);
 		GetWeight weighter = new GetWeight(fetchQueue, weightQueue, keywords);
-		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue);
+		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue, webToasts);
 		Aggregate aggregator = new Aggregate(sentimentQueue, webToasts, gaugeValues);
 		
 		m_getterThread = new Thread(getter);
@@ -50,13 +50,13 @@ public class GaugeBackend {
 		m_aggregatorThread.start();
 		
 		// the analysis duration timer
-		Timer t = new Timer();
+/*		Timer t = new Timer();
 		t.schedule(new TimerTask() {          
 			@Override
 			public void run() {
 				a.showEndSessionMessage();
 			}
-		}, duration*1000);
+		}, duration*1000);*/
 	}
 	
 	public static void stop() {

@@ -173,20 +173,12 @@ public class TopicActivity extends FragmentActivity {
 				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n"); // Average is negative
 		}
 		
+		// Display an instructional message to user if there are no sessions in the topic's history
 		if(analysisSessions.size() == 0)
 			info.setText("There are no analysis sessions in the database." +
 					" \n\nEnter a duration above and click \"To Gauge\"" +
 					" in order to begin an analysis session");
 	} // end drawGraph();
-
-	/* TODO Remove?
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_topic, menu);
-		return true;
-	}
-	*/
 	
 	@Override
 	protected void onResume() {
@@ -207,27 +199,6 @@ public class TopicActivity extends FragmentActivity {
 		dh.close();
 		super.onPause();
 	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle menu item selection
-	    switch (item.getItemId()) {
-	        case R.id.menu_login:
-	            showLoginActivity();
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
-	}
-	
-	/**
-	 * Creates an instance of the Login Activity for the user to
-	 * enter Twitter authentication credentials.
-	 */
-	public void showLoginActivity() {
-		Intent intent = new Intent(this, LoginActivity.class);
-		startActivity(intent);
-    }
 	
 	/**
 	 * Creates an intent to change to the Gauge activity corresponding to the
