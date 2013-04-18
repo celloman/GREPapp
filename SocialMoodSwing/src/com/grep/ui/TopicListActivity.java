@@ -207,7 +207,6 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
 		    // Open the browser
 		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
-		    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 		    startActivity(intent);
 		} catch (Exception e) {
 		    Toast.makeText(this, "Cannot connect to Twitter, make sure your time is correct" +
