@@ -105,11 +105,6 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
-		
-		//bring the keyboard up ready to type for new topic, not for existing topic
-		if (!isNewTopic) {
-			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		}
 	}
 	
 	
