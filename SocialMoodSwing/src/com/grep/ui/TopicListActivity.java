@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewDebug.FlagToString;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -39,7 +40,16 @@ public class TopicListActivity extends FragmentActivity
 	protected void onResume()
 	{
 		super.onResume();
-		dh.open();			
+		dh.open();	
+		
+		// check database for credentials
+		if(dh.getCredentials() == null) {
+			// send user to Twitter login activity
+			Intent intent = new Intent(this, LoginActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+			intent.putExtra("change_credentials", true);
+			startActivity(intent);
+		}
 	}
 	
 	@Override
@@ -110,7 +120,7 @@ public class TopicListActivity extends FragmentActivity
 	    switch (item.getItemId())
 	    {
 	        case R.id.menu_login:
-	        	showLoginActivity();
+	        	launchLoginActivity();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -191,7 +201,7 @@ public class TopicListActivity extends FragmentActivity
 	 * Creates an instance of the Login Activity for the user to
 	 * enter Twitter authentication credentials.
 	 */
-	public void showLoginActivity() {
+	public void launchLoginActivity() {
 		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
     }

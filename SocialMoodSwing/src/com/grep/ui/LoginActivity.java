@@ -46,6 +46,10 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		setTitle(R.string.title_activity_login);
+		
+		if (getIntent().getBooleanExtra("change_credentials", false)) {
+			startOAuth();
+		}
     }
 	
 	@Override
@@ -61,9 +65,21 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
+	 * When Change User button is clicked, delete credentials 
+	 * and call startOAuth.
+	 * 
+	 * @param v (View)
+	 */
+	public void loginClick(View v) {
+		Credentials c = dh.getCredentials();
+		dh.deleteCredentials(c.getId());
+		startOAuth();
+	}
+	
+	/**
 	 * Starts user authentication using Twitter OAuth
 	 */
-	public void startOAuth(View v) {
+	public void startOAuth() {
 		//Attempt to open Twitter OAuth in browser
 		try {
 		    httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
@@ -72,9 +88,12 @@ public class LoginActivity extends Activity {
 		                                            "https://api.twitter.com/oauth/authorize");
 		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
 		    // Open the browser
-		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
+		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
+		    //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+		    startActivity(intent);
 		} catch (Exception e) {
-		    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+		    Toast.makeText(this, "Cannot connect to Twitter, make sure your time is correct" +
+		    		" and you have internet access.", Toast.LENGTH_LONG).show();
 		}
 	}
 	
@@ -116,21 +135,9 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
-	 * {@code public void viewTwitterSite}
-	 * Creates a new browser activity taking the user to twitter.com
-	 * 
-	 * @param v (View) - text view specified from onClick
-	 */
-	public void toTwitterSite(View v) {
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("http://twitter.com"));
-		startActivity(intent);
-	}
-	
-	/**
 	 * Test function on toast button for testing retrieving
 	 * credentials from twitter oauth site. Can be removed
-	 * when successfull.
+	 * when successful.
 	 * @param v
 	 */
 	public void toastCredentials(View v) {
