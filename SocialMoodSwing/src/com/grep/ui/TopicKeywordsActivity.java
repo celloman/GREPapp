@@ -2,14 +2,14 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -105,6 +105,22 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);
+		
+		//get screen width
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+		//set cancel button width to 0.3*screenwidth
+		double cancelWidth = metrics.widthPixels*.3;
+		Button cancelButton = (Button) findViewById(R.id.cancelButton);
+		cancelButton.setWidth((int)cancelWidth);
+		
+		//set save and delete button width to 0.35*screenwidth
+		double otherWidth = metrics.widthPixels*.35;
+		Button saveButton = (Button) findViewById(R.id.saveButton);
+		Button deleteButton = (Button) findViewById(R.id.deleteButton);
+		saveButton.setWidth((int)otherWidth);
+		deleteButton.setWidth((int)otherWidth);
 	}
 	
 	
