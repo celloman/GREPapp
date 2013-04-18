@@ -76,7 +76,7 @@ public class GetSentiment implements Runnable {
 						@Override
 						public void onFailure(Throwable thrwbl, String string) {
 							System.out.println("sentiment request failed...");
-							m_webToasts.offer(new WebToast("warning", "Warning", "We're having some trouble talking to the sentiment server. We'll keep trying, but you might want to check your internet connection.", 0, 0, 0));
+							m_webToasts.offer(new WebToast("warning", "We're having some trouble talking to the sentiment server. We'll keep trying, but you might want to check your internet connection.", "Warning", 0, 0, 0));
 						}
 					});
 				
