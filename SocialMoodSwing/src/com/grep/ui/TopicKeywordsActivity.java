@@ -77,7 +77,7 @@ public class TopicKeywordsActivity extends FragmentActivity {
 		else
 			setTitle(getResources().getString(R.string.title_activity_topic_keywords) + " - " + getResources().getString(R.string.new_topic));
 		
-		setContentView(R.layout.keyword_dialog);
+		setContentView(R.layout.activity_topic_keywords);
 				
 		
 		//listview of keywords we will populate, edittext for the topic title, edittext for new keywords
@@ -101,7 +101,7 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	    }
    
 		//create an adapter which defines the data/format of each element of our listview
-		adapter = new ListItemAdapter(this, R.layout.keywords_item_row, rows, ListItemAdapter.listItemType.KEYWORD);
+		adapter = new ListItemAdapter(this, R.layout.keywords_list_item_row, rows, ListItemAdapter.listItemType.KEYWORD);
 	       
 		//set our adapter for the listview so that we can know what each list element (row) will be like
 		keywordsListView.setAdapter(adapter);

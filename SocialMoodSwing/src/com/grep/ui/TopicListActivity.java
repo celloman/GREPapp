@@ -58,7 +58,7 @@ public class TopicListActivity extends FragmentActivity
 		setTitle(R.string.title_activity_topic_list);
 
         //create an adapter which defines the data/format of each element of our listview
-        adapter = new ListItemAdapter(this, R.layout.listview_item_row, rows, ListItemAdapter.listItemType.TOPIC);
+        adapter = new ListItemAdapter(this, R.layout.topics_list_item_row, rows, ListItemAdapter.listItemType.TOPIC);
               
         //listview we will populate
         topicsListView = (ListView)findViewById(R.id.topicsListView);

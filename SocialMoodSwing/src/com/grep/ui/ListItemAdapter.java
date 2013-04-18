@@ -59,10 +59,13 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     @Override
     public View getView(int position, View convertView, ViewGroup parent) 
     {
+    	
+        /* Was causing bug #33, comment out rather than remove for now, until I can be sure
         View currentFocus = ((Activity)context).getCurrentFocus();
         if (currentFocus != null) {
             currentFocus.clearFocus();
         }
+        */
         
         View row = convertView;
 
@@ -70,6 +73,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
         if (this.type == listItemType.TOPIC) {
         	row = setUpTopicListItemHolder(row, position, parent);
         }
+        
         else if (this.type == listItemType.KEYWORD) {
         	row = setUpKeywordListItemHolder(row, position, parent);
         }
@@ -80,6 +84,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     //set up the holder and give it values for a list of topic items
     private View setUpTopicListItemHolder(View row, int position, ViewGroup parent)
     {
+    	
         TopicListItemHolder holder = null;
         
         if(row == null)
@@ -111,6 +116,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     //set up the holder and give it values for a list of keyword items
     private View setUpKeywordListItemHolder(View row, final int position, ViewGroup parent)
     {
+    	
         KeywordListItemHolder holder = null;
         
         if(row == null)
@@ -157,9 +163,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
                 	if (keywordJustAdded) {
             			listItems.get(position + 1).setText(edittext.getText().toString());
             		}
-                	
-            		else if (keywordDeleted != position) {
-                		
+            		else if (keywordDeleted != position) {	
                 		//decide to update the listItems list based off what just happened
                 		if(keywordDeleted < position && keywordDeleted != -1) {
                 			listItems.get(position-1).setText(edittext.getText().toString());
@@ -187,8 +191,6 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
     	keywordJustAdded = false;
         
     	return row;
-    	
-    	
     }
     
     //given a textTrackerId, find the ListItem is listItems which contains this textTrackerId and return its index in listItems
