@@ -76,9 +76,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		
 		// check database for credentials
 		if(dh.getCredentials() == null) {
-			// Display Twitter login dialog
-			DialogFragment dialog = new LoginDialogFragment();
-	        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
+			showLoginDialog();
 		}
 		
 		setContentView(R.layout.activity_topic_list);
@@ -147,7 +145,8 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	            dh.addCredentials(c);
 
 	        } catch(Exception e){
-	        	Log.e("OAuth", "OAuth Fail" + e.getMessage());
+	        	showLoginDialog();
+	        	Toast.makeText(this, "Please log into Twitter" , Toast.LENGTH_LONG).show();
 	        }
 	    } else {
 	        // Do something if the callback comes from elsewhere
@@ -171,7 +170,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	        case R.id.menu_login:
 	        	Credentials c = dh.getCredentials();
 	        	dh.deleteCredentials(c.getId());
-	        	this.recreate();
+	        	showLoginDialog();
 	            return true;
 	        case R.id.menu_help:
 	        	showHelpActivity();
@@ -181,6 +180,12 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	    }
 	}
 
+	public void showLoginDialog() {
+		// Display Twitter login dialog
+		DialogFragment dialog = new LoginDialogFragment();
+        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
+	}
+	
 	/**
 	 * Method from Login dialog, when "OK" button is clicked it calls this.
 	 * This method calls startOAuth().
@@ -207,6 +212,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		} catch (Exception e) {
 		    Toast.makeText(this, "Cannot connect to Twitter, make sure your time is correct" +
 		    		" and you have internet access.", Toast.LENGTH_LONG).show();
+		    showLoginDialog();
 		}
 	}
 	
