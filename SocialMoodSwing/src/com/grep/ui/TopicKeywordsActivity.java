@@ -6,6 +6,7 @@ import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -30,8 +31,8 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	static List<ListItem> rows = new ArrayList<ListItem>();
 	List<Keyword> keywords = new ArrayList<Keyword>();
 	EditText topicTitle;
-	boolean isNewTopic;
-	DatabaseHandler dh;
+	static boolean isNewTopic;
+	static DatabaseHandler dh;
 	boolean buttonHeightSet = false;
 	static int topicId = -1;
 	static List<Keyword> keywordTracker = new ArrayList<Keyword>();
@@ -182,10 +183,16 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	 */
 	public void onClickDeleteTopicButton(View v)
 	{
+		//Create an instance of the delete topic warning dialog fragment and show it
+		DialogFragment dialog = new DeleteTopicWarningDialogFragment();
+		dialog.show(getSupportFragmentManager(), "DeleteTopicWarningDialogFragment");
+	}
+	
+	public static void DeleteTopic()
+	{
 		//if not a new topic (we are editing existing topic) we need to actually delete it; if new topic just cancel w/out saving 
 		if(!isNewTopic) {
 			
-			//TODO should we pop up a warning dialog confirming that they want to delete the topic?
 			//delete topic from the database
 			dh.deleteTopic(topicId);
 			
@@ -200,8 +207,11 @@ public class TopicKeywordsActivity extends FragmentActivity {
 			}
 		}
 		
-		TopicKeywordsActivity.this.finish();
+		//TopicKeywordsActivity.this.finish();
 	}
+	
+	
+
 		
 	
 	/**

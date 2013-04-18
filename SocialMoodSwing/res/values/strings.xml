@@ -16,5 +16,6 @@
     <string name="analysis_session_ended">Analysis Session Ended</string>
     <string name="title_activity_topic_keywords">Topic Keywords</string>
     <string name="new_topic">New Topic</string>
+    <string name="delete_topic_warning_message">Are you sure you want to delete this topic, all associated keywords, and its analysis session history?</string>
 
 </resources>
