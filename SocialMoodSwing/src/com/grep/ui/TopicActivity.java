@@ -143,15 +143,15 @@ public class TopicActivity extends FragmentActivity {
 			totalTime += analysisSessions.get(i).getDuration();
 			// Calculate the proper sentiment to retrieve, and retrieve it, adding to overall average sentiment calculation for the current topic
 			if(analysisSessions.get(i).getAvgPosSentiment() > (-1) * analysisSessions.get(i).getAvgNegSentiment())
-				avgSentiment += analysisSessions.get(i).getAvgPosSentiment();
+				avgSentiment += analysisSessions.get(i).getAvgPosSentiment() * analysisSessions.get(i).getNumTweetsProcessed();
 			else
-				avgSentiment += analysisSessions.get(i).getAvgNegSentiment();
+				avgSentiment += analysisSessions.get(i).getAvgNegSentiment() * analysisSessions.get(i).getNumTweetsProcessed();
 		}
 		
-		// If there are analysis sessions in the database, print out statistics about the analyss session set
+		// If there are analysis sessions in the database, print out statistics about the analysis session set
 		if(analysisSessions.size() > 0) {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
-			avgSentiment = avgSentiment/analysisSessions.size();
+			avgSentiment = avgSentiment/totalTweets;
 		
 			info.setText("Tweets Processed:\t" + totalTweets + "\n");
 			
