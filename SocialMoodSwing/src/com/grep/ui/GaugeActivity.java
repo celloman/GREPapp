@@ -184,6 +184,9 @@ public class GaugeActivity extends FragmentActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		// Make sure to end countdown thread (when ending early) so doesn't crash topic activity
+		if(countdown.isAlive())
+			countdown.interrupt();
 	}
 
 	@Override

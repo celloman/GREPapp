@@ -3,7 +3,7 @@
 
     <string name="app_name">Social Mood Swing</string>
     <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_help">User Manual</string>
     <string name="title_activity_gauge">Analysis Session</string>
     <string name="title_activity_topic_list">Topics</string>
     <string name="warning_message">Analysis session will terminate if you leave this page.</string>
@@ -16,5 +16,6 @@
     <string name="analysis_session_ended">Analysis Session Ended</string>
     <string name="title_activity_topic_keywords">Topic Keywords</string>
     <string name="new_topic">New Topic</string>
+    <string name="title_activity_help">HelpActivity</string>
 
 </resources>

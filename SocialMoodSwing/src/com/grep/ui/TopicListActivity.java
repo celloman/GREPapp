@@ -109,6 +109,9 @@ public class TopicListActivity extends FragmentActivity
 	        case R.id.menu_login:
 	        	showLoginActivity();
 	            return true;
+	        case R.id.menu_help:
+	        	showHelpActivity();
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -146,6 +149,15 @@ public class TopicListActivity extends FragmentActivity
 	 */
 	public void showLoginActivity() {
 		Intent intent = new Intent(this, LoginActivity.class);
+		startActivity(intent);
+    }
+	
+	/**
+	 * Creates an instance of the Help Activity for the user to
+	 * view application help page
+	 */
+	public void showHelpActivity() {
+		Intent intent = new Intent(this, HelpActivity.class);
 		startActivity(intent);
     }
 		
