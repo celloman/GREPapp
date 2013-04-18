@@ -82,8 +82,7 @@
         android:layout_above="@+id/deleteButton"
         android:divider="@null"
         android:dividerHeight="0dp"	
-        android:scrollingCache="false"
-        android:descendantFocusability="afterDescendants" />
+        android:scrollingCache="false" />
 
     <Button
         android:id="@+id/saveButton"
