@@ -6,6 +6,8 @@
 
 package com.grep.gaugebackend;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
@@ -21,7 +23,7 @@ public class GetWeight implements Runnable {
 	// keywords that we are searching for
 	protected String[] m_Keywords = null;
 	// queue to hold previously seen tweet ids
-	protected CircularFifoBuffer m_seenIDs = new CircularFifoBuffer(10);
+	protected CircularFifoBuffer m_seenIDs = new CircularFifoBuffer(100);
 	
 	/**
 	 * Constructor
@@ -30,9 +32,24 @@ public class GetWeight implements Runnable {
 	 * @param keywords (String[])
 	 */
 	public GetWeight(BlockingQueue<Tweet> in_queue, BlockingQueue<Tweet> out_queue, String[] keywords) {
-		this.m_inQueue = in_queue;
-		this.m_outQueue = out_queue;
-		this.m_Keywords = keywords;
+		m_inQueue = in_queue;
+		m_outQueue = out_queue;
+		m_Keywords = keywords;
+		
+		// get the longest keywords at the front
+		Arrays.sort(m_Keywords, new Comparator<String>() {
+			public int compare(String s1, String s2) {
+				if(s1.length() > s2.length())
+					return -1;
+				else if(s1.length() < s2.length())
+					return 1;
+				else
+					return 0;
+			}
+		});
+		
+		for(String keyword: m_Keywords)
+			System.out.println(keyword);
 	}
         
 	/**
@@ -51,12 +68,14 @@ public class GetWeight implements Runnable {
 	private int getKeyword(Tweet t) {
 		int count = 0;
 		// loop through the m_Keywords
-		for(int i = 0; i < this.m_Keywords.length - 1; i++) {
+		for(int i = 0; i < m_Keywords.length - 1; i++) {
 			if(t.text.contains(m_Keywords[i])) {
 				// count matches
 				count++;
 				// save the match
 				t.keyword = m_Keywords[i];
+				// break
+				break;
 			}
 		}
 		return count;
@@ -72,7 +91,7 @@ public class GetWeight implements Runnable {
 			
 			try {
 				// get from prev module
-				Tweet t = this.m_inQueue.take();
+				Tweet t = m_inQueue.take();
 				
 				// make sure we only get english
 				if(!t.lang.equals("en"))
@@ -83,7 +102,7 @@ public class GetWeight implements Runnable {
 					continue;
 				
 				// check to make sure it just has one keyword, and store that keyword in the tweet
-				if(getKeyword(t) != 1)
+				if(getKeyword(t) == 0)
 					continue;
 				
 				// weighting algorithm (believe it or not, this is equivalent)
@@ -97,7 +116,7 @@ public class GetWeight implements Runnable {
 				t.weight = t.followers + (208 * t.retweets);
 
 				// send to the next module
-				this.m_outQueue.put(t);
+				m_outQueue.put(t);
 				
 			} catch (InterruptedException e) {
 				// immediately reset interrupt flag

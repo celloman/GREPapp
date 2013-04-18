@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -142,7 +143,7 @@ public class ListItemAdapter extends ArrayAdapter<ListItem>
             int index = getIndexByTextTrackerId(holder.textTrackerId);
             
             if(index == -1) {
-            	//TODO Error should never get here
+            	Log.e("Error", "Invalid index for text tracker, shouldn't ever have happened. Bad juju!");
             }
             else {
             	//save the contents of the EditText to the ListItem previously occupying this row view, and update the textTrackerId's

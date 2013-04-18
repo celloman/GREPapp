@@ -25,6 +25,8 @@ public class GetTweets implements Runnable {
 	protected String m_accessToken;
 	// access token secret
 	protected String m_accessTokenSecret;
+	// have we sent the track limitation notice to the user yet?
+	protected Boolean m_trackLimitNotified = false;
 	
 	/**
 	 * Constructor
@@ -84,7 +86,10 @@ public class GetTweets implements Runnable {
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
                 System.out.println("Got track limitation notice:" + numberOfLimitedStatuses);
-				m_webToasts.offer(new WebToast("warning", "Warning", "Twitter is telling us that one of your keywords might be too broad. Try narrowing it down for better results.", 0, 0, 0));
+				if(!m_trackLimitNotified){
+					m_webToasts.offer(new WebToast("warning", "This is a hot topic on Twitter right now! If you want to analyze every tweet for this topic, try narrowing down your keywords.", "Warning", 0, 0, 0));
+					m_trackLimitNotified = true;
+				}
             }
 
             @Override
