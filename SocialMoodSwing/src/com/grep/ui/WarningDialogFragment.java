@@ -1,6 +1,5 @@
 package com.grep.ui;
 
-import com.grep.gaugebackend.GaugeBackend;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -8,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 
 /**
  * WarningDialogFragment displays a warning to the user.
@@ -31,7 +31,8 @@ public class WarningDialogFragment extends DialogFragment {
         
         // Get view from inflater
         final View view = inflater.inflate(R.layout.warning_dialog, null);
-        
+        final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveCheckBox);
+
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setMessage("WARNING!")
@@ -43,7 +44,7 @@ public class WarningDialogFragment extends DialogFragment {
 					   
             		   //stop the analysis session and return to TopicActivity, finish() calls onDestroy() for
             		   //this activity where results from session need to be stored in database
-            		   a.stopGauge();
+            		   a.stopGauge(saveSession.isChecked());
                    }
                })
                .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {

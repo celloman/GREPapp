@@ -2,17 +2,12 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -20,9 +15,6 @@ import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 /**
@@ -38,6 +30,7 @@ public class TopicActivity extends FragmentActivity {
 
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +41,7 @@ public class TopicActivity extends FragmentActivity {
 		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
 		topic_id = getIntent().getIntExtra("topicId", -1);
 
+		// Set title of Activity to "Run History - <Topic Name>"
 		setTitle(getResources().getString(R.string.title_activity_topic) + " - " + dh.getTopic(topic_id).getTopicName());
 		
 		if (topic_id == -1) {
@@ -59,80 +53,124 @@ public class TopicActivity extends FragmentActivity {
 
 	}
 
+	/**
+	 * Draw javascript graph in webview
+	 * Takes historical analysis session data from database and passes it to javascript
+	 * 
+	 */
 	private void drawGraph() {
-		// Create lists to pass to javascript of session values and session times (theoretically)
-		Random generator = new Random();
-		
 		dh.open();
 		
-// 		Get a list of session values
-		List<Session> analysisSessions = dh.getAllSessions(topic_id); // Figure out how to get list of sessions from db
+		// Get a list of session values
+		List<Session> analysisSessions = dh.getAllSessions(topic_id);
+		
+		// Lists to hold sentiment values and timestamps from historical analysis sessions
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
-				
-		// Create 40 random fake analysis sessions
-/*		for(int i = 0; i < 40; i++)
-			analysisSessions.add(new Session(topic_id, generator.nextInt(4000), generator.nextInt(1000), generator.nextInt() % 100, generator.nextInt() % 100));
-	*/
-		//Don't display a graph if there are no analysis sessions in history 
+
 		//Only show the last 15 analysis sessions
 		int length = 0;
 		if(analysisSessions.size() > 15)
 			length = analysisSessions.size() - 15;
 		
+		// Loop through historical analysis sessions and store appropriate values into lists
 		for(int i = length; i < analysisSessions.size(); i++) {
-			analysisTimes.add(analysisSessions.get(i).getStartTime()); // Is this somewhat correct?
-			
-			// Are we storing negative sentiment as a negative number?
+			// Save the start time in a list
+			analysisTimes.add(analysisSessions.get(i).getStartTime());
+			// Calculate real analysis session average sentiment and store
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment())
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 			else
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 		}
+		
+		// Historical analysis session graph webview
 		final WebView historyGraphWebView = (WebView) findViewById(R.id.graph);
 
 		historyGraphWebView.setWebViewClient(new WebViewClient() {  
+			/*
+			 * After initial page has finished loading, pass in the values to be displayed on the graph
+			 * This is required, because Java code following the loading of the URL will continue on without waiting
+			 * for this to finish, causing an error.
+			 */
 		    @Override  
-		    public void onPageFinished(WebView view, String url)  // Code to be executed after page is loaded (loads graph)
-		    {  
+		    public void onPageFinished(WebView view, String url) {  
 				for(int i = 0; i < analysisValues.size(); i++){
-					historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";");//, i, analysisValues[i]));
-					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");//, i, analysisTimes[i]));
+					// Values of 100 would throw the scale of the graph off, this makes 100's 99's ... can't tell the difference on graph
+					// Also takes care of any possible errors where a value greater than 100 or less than -100 is stored
+					if(analysisValues.get(i) >= 100)
+						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + 99 + ";");
+					else if(analysisValues.get(i) <= -100)
+						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + -99 + ";");
+					else
+						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";"); // No need to adjust real values
+					// Pass time stamp from the database into graph
+					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");
 				}
 				
+				// Call javascript function to draw the graph with appropriate data
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
-		});
+		}); // End of historyGraphWebView.setWebViewClient(...);
 		
+		// Load local html page (containing graph) into webview 
 		historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		// Prevent scrolling within webview
+		// TODO We may want to enable horizontal scrolling for better graph accessibility
 		historyGraphWebView.setHorizontalScrollBarEnabled(false);
-		WebSettings historyGraphWebSettings = historyGraphWebView.getSettings();
-		historyGraphWebSettings.setJavaScriptEnabled(true);
-		historyGraphWebSettings.setDomStorageEnabled(true);
-		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph?
-		historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling
+		historyGraphWebView.setVerticalScrollBarEnabled(false);
 		
+		// Settings for graph webview
+		WebSettings historyGraphWebSettings = historyGraphWebView.getSettings();
+		// We need to allow javascript to run in this graph
+		historyGraphWebSettings.setJavaScriptEnabled(true);
+		historyGraphWebSettings.setDomStorageEnabled(true); // Might not be necessary
+		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph? Might not be necessary
+		historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling (for sure) TODO check on this
+		
+		// EditText area that displays statistics for all historical analysis sessions
 		EditText info = (EditText) findViewById(R.id.topicInfo);
 		
 		int totalTweets = 0;
 		int totalTime = 0;
 		int avgSentiment = 0;
 		
+		// Gather data from all analysis sessions
 		for(int i = 0; i < analysisSessions.size(); i++) {
+			// Tally the total number of tweets over all analysis sessions for the current topic
 			totalTweets += analysisSessions.get(i).getNumTweetsProcessed();
+			// Tally the total number of seconds that the application has spent analyizing the current topic
 			totalTime += analysisSessions.get(i).getDuration();
-			// Check to see if this is right at some point
+			// Calculate the proper sentiment to retrieve, and retrieve it, adding to overall average sentiment calculation for the current topic
 			if(analysisSessions.get(i).getAvgPosSentiment() > (-1) * analysisSessions.get(i).getAvgNegSentiment())
 				avgSentiment += analysisSessions.get(i).getAvgPosSentiment();
 			else
 				avgSentiment += analysisSessions.get(i).getAvgNegSentiment();
 		}
+		
+		// If there are analysis sessions in the database, print out statistics about the analyss session set
 		if(analysisSessions.size() > 0) {
+			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/analysisSessions.size();
 		
 			info.setText("Tweets Processed:\t" + totalTweets + "\n");
-			info.append("Hours Running:\t\t\t" + totalTime + "\n");
-			info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n");
+			
+			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
+			if(totalTime >= 3600) // Greater than or equal to an hour
+				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime/3600) + "h " 
+						+ String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
+						+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			else if(totalTime >= 60) // Greater than or equal to a minute (but less than an hour) (XXm XXs)
+				info.append("Time Running:\t\t\t\t" + String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
+				+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			else // Less than one minute (XXs)
+				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			
+			// Format and print average sentiment
+			if(avgSentiment > 0)
+				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%\n"); // Average is positive
+			else
+				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n"); // Average is negative
 		}
 		
 		if(analysisSessions.size() == 0)
@@ -141,7 +179,7 @@ public class TopicActivity extends FragmentActivity {
 					" in order to begin an analysis session");
 	} // end drawGraph();
 
-	/*
+	/* TODO Remove?
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -152,7 +190,15 @@ public class TopicActivity extends FragmentActivity {
 	
 	@Override
 	protected void onResume() {
+		// Calls function to draw javascript graph in webview
 		drawGraph();
+		
+		// Always reset hint to gray, in case user failed to enter value before last analysis session
+		EditText hoursEntry = (EditText) findViewById(R.id.hours);
+		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
+		hoursEntry.setHintTextColor(getResources().getColor(R.color.gray));
+		minutesEntry.setHintTextColor(getResources().getColor(R.color.gray));
+		
 		super.onResume();
 	}
 	
@@ -169,9 +215,6 @@ public class TopicActivity extends FragmentActivity {
 	        case R.id.menu_login:
 	            showLoginActivity();
 	            return true;
-	        case R.id.menu_keywords:
-	        	showTopicKeywordsDialog();
-	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -185,16 +228,6 @@ public class TopicActivity extends FragmentActivity {
 		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
     }
-
-	/**
-	 * Creates an instance of the Topic Keywords dialog fragment so the user
-	 * may create a new topic, or edit a topic's keywords.
-	 */
-	public void showTopicKeywordsDialog() {
-		// Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new TopicKeywordsDialogFragment();
-        dialog.show(getSupportFragmentManager(), "TopicKeywordsDialogFragment");
-	}
 	
 	/**
 	 * Creates an intent to change to the Gauge activity corresponding to the
@@ -207,7 +240,8 @@ public class TopicActivity extends FragmentActivity {
 		int hours = 0;
 		int minutes = 0;
 		
-		if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0) {
+		
+		if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0 && dh.getCredentials() != null) {
 			if(hoursEntry.getText().length() != 0) {
 				hours = Integer.parseInt(hoursEntry.getText().toString());
 			}
@@ -220,6 +254,9 @@ public class TopicActivity extends FragmentActivity {
 			intent.putExtra("analysisDuration", time);
 			intent.putExtra("topicId", topic_id);
 			startActivity(intent);
+		}
+		else if(dh.getCredentials() == null) {
+			Toast.makeText(this, "Please log in with Twitter", Toast.LENGTH_LONG).show();
 		}
 		else {
 			Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();

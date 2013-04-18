@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:id="@+id/mainLayout" >
 
     <EditText
         android:id="@+id/topicEditText"
@@ -21,11 +22,11 @@
         android:paddingRight="10dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
-        android:hint="Topic Title" >    
-    <requestFocus />
-    </EditText>
+        android:hint="Topic Title"  >    
+	</EditText>
+	
 
-    <RelativeLayout
+  	<RelativeLayout
     	android:id="@+id/addKeywordLayout"
     	xmlns:android="http://schemas.android.com/apk/res/android"
     	android:orientation="horizontal" 
@@ -56,29 +57,57 @@
     
     	<ImageView
         	android:id="@+id/addKeywordIcon"
-         	android:src="@drawable/right_arrow"
+         	android:src="@drawable/check"
          	android:contentDescription="Image to be placed at end of add keyword edittext."
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
          	android:paddingBottom="10dp"
-         	android:paddingLeft="5dp"
-         	android:paddingRight="5dp"
+         	android:paddingLeft="7dp"
+         	android:paddingRight="6dp"
          	android:paddingTop="10dp"
          	android:layout_alignParentRight="true"
         	android:layout_centerVertical="true"
          	android:gravity="right"
          	android:clickable="true"
          	android:focusable="false"
-         	android:onClick="onClickAddKeywordButton" />	
-		</RelativeLayout>    
+         	android:onClick="onClickAddKeywordButton" />
+	</RelativeLayout>    
+	
     
-    <ListView
+   	<ListView
         android:id="@+id/keywordsListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/addKeywordLayout"
+        android:layout_above="@+id/deleteButton"
         android:divider="@null"
         android:dividerHeight="0dp"	
         android:scrollingCache="false" />
 
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Save Topic"
+        android:onClick="onClickSaveTopicButton" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Delete Topic"
+        android:onClick="onClickDeleteTopicButton" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Cancel"
+        android:onClick="onClickCancelButton" />
+   
 </RelativeLayout>

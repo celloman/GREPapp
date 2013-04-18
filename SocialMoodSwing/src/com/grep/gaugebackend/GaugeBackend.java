@@ -54,7 +54,7 @@ public class GaugeBackend {
 		t.schedule(new TimerTask() {          
 			@Override
 			public void run() {
-				a.stopGauge();
+				a.showEndSessionMessage();
 			}
 		}, duration*1000);
 	}

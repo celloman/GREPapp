@@ -5,8 +5,8 @@ import com.grep.database.Session;
 import com.grep.gaugebackend.GaugeBackend;
 import com.grep.database.DatabaseHandler;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -21,8 +21,6 @@ import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -42,6 +40,7 @@ public class GaugeActivity extends FragmentActivity {
 	int topic_id = -1;
 	Thread countdown;
 	int sessionDuration;
+	int elapsedTime;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -51,6 +50,7 @@ public class GaugeActivity extends FragmentActivity {
 		});
 	}
 
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -76,7 +76,6 @@ public class GaugeActivity extends FragmentActivity {
 		String[] keywords = new String[keywordList.size()];
 		for(int i = 0; i < keywordList.size(); i++) {
 			keywords[i] = keywordList.get(i).getKeyword();
-			System.out.println("Keyword: " + keywordList.get(i).getKeyword());
 		}
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
@@ -115,9 +114,10 @@ public class GaugeActivity extends FragmentActivity {
 			      		public void run() {
 			      			refreshTime(remainingTime);
 			      			remainingTime--;
+			      			elapsedTime++;
 			      		}
 			        });
-			        Thread.sleep(997); // This should possibly be more like 997... It loses ~1 sec every 5 mins
+			        Thread.sleep(998); // This should possibly be more like 997... It loses ~1 sec every 5 mins
 			      }
 			    } catch (InterruptedException e) {
 			    }
@@ -128,16 +128,42 @@ public class GaugeActivity extends FragmentActivity {
 	
 	public void refreshTime(int remainingTime) {
 		TextView textView = (TextView) findViewById(R.id.time_left);
-		if(remainingTime > 3600) // If duration is greater than an hour
-			textView.setText(String.format("%02d", remainingTime/3600) + ":" + String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
+		if(remainingTime >= 3600) // If duration is greater than an hour
+			textView.setText(String.format("%02d", remainingTime/3600) + ":" 
+					+ String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" 
+					+ String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else if(remainingTime >= 60) // If duration is greater than a minute (but less than an hour)
-			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" + String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
+			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" 
+					+ String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
 		else
 			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
 	}
 	
-	public void stopGauge() {
-	   // stop the threads (hopefully...)
+	public void dialogueChecked() {
+		
+	}
+	
+	public void stopGauge(boolean isChecked) {
+		dh.open();
+		// get latest gauge value from consumer and save to database
+		System.out.println("Values: " + m_gaugeConsumer + m_gaugeConsumer.m_latestGauge);
+		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null && isChecked) {
+			if(m_gaugeConsumer.m_latestGauge.m_sessionAverage > 0) {
+				dh.addSession(new Session(topic_id, 
+						elapsedTime, 
+						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
+						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100), 
+						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage - 1) * 100))); // Need to figure out these numbers
+			} else {
+				dh.addSession(new Session(topic_id, 
+						elapsedTime, 
+						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
+						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage + 1) * 100), 
+						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100))); // Need to figure out these numbers
+			}
+		}
+		dh.close();
+		// stop the threads (hopefully...)
 	   GaugeBackend.stop();
 	   GaugeActivity.m_gaugeConsumerThread.interrupt();
 	   try {
@@ -150,27 +176,7 @@ public class GaugeActivity extends FragmentActivity {
 	
 	@Override
 	public void onDestroy() {
-		countdown.interrupt();
 		super.onDestroy();
-		dh.open();
-		// get latest gauge value from consumer and save to database
-		System.out.println("Values: " + m_gaugeConsumer + m_gaugeConsumer.m_latestGauge);
-		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
-			if(m_gaugeConsumer.m_latestGauge.m_sessionAverage > 0) {
-				dh.addSession(new Session(topic_id, 
-						sessionDuration, 
-						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
-						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100), 
-						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage - 1) * 100))); // Need to figure out these numbers
-			} else {
-				dh.addSession(new Session(topic_id, 
-						sessionDuration, 
-						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
-						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage + 1) * 100), 
-						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100))); // Need to figure out these numbers
-			}
-		}
-		dh.close();
 	}
 
 	@Override
@@ -184,6 +190,19 @@ public class GaugeActivity extends FragmentActivity {
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new WarningDialogFragment();
         dialog.show(getSupportFragmentManager(), "WarningDialogFragment");
+	}
+	
+	public void showEndSessionMessage() {
+		countdown.interrupt();
+		elapsedTime = sessionDuration; // Ensure time added to db is what is expected
+		// Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new EndSessionDialogFragment();
+        Bundle sessionValues = new Bundle();
+        sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
+        sessionValues.putInt("runTime", sessionDuration);
+        sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
+        dialog.setArguments(sessionValues);
+        dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
 	}
 	
 	@Override
