@@ -66,6 +66,7 @@ public class TopicActivity extends FragmentActivity {
 		// Lists to hold sentiment values and timestamps from historical analysis sessions
 		final List<Integer> analysisValues = new ArrayList<Integer>();
 		final List<String> analysisTimes = new ArrayList<String>();
+		final List<String> toolTips = new ArrayList<String>();
 
 		//Only show the last 15 analysis sessions
 		int length = 0;
@@ -77,10 +78,17 @@ public class TopicActivity extends FragmentActivity {
 			// Save the start time in a list
 			analysisTimes.add(analysisSessions.get(i).getStartTime());
 			// Calculate real analysis session average sentiment and store
-			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment())
+			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment()) {
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
-			else
+				toolTips.add("" + analysisSessions.get(i).getAvgNegSentiment() + "%");
+			}
+			else {
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
+				if(analysisSessions.get(i).getAvgPosSentiment() == 0)
+					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%");
+				else
+					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%");
+			}
 		}
 		
 		// Historical analysis session graph webview
@@ -105,6 +113,8 @@ public class TopicActivity extends FragmentActivity {
 						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";"); // No need to adjust real values
 					// Pass time stamp from the database into graph
 					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");
+					historyGraphWebView.loadUrl("javascript:toolTips[" + i + "] = '" + toolTips.get(i) + "';");
+					
 				}
 				
 				// Call javascript function to draw the graph with appropriate data
@@ -115,7 +125,7 @@ public class TopicActivity extends FragmentActivity {
 		// Load local html page (containing graph) into webview 
 		if(analysisValues.size() > 1)
 			historyGraphWebView.loadUrl("file:///android_asset/graph.html");
-		else {
+		else if (analysisValues.size() == 1){
 			historyGraphWebView.loadData("<html><body>There is currently only one analysis session in this topic's history, a graph will" +
 					" display once there are at least two sessions in the database.</body></html>", "text/html", null);
 		}

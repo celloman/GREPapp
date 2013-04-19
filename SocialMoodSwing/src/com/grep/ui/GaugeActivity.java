@@ -172,6 +172,7 @@ public class GaugeActivity extends FragmentActivity {
 	}
 
 	public void stopGaugeThreads() {
+		countdown.interrupt(); // Stop timer in background
 		GaugeBackend.stop();
 		GaugeActivity.m_gaugeConsumerThread.interrupt();
 		try {
@@ -184,9 +185,6 @@ public class GaugeActivity extends FragmentActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// Make sure to end countdown thread (when ending early) so doesn't crash topic activity
-		if(countdown.isAlive())
-			countdown.interrupt();
 	}
 
 	@Override
@@ -210,7 +208,6 @@ public class GaugeActivity extends FragmentActivity {
 	}
 	
 	public void showEndSessionMessage() {
-		countdown.interrupt(); // Stop timer in background
 		elapsedTime = sessionDuration; // Ensure time added to db is what is expected
 
 		// Stop the gauge threads so gauge does not continue running in background

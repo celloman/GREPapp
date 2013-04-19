@@ -16,6 +16,7 @@
     <script>
     	sessions = new Array();
 		timeStamps = new Array();
+		toolTips = new Array();
         window.onload = function ()
         {
         }
@@ -24,6 +25,7 @@
             //RGraph.Clear(document.getElementById("cvs"));
             myLine = new RGraph.Line('cvs', sessions);
        		myLine.Set('chart.labels', timeStamps);
+			myLine.Set('tooltips', toolTips);
 			myLine.Set('chart.gutter.left', 45); // set left padding
             myLine.Set('chart.gutter.right', 15); // set right padding
             myLine.Set('chart.gutter.bottom', 100); // set space for labels under graph
