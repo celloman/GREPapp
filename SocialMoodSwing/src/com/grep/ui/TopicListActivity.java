@@ -18,7 +18,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -154,6 +153,11 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	}
 
 	@Override
+	public void onBackPressed() {
+		// exit app on back press
+	    this.finish();
+	}
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -179,12 +183,6 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-
-	public void showLoginDialog() {
-		// Display Twitter login dialog
-		DialogFragment dialog = new LoginDialogFragment();
-        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
-	}
 	
 	/**
 	 * Method from Login dialog, when "OK" button is clicked it calls this.
@@ -209,10 +207,19 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
 		    startActivity(intent);
 		} catch (Exception e) {
-		    Toast.makeText(this, "Cannot connect to Twitter, make sure your time is correct" +
-		    		" and you have internet access.", Toast.LENGTH_LONG).show();
+		    Toast.makeText(this, "Unable to connect to Twitter. Make sure you have internet access" +
+		    		" and the correct time for your location.\n\nError: " + e.toString(), Toast.LENGTH_LONG).show();
 		    showLoginDialog();
 		}
+	}
+	
+	/**
+	 * Display the Twitter login dialog
+	 */
+	public void showLoginDialog() {
+		DialogFragment dialog = new LoginDialogFragment();
+		dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
 	}
 	
 	/**

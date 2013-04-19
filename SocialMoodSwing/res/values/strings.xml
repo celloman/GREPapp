@@ -11,7 +11,7 @@
     <string name="text_button_stop">Stop</string>
     <string name="text_button_topic">To Topic</string>
     <string name="title_activity_login">Twitter Login</string>
-    <string name="login_description_text">This application requires a twitter account to fetch Tweets from Twitter. By clicking the Twitter Login button below, you can login to your Twitter account (or create one if you don\'t have one already). No normation will be retireved form your Twitter account by this application.</string>
+    <string name="login_description_text">This application requires a twitter account to fetch Tweets from Twitter. By clicking the OK button below, you can login to your Twitter account (or create one if you don\'t have one already). No information will be retieved form your Twitter account by this application.</string>
     <string name="text_save_session">Save this analysis session</string>
     <string name="analysis_session_ended">Analysis Session Ended</string>
     <string name="title_activity_topic_keywords">Topic Keywords</string>

@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -44,7 +45,7 @@ public class LoginDialogFragment extends DialogFragment {
         
         // Get view from inflater
         final View view = inflater.inflate(R.layout.login_dialog, null);
-
+        
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setMessage("Twitter Login")
@@ -56,6 +57,15 @@ public class LoginDialogFragment extends DialogFragment {
 					   mListener.onLoginDialogClick();
 					   LoginDialogFragment.this.getDialog().cancel();
                    }
+               })
+               // Check for back press, close application if back is pressed
+               .setOnKeyListener(new DialogInterface.OnKeyListener() {
+            	   @Override
+            	   public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            		   if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP)
+            			   getActivity().finish();
+            		   return true;
+            	   }
                });
         
         return builder.create();
