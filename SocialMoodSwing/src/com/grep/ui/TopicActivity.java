@@ -113,10 +113,15 @@ public class TopicActivity extends FragmentActivity {
 		}); // End of historyGraphWebView.setWebViewClient(...);
 		
 		// Load local html page (containing graph) into webview 
-		historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		if(analysisValues.size() > 1)
+			historyGraphWebView.loadUrl("file:///android_asset/graph.html");
+		else {
+			historyGraphWebView.loadData("<html><body>There is currently only one analysis session in this topic's history, a graph will" +
+					" display once there are at least two sessions in the database.</body></html>", "text/html", null);
+		}
 		// Prevent scrolling within webview
 		// TODO We may want to enable horizontal scrolling for better graph accessibility
-		historyGraphWebView.setHorizontalScrollBarEnabled(false);
+		historyGraphWebView.setHorizontalScrollBarEnabled(true);
 		historyGraphWebView.setVerticalScrollBarEnabled(false);
 		
 		// Settings for graph webview
@@ -125,7 +130,7 @@ public class TopicActivity extends FragmentActivity {
 		historyGraphWebSettings.setJavaScriptEnabled(true);
 		historyGraphWebSettings.setDomStorageEnabled(true); // Might not be necessary
 		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph? Might not be necessary
-		historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling (for sure) TODO check on this
+		//historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling (for sure) TODO check on this
 		
 		// EditText area that displays statistics for all historical analysis sessions
 		EditText info = (EditText) findViewById(R.id.topicInfo);
