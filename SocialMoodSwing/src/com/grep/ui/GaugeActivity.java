@@ -41,6 +41,7 @@ public class GaugeActivity extends FragmentActivity {
 	Thread countdown;
 	int sessionDuration;
 	int elapsedTime;
+	WebView m_webView;
 	
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
@@ -84,22 +85,22 @@ public class GaugeActivity extends FragmentActivity {
 
 		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues);
 
-		WebView webView = (WebView) findViewById(R.id.webview);
-		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-		webView.setOnLongClickListener(new OnLongClickListener() {
+		m_webView = (WebView) findViewById(R.id.webview);
+		m_webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		m_webView.getSettings().setJavaScriptEnabled(true);
+		m_webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+		m_webView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
 				return true;
 			}
 		});
-		webView.setLongClickable(false);
-		webView.loadUrl("file:///android_asset/gauge.html");
+		m_webView.setLongClickable(false);
+		m_webView.loadUrl("file:///android_asset/gauge.html");
 		
 		// start another thread to process gauge values TODO add another to process
 		// the popular Tweets
-		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, webView);
+		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, m_webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
 		
@@ -125,6 +126,7 @@ public class GaugeActivity extends FragmentActivity {
 			        Thread.sleep(998); // This should possibly be more like 997... It loses ~1 sec every 5 mins
 			      }
 			    } catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 			    }
 			  }
 			};
@@ -187,6 +189,9 @@ public class GaugeActivity extends FragmentActivity {
 		// Make sure to end countdown thread (when ending early) so doesn't crash topic activity
 		if(countdown.isAlive())
 			countdown.interrupt();
+		
+		m_webView.destroy();
+		m_webView = null;
 	}
 
 	@Override

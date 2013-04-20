@@ -23,6 +23,10 @@ public class GaugeConsumer implements Runnable {
 	protected WebView m_wv = null;
 	// latest gauge values
 	public Gauge m_latestGauge = null;
+	// last popular tweet time
+	long m_Time = 0;
+	// last guage update time
+	long m_UpdateTime = 0;
 	
 	/**
 	 * Constructor
@@ -49,11 +53,15 @@ public class GaugeConsumer implements Runnable {
 				if((g.m_Positive - g.m_Negative) != 0)
 					gaugeVal = (int)(g.m_Positive*100)/(g.m_Positive - g.m_Negative);
 				
-				m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.1f)",
-					gaugeVal,
-					g.m_tweetCount,
-					g.m_sessionAverage*100
-				));
+				long currentTime = System.currentTimeMillis();
+				if(currentTime > m_UpdateTime+1000){
+					m_wv.loadUrl( String.format("javascript:refresh_gauge(%d, %d, %.1f)",
+						gaugeVal,
+						g.m_tweetCount,
+						g.m_sessionAverage*100
+					));
+					m_UpdateTime = currentTime;
+				}
 				
 				// check for popular tweets, toast if we have one
 				WebToast t = m_inWebToasts.poll();
@@ -69,16 +77,23 @@ public class GaugeConsumer implements Runnable {
 							t.m_data3
 						));
 					}
-					else{
+					else {
+						currentTime = System.currentTimeMillis();
 						//m_activity.showToast(t.text);
-						m_wv.loadUrl( String.format("javascript:makeToast('%s','%s','%s', %d, %d, %d)",
-							t.m_type,
-							t.m_message,
-							t.m_heading,
-							t.m_data1,
-							t.m_data2,
-							t.m_data3
-						));
+						if(currentTime > m_Time+1500){
+							m_wv.loadUrl( String.format("javascript:makeToast('%s','%s','%s', %d, %d, %d)",
+								t.m_type,
+								t.m_message,
+								t.m_heading,
+								t.m_data1,
+								t.m_data2,
+								t.m_data3
+							));	
+							m_Time = currentTime;
+						}
+						else{
+							System.out.println("too much!!!!");
+						}
 					}
 				}
 				

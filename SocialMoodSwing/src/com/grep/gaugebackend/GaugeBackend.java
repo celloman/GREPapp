@@ -17,18 +17,23 @@ public class GaugeBackend {
 	static protected Thread m_weighterThread;
 	static protected Thread m_sentimenterThread;
 	static protected Thread m_aggregatorThread;
+	
+	// queues
+	static protected BlockingQueue<Tweet> m_fetchQueue;
+	static protected BlockingQueue<Tweet> m_weightQueue;
+	static protected BlockingQueue<Tweet> m_sentimentQueue;
 
 	public static void start(String[] keywords, String accessToken, String accessTokenSecret, BlockingQueue<WebToast> webToasts, BlockingQueue<Gauge> gaugeValues) {
 		// interprocess communication structures
-		BlockingQueue<Tweet> fetchQueue = new ArrayBlockingQueue<Tweet>(5);
-		BlockingQueue<Tweet> weightQueue = new ArrayBlockingQueue<Tweet>(5);
-		BlockingQueue<Tweet> sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
+		m_fetchQueue = new ArrayBlockingQueue<Tweet>(5);
+		m_weightQueue = new ArrayBlockingQueue<Tweet>(5);
+		m_sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
 		
 		// create the threads
-		GetTweets getter = new GetTweets(fetchQueue, webToasts, keywords, accessToken, accessTokenSecret);
-		GetWeight weighter = new GetWeight(fetchQueue, weightQueue, keywords);
-		GetSentiment sentimenter = new GetSentiment(weightQueue, sentimentQueue, webToasts);
-		Aggregate aggregator = new Aggregate(sentimentQueue, webToasts, gaugeValues);
+		GetTweets getter = new GetTweets(m_fetchQueue, webToasts, keywords, accessToken, accessTokenSecret);
+		GetWeight weighter = new GetWeight(m_fetchQueue, m_weightQueue, keywords);
+		GetSentiment sentimenter = new GetSentiment(m_weightQueue, m_sentimentQueue, webToasts);
+		Aggregate aggregator = new Aggregate(m_sentimentQueue, webToasts, gaugeValues);
 		
 		m_getterThread = new Thread(getter);
 		m_weighterThread = new Thread(weighter);
@@ -56,6 +61,10 @@ public class GaugeBackend {
 			m_weighterThread.join();
 			m_sentimenterThread.join();
 			m_aggregatorThread.join();
+			
+			m_fetchQueue = null;
+			m_weightQueue = null;
+			m_sentimentQueue = null;
 			
 		} catch (InterruptedException ex) {
 			System.out.println("something went wrong while killing the threads");
