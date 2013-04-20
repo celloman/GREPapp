@@ -13,6 +13,7 @@ import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 import com.grep.ui.LoginDialogFragment.LoginDialogListener;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	public final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
 	public final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
 	private final String CALLBACKURL = "socialmoodswing://credentials";
+	private int TWITTER_AUTH;
 	
 	// ListView variables
 	static ListView topicsListView;
@@ -56,6 +58,11 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	{
 		super.onResume();
 		dh.open();	
+		
+		// check database for credentials
+		if(dh.getCredentials() == null) {
+			showLoginDialog();
+		}
 	}
 	
 	@Override
@@ -72,11 +79,6 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		
 		dh = new DatabaseHandler(this);
 		dh.open();
-		
-		// check database for credentials
-		if(dh.getCredentials() == null) {
-			showLoginDialog();
-		}
 		
 		setContentView(R.layout.activity_topic_list);
 		setTitle(R.string.title_activity_topic_list);
@@ -115,6 +117,48 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	}
 	
 	/**
+	 * Add credential results returned from Twitter webview to database.
+	 * 
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		// check if results come from webview
+        if (requestCode == TWITTER_AUTH)
+        {
+        	//check if results are "OK" from webview
+            if (resultCode == Activity.RESULT_OK)
+            {
+                String verifier = (String) data.getExtras().get("oauth_verifier");
+
+                try
+                {
+                	httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
+    	            String user_key = httpOauthConsumer.getToken();
+    	            String user_secret = httpOauthConsumer.getTokenSecret();
+
+    	            // Save user_key and user_secret in database
+    	            Credentials c = new Credentials(user_key, user_secret);
+    	            dh.open();
+    	            dh.addCredentials(c);
+                }
+                catch (Exception e)
+                {
+                	//showLoginDialog();
+                	Toast.makeText(this, "Please log into Twitter" , Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        else
+        {
+            Toast.makeText(this, "uh oh, Spaghetti Os", 300).show();
+        }
+    }
+	
+	/**
 	 * Captures return values from Twitter OAuth
 	 * 
 	 * @param intent
@@ -122,15 +166,17 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	@Override
 	protected void onNewIntent(Intent intent) {
 	    super.onNewIntent(intent);
-
-	    Uri uri = intent.getData();
-
+	    
+	    Toast.makeText(this, "onNewIntent", Toast.LENGTH_LONG).show();
+	    
+	    Uri uri = (Uri) intent.getExtras().get("webview_uri");
+	
 	    //Check if you got NewIntent event due to Twitter Call back only
 
 	    if (uri != null && uri.toString().startsWith(CALLBACKURL)) {
 
-	        String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
-
+	        //String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
+	    	String verifier = (String) intent.getExtras().get("oauth_verifier");
 	        try {
 	            // this will populate token and token_secret in consumer
 
@@ -144,7 +190,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	            dh.addCredentials(c);
 
 	        } catch(Exception e){
-	        	showLoginDialog();
+	        	//showLoginDialog();
 	        	Toast.makeText(this, "Please log into Twitter" , Toast.LENGTH_LONG).show();
 	        }
 	    } else {
@@ -152,11 +198,6 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	    }
 	}
 
-	@Override
-	public void onBackPressed() {
-		// exit app on back press
-	    this.finish();
-	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -203,9 +244,13 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		                                            "https://api.twitter.com/oauth/access_token",
 		                                            "https://api.twitter.com/oauth/authorize");
 		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
-		    // Open the browser
-		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
-		    startActivity(intent);
+		    /* // Open the browser
+		     * Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
+		     */
+		    // open web view with for twitter authentication
+		    Intent intent = new Intent(this, TwitterWebviewActivity.class);
+		    intent.putExtra("URL", authUrl);
+		    startActivityForResult(intent, TWITTER_AUTH);
 		} catch (Exception e) {
 		    Toast.makeText(this, "Unable to connect to Twitter. Make sure you have internet access" +
 		    		" and the correct time for your location.\n\nError: " + e.toString(), Toast.LENGTH_LONG).show();
@@ -305,7 +350,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		if(c==null) {
 			Toast.makeText(this, "No credentials in database!" , Toast.LENGTH_LONG).show();
 		} else {
-			Toast.makeText(this, "Key: " + c.getConsumerKey() + "; Secret: " + c.getConsumerSecret() , Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Key: " + c.getUserKey() + "; Secret: " + c.getUserSecret() , Toast.LENGTH_LONG).show();
 		}	
 	}
 }

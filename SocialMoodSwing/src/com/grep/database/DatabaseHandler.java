@@ -25,7 +25,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	//Static variables
 	//Database version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	
 	// Database name
 	private static final String DATABASE_NAME = "SMS_DB";
@@ -38,8 +38,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	// Authentication Table column names
 	private static final String USER_KEY_ID = "id";
-	private static final String CONSUMER_KEY = "c_key";
-	private static final String CONSUMER_SECRET = "c_secret";
+	private static final String USER_KEY = "c_key";
+	private static final String USER_SECRET = "c_secret";
 	
 	// Topic Table column names
 	private static final String TOPIC_KEY_ID = "id";
@@ -76,8 +76,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // Create Authentication Table in SQLite DB
     	String CREATE_AUTH_TABLE = "CREATE TABLE " + AUTH_TABLE + " ("
-                + USER_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + CONSUMER_KEY + " TEXT, "
-                + CONSUMER_SECRET + " TEXT" + ")";
+                + USER_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + USER_KEY + " TEXT, "
+                + USER_SECRET + " TEXT" + ")";
         db.execSQL(CREATE_AUTH_TABLE);
         
         // Create Topic Table in SQLite DB
@@ -189,8 +189,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     public int addCredentials(Credentials credentials) {   	
     	ContentValues values = new ContentValues();
-    	values.put(CONSUMER_KEY, credentials.getConsumerKey());
-    	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
+    	values.put(USER_KEY, credentials.getUserKey());
+    	values.put(USER_SECRET, credentials.getUserSecret());
     	
     	return (int)this.db.insert(AUTH_TABLE, null, values);
     }
@@ -210,7 +210,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	Cursor cursor = this.db.rawQuery(selectQuery, null);
     	/*
     	Cursor cursor = this.db.query(AUTH_TABLE, new String[] { USER_KEY_ID,
-                CONSUMER_KEY, CONSUMER_SECRET }, USER_KEY_ID + " =?",
+                USER_KEY, USER_SECRET }, USER_KEY_ID + " =?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
     	*/
     	if (cursor.getCount() > 0) {
@@ -234,8 +234,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     public boolean updateCredentials(Credentials credentials) {  	
     	ContentValues values = new ContentValues();
-    	values.put(CONSUMER_KEY, credentials.getConsumerKey());
-    	values.put(CONSUMER_SECRET, credentials.getConsumerSecret());
+    	values.put(USER_KEY, credentials.getUserKey());
+    	values.put(USER_SECRET, credentials.getUserSecret());
     	
     	// update credentials row
     	boolean updateSuccess = this.db.update(AUTH_TABLE, values, USER_KEY_ID + " = ?",

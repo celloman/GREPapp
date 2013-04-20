@@ -18,9 +18,9 @@ public class Credentials {
 	// Table key id
 	private int id;
 	
-	// OAuth consumer key and secret
-	private String consumerKey;
-	private String consumerSecret;
+	// OAuth user key and secret
+	private String userKey;
+	private String userSecret;
 	
 	/**
 	 * Constructor
@@ -35,8 +35,8 @@ public class Credentials {
 	 * @param secret 	(String)
 	 */
 	public Credentials(String key, String secret) {
-		this.consumerKey = key;
-		this.consumerSecret = secret;
+		this.userKey = key;
+		this.userSecret = secret;
 	}
 	
 	/**
@@ -47,8 +47,8 @@ public class Credentials {
 	 */
 	public Credentials(int id, String key, String secret) {
 		this.id = id;
-		this.consumerKey = key;
-		this.consumerSecret = secret;
+		this.userKey = key;
+		this.userSecret = secret;
 	}
 	
 	// Get and set methods
@@ -70,34 +70,34 @@ public class Credentials {
 	}
 	
 	/**
-	 * {@code public String getConsumerKey}
-	 * @return consumerKey
+	 * {@code public String getUserKey}
+	 * @return userKey
 	 */
-	public String getConsumerKey() {
-		return this.consumerKey;
+	public String getUserKey() {
+		return this.userKey;
 	}
 	
 	/**
-	 * {@code public void setConsumerKey}
+	 * {@code public void setUserKey}
 	 * @param key	(String)
 	 */
-	public void setConsumerKey(String key) {
-		this.consumerKey = key;
+	public void setUserKey(String key) {
+		this.userKey = key;
 	}
 	
 	/**
-	 * {@code public String getConsumerSecret}
-	 * @return consumerSecret
+	 * {@code public String getUserSecret}
+	 * @return userSecret
 	 */
-	public String getConsumerSecret() {
-		return this.consumerSecret;
+	public String getUserSecret() {
+		return this.userSecret;
 	}
 	
 	/**
-	 * {@code setConsumerSecret}
+	 * {@code setUserSecret}
 	 * @param secret	(String)
 	 */
-	public void setConsumerSecret(String secret) {
-		this.consumerSecret	= secret;
+	public void setUserSecret(String secret) {
+		this.userSecret	= secret;
 	}
 }
