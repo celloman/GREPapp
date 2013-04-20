@@ -36,6 +36,7 @@ public class WarningDialogFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.warning_dialog, null);
         final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveCheckBox);
         
+        // if no Tweets were processed, do not allow user to save session
         if(!arguments.getBoolean("hasValues")) {
         	saveSession.setChecked(false);
         	saveSession.setEnabled(false);

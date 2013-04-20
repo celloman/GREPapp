@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -80,14 +79,16 @@ public class TopicActivity extends FragmentActivity {
 			// Calculate real analysis session average sentiment and store
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment()) {
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
-				toolTips.add("" + analysisSessions.get(i).getAvgNegSentiment() + "%");
+				// Add negative value to toolTip string... no need to add -
+				toolTips.add(analysisSessions.get(i).getAvgNegSentiment() + "%");
 			}
 			else {
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
+				// Add the sentiment values to the toolTip strings to be placed in toolTips on the graph
 				if(analysisSessions.get(i).getAvgPosSentiment() == 0)
-					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%");
+					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%"); // If 0, don't add +
 				else
-					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%");
+					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%"); // Add + for positive
 			}
 		}
 		
@@ -113,8 +114,8 @@ public class TopicActivity extends FragmentActivity {
 						historyGraphWebView.loadUrl("javascript:sessions[" + i + "] = " + analysisValues.get(i) + ";"); // No need to adjust real values
 					// Pass time stamp from the database into graph
 					historyGraphWebView.loadUrl("javascript:timeStamps[" + i + "] = '" + analysisTimes.get(i) + "';");
+					// Pass toolTip string to graph
 					historyGraphWebView.loadUrl("javascript:toolTips[" + i + "] = '" + toolTips.get(i) + "';");
-					
 				}
 				
 				// Call javascript function to draw the graph with appropriate data
@@ -126,11 +127,11 @@ public class TopicActivity extends FragmentActivity {
 		if(analysisValues.size() > 1)
 			historyGraphWebView.loadUrl("file:///android_asset/graph.html");
 		else if (analysisValues.size() == 1){
+			// If there is only one analysis session in history, display a message in the webview instead of the graph (as can't see the point)
 			historyGraphWebView.loadData("<html><body>There is currently only one analysis session in this topic's history, a graph will" +
 					" display once there are at least two sessions in the database.</body></html>", "text/html", null);
 		}
-		// Prevent scrolling within webview
-		// TODO We may want to enable horizontal scrolling for better graph accessibility
+		// Allow horizontal scrolling within webview
 		historyGraphWebView.setHorizontalScrollBarEnabled(true);
 		historyGraphWebView.setVerticalScrollBarEnabled(false);
 		
@@ -140,7 +141,6 @@ public class TopicActivity extends FragmentActivity {
 		historyGraphWebSettings.setJavaScriptEnabled(true);
 		historyGraphWebSettings.setDomStorageEnabled(true); // Might not be necessary
 		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph? Might not be necessary
-		//historyGraphWebSettings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN); // disable horizontal scrolling (for sure) TODO check on this
 		
 		// EditText area that displays statistics for all historical analysis sessions
 		EditText info = (EditText) findViewById(R.id.topicInfo);
@@ -151,11 +151,11 @@ public class TopicActivity extends FragmentActivity {
 		
 		// Gather data from all analysis sessions
 		for(int i = 0; i < analysisSessions.size(); i++) {
-			// Tally the total number of tweets over all analysis sessions for the current topic
+			// Tally the total number of Tweets over all analysis sessions for the current topic
 			totalTweets += analysisSessions.get(i).getNumTweetsProcessed();
-			// Tally the total number of seconds that the application has spent analyizing the current topic
+			// Tally the total number of seconds that the application has spent analyzing the current topic
 			totalTime += analysisSessions.get(i).getDuration();
-			// Calculate the proper sentiment to retrieve, and retrieve it, adding to overall average sentiment calculation for the current topic
+			// Calculate the proper sentiment to retrieve, and retrieve it, adding to overall weighted average sentiment calculation for the current topic
 			if(analysisSessions.get(i).getAvgPosSentiment() > (-1) * analysisSessions.get(i).getAvgNegSentiment())
 				avgSentiment += analysisSessions.get(i).getAvgPosSentiment() * analysisSessions.get(i).getNumTweetsProcessed();
 			else
@@ -166,7 +166,7 @@ public class TopicActivity extends FragmentActivity {
 		if(analysisSessions.size() > 0) {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/totalTweets;
-		
+			
 			info.setText("Tweets Processed:\t" + totalTweets + "\n");
 			
 			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
@@ -225,8 +225,9 @@ public class TopicActivity extends FragmentActivity {
 		int hours = 0;
 		int minutes = 0;
 		
-		
+		// If user entered time and has credentials in the database...
 		if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0 && dh.getCredentials() != null) {
+			// Calculate time from user input
 			if(hoursEntry.getText().length() != 0) {
 				hours = Integer.parseInt(hoursEntry.getText().toString());
 			}
@@ -235,16 +236,23 @@ public class TopicActivity extends FragmentActivity {
 			}
 			int time = hours * 3600 + minutes * 60;
 			
+			// Create intent to go to Gauge Activity
 			Intent intent = new Intent(this, GaugeActivity.class);
+			// Pass analysis session duration to Gauge Activity
 			intent.putExtra("analysisDuration", time);
+			// Pass the topic id to the Gauge Activity
 			intent.putExtra("topicId", topic_id);
 			startActivity(intent);
 		}
 		else if(dh.getCredentials() == null) {
+			// If user hasn't logged in with Twitter, don't allow them to go to Gauge Activity
+			// Should not ever get here, as should be forced on Topic List Activity
 			Toast.makeText(this, "Please log in with Twitter", Toast.LENGTH_LONG).show();
 		}
 		else {
+			// If user fails to enter a duration, inform them that they need to
 			Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
+			// Set text color to red in duration boxes to inform the user where to look
 			hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
 			minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
 		}
