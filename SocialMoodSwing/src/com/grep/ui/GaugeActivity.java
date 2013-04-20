@@ -99,11 +99,11 @@ public class GaugeActivity extends FragmentActivity {
 				return true; // Fix crashing on long click
 			}
 		});
+		
 		m_webView.setLongClickable(false);
 		m_webView.loadUrl("file:///android_asset/gauge.html");
 		
-		// start another thread to process gauge values TODO add another to process
-		// the popular Tweets
+		// start another thread to process gauge values
 		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, m_webView);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
@@ -130,7 +130,7 @@ public class GaugeActivity extends FragmentActivity {
 			      			}
 			      		}
 			        });
-			        Thread.sleep(1000); // Sleep for a second before updating count
+			        Thread.sleep(998); // Sleep for a second before updating count
 			      }
 			    } catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
