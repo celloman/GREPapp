@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -43,6 +44,7 @@ public class GaugeActivity extends FragmentActivity {
 	int elapsedTime;
 	WebView m_webView;
 	
+	// TODO Why on earth is this here, is it ever used?
 	public void showToast(final String toast) {
 		runOnUiThread(new Runnable() {
 			public void run() {
@@ -51,24 +53,25 @@ public class GaugeActivity extends FragmentActivity {
 		});
 	}
 
-	@SuppressLint("SetJavaScriptEnabled")
+	@SuppressLint("SetJavaScriptEnabled") // Prevents warnings about using javascript in webview
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gauge);
 
 		dh.open();
-		topic_id = getIntent().getIntExtra("topicId", -1);
+		topic_id = getIntent().getIntExtra("topicId", -1); // Get topic id
 		
+		// Set title of activity to "Analysis Session - <Topic Name>"
 		setTitle(getResources().getString(R.string.title_activity_gauge) + " - " + dh.getTopic(topic_id).getTopicName());
 		
 		if (topic_id == -1) {
 			//Show user an error if the topic id is not properly retrieved... something went wrong
-			//Should not ever really get here
+			//Should not ever get here, as all topics on list should be in db
 			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
 			this.finish();
 		}
-		
+		// Retrieve the analysis session duration passed from the topic activity
 		final int duration = getIntent().getIntExtra("analysisDuration", 10);
 		sessionDuration = duration;
 		
@@ -81,6 +84,7 @@ public class GaugeActivity extends FragmentActivity {
 		BlockingQueue<WebToast> webToasts = new ArrayBlockingQueue<WebToast>(100);
 		BlockingQueue<Gauge> gaugeValues = new ArrayBlockingQueue<Gauge>(100);
 
+		// Get Twitter OAuth credentials from database (for Tweet retrieval)
 		Credentials c = dh.getCredentials();
 
 		GaugeBackend.start(keywords, c.getConsumerKey(), c.getConsumerSecret(), webToasts, gaugeValues);
@@ -92,7 +96,7 @@ public class GaugeActivity extends FragmentActivity {
 		m_webView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				return true;
+				return true; // Fix crashing on long click
 			}
 		});
 		m_webView.setLongClickable(false);
@@ -104,6 +108,9 @@ public class GaugeActivity extends FragmentActivity {
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
 		
+		// Thread handling the updating of the countdown timer on Gauge Activity
+		// Also handles terminating threads at end of duration, and showing
+		// of dialog at end of session
 		countdown = new Thread() {
 			int remainingTime = duration;
 			  @Override
@@ -117,22 +124,24 @@ public class GaugeActivity extends FragmentActivity {
 			      			// Don't allow counter to go below 0
 			      			if(remainingTime > 0) {
 			      				remainingTime--;
-			      				elapsedTime++;
+			      				elapsedTime++; // Keep track of elapsed time... could modify so this isn't needed...
 			      			} else if (remainingTime <= 0) {
-			      				showEndSessionMessage();
+			      				showEndSessionMessage(); // Show end session dialog when duration is up
 			      			}
 			      		}
 			        });
-			        Thread.sleep(998); // This should possibly be more like 997... It loses ~1 sec every 5 mins
+			        Thread.sleep(1000); // Sleep for a second before updating count
 			      }
 			    } catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
+			    	Log.e(getName(), "Error in timer thread");
 			    }
 			  }
 			};
-		countdown.start();
+		countdown.start(); // Start the countdown timer
 	}
 	
+	// Updates countdown display
 	public void refreshTime(int remainingTime) {
 		TextView textView = (TextView) findViewById(R.id.time_left);
 		if(remainingTime >= 3600) // If duration is greater than an hour
@@ -142,38 +151,41 @@ public class GaugeActivity extends FragmentActivity {
 		else if(remainingTime >= 60) // If duration is greater than a minute (but less than an hour)
 			textView.setText(String.format("%02d", (remainingTime - (remainingTime/3600)*3600)/60) + ":" 
 					+ String.format("%02d", (remainingTime- (remainingTime/60)*60)) + " remaining");
-		else
+		else // If duration is less than a minute, display seconds
 			textView.setText((remainingTime- (remainingTime/60)*60) + " seconds remaining");
 	}
 	
-	public void dialogueChecked() {
-		
-	}
-	
+	// Save results if user checked box in dialog (warning or end session)
 	public void saveResults(boolean isChecked) {
 		dh.open();
 		// get latest gauge value from consumer and save to database
 		System.out.println("Values: " + m_gaugeConsumer + m_gaugeConsumer.m_latestGauge);
 		if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null && isChecked) {
+			// Determine whether average in gauge is positive or negative
 			if(m_gaugeConsumer.m_latestGauge.m_sessionAverage > 0) {
+				// if positive, save appropriate values
 				dh.addSession(new Session(topic_id, 
 						elapsedTime, 
 						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
 						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100), 
-						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage - 1) * 100))); // Need to figure out these numbers
+						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage - 1) * 100)));
 			} else {
+				// if negative, save appropriate values
 				dh.addSession(new Session(topic_id, 
 						elapsedTime, 
 						m_gaugeConsumer.m_latestGauge.m_tweetCount, 
 						(int)((m_gaugeConsumer.m_latestGauge.m_sessionAverage + 1) * 100), 
-						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100))); // Need to figure out these numbers
+						(int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100)));
 			}
 		}
 		dh.close();
+		//finish the activity TODO is this in the right place?
 		finish();
 	}
 
+	// Stop all gauge threads
 	public void stopGaugeThreads() {
+		countdown.interrupt(); // Stop timer in background
 		GaugeBackend.stop();
 		GaugeActivity.m_gaugeConsumerThread.interrupt();
 		try {
@@ -194,6 +206,7 @@ public class GaugeActivity extends FragmentActivity {
 		m_webView = null;
 	}
 
+	// TODO Remove?
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -201,14 +214,24 @@ public class GaugeActivity extends FragmentActivity {
 		return true;
 	}
 	
+	// Show message alerting user that they pressed stop, and that continuing will
+	// end current analysis session
+	// Offers opportunity to save current results if they terminate the session
 	public void showWarningMessage(View v) {
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new WarningDialogFragment();
+        Bundle sessionValues = new Bundle();
+        if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+        	sessionValues.putBoolean("hasValues", true);
+        } else {
+        	sessionValues.putBoolean("hasValues", false);
+        }
+        dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "WarningDialogFragment");
 	}
 	
+	// Show dialog when the duration is up
 	public void showEndSessionMessage() {
-		countdown.interrupt(); // Stop timer in background
 		elapsedTime = sessionDuration; // Ensure time added to db is what is expected
 
 		// Stop the gauge threads so gauge does not continue running in background
@@ -218,9 +241,15 @@ public class GaugeActivity extends FragmentActivity {
         DialogFragment dialog = new EndSessionDialogFragment();
         Bundle sessionValues = new Bundle();
         // Send values to be displayed to dialog
-        sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
-        sessionValues.putInt("runTime", sessionDuration);
-        sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
+        if(m_gaugeConsumer != null && m_gaugeConsumer.m_latestGauge != null) {
+        	sessionValues.putInt("numTweets", m_gaugeConsumer.m_latestGauge.m_tweetCount);
+        	sessionValues.putInt("runTime", sessionDuration);
+        	sessionValues.putInt("sessionAverage", (int)(m_gaugeConsumer.m_latestGauge.m_sessionAverage * 100));
+        	sessionValues.putBoolean("hasValues", true);
+        } else {
+        	// No Tweets were processed, don't allow user to attempt to save
+        	sessionValues.putBoolean("hasValues", false);
+        }
         dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
 	}

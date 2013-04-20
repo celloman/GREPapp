@@ -11,11 +11,12 @@
     <script src="./js/jquery.min.js" ></script>
 </head>
 <body>
-    <div style="text-align:center"><canvas id="cvs" width="300" height="300" style="display:inline"></canvas></div>
+    <div style="text-align:center"><canvas id="cvs" height="300" style="display:inline"></canvas></div>
     
     <script>
     	sessions = new Array();
 		timeStamps = new Array();
+		toolTips = new Array();
         window.onload = function ()
         {
         }
@@ -24,6 +25,7 @@
             //RGraph.Clear(document.getElementById("cvs"));
             myLine = new RGraph.Line('cvs', sessions);
        		myLine.Set('chart.labels', timeStamps);
+			myLine.Set('tooltips', toolTips);
 			myLine.Set('chart.gutter.left', 45); // set left padding
             myLine.Set('chart.gutter.right', 15); // set right padding
             myLine.Set('chart.gutter.bottom', 100); // set space for labels under graph
@@ -50,7 +52,7 @@
             myLine.Set('chart.axis.color', '#000');
             myLine.Set('chart.text.color', '#000');
             myLine.Set('chart.scale.round', true);
-            //myLine.Set('chart.spline', true);
+            //myLine.Set('chart.spline', true); // Rounded points
             myLine.Set('chart.colors.alternate', true); // Different colors for positive and negative slopes (defined on chart.colors)
             myLine.Set('chart.xaxispos', 'center'); // Allow for negative values
 			RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000}); // Unfolding effect
@@ -61,13 +63,6 @@
        		RGraph.Clear(document.getElementById("cvs"));
        		RGraph.ObjectRegistry.Clear();
        	}
-       
-		/*function draw_graph(){
-				myLine = new RGraph.Line('cvs', <?php print($newSessions);?>);//sessions);
-				myLine.Set('chart.labels', <?php print($timeStamps);?>);
-				//sessions = newSessions;
-				RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000});
-		}*/
     </script>
 
 </body>

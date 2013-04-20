@@ -3,6 +3,7 @@ package com.grep.ui;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -37,14 +38,28 @@ public class EndSessionDialogFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.end_session_dialog, null);
         final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveSessionCheckBox);
         final TextView sessionInfo = (TextView) view.findViewById(R.id.endSessionTextView);
-
-		sessionInfo.append("\nTweets Processed: " + arguments.getInt("numTweets") + "\n");
-		if(arguments.getInt("runTime") >= 3600)
-			sessionInfo.append("Session Duration: \t" + String.format("%02d", arguments.getInt("runTime")/3600) + "h " + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
-		else if (arguments.getInt("runTime") >=60)
-			sessionInfo.append("Session Duration: \t" + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
-		sessionInfo.append("Avg. Sentiment: \t\t" + arguments.getInt("sessionAverage") + "%\n");
-
+        
+        // If Tweets were processed during session
+        if(arguments.getBoolean("hasValues")) {
+        	// Display number of Tweets processed
+        	sessionInfo.append("\nTweets Processed: " + arguments.getInt("numTweets") + "\n");
+        	// Display duration of analysis session
+        	// No need for seconds only, as user cannot enter less than a minute
+        	if(arguments.getInt("runTime") >= 3600)
+        		sessionInfo.append("Session Duration: \t" + String.format("%02d", arguments.getInt("runTime")/3600) + "h " + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
+        	else if (arguments.getInt("runTime") >=60)
+        		sessionInfo.append("Session Duration: \t" + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
+        	// Display average sentiment for this session
+        	sessionInfo.append("Avg. Sentiment: \t\t" + arguments.getInt("sessionAverage") + "%\n");
+        } else {
+        	// If no Tweets were processed, inform user
+        	// Their keywords may be bad, or there may have been a communication error with Twitter
+        	sessionInfo.append("Error: No Tweets were processed during this analysis session!\n" +
+        			"There may have been a communication error with Twitter, or there may not be any Tweets with your keyword set");
+        	// Don't allow them to save a null session
+        	saveSession.setChecked(false);
+        	saveSession.setEnabled(false);
+        }
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setMessage("Analysis Session Ended")

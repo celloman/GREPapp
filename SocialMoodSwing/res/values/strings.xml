@@ -10,12 +10,13 @@
     <string name="title_activity_topic">Run History</string>
     <string name="text_button_stop">Stop</string>
     <string name="text_button_topic">To Topic</string>
-    <string name="temporary">More info to go here\nand here and here</string>
     <string name="title_activity_login">Twitter Login</string>
+    <string name="login_description_text">This application requires a twitter account to fetch Tweets from Twitter. By clicking the Twitter Login button below, you can login to your Twitter account (or create one if you don\'t have one already). No normation will be retireved form your Twitter account by this application.</string>
     <string name="text_save_session">Save this analysis session</string>
     <string name="analysis_session_ended">Analysis Session Ended</string>
     <string name="title_activity_topic_keywords">Topic Keywords</string>
     <string name="new_topic">New Topic</string>
+    <string name="title_activity_launch">LaunchActivity</string>
     <string name="delete_topic_warning_message">Are you sure you want to delete this topic, all associated keywords, and its analysis session history?</string>
     <string name="title_activity_help">HelpActivity</string>
 
