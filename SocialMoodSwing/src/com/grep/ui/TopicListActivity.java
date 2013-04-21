@@ -43,6 +43,7 @@ public class TopicListActivity extends FragmentActivity {
 	public final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
 	private final String CALLBACKURL = "socialmoodswing://credentials";
 	private int TWITTER_AUTH;
+	private String verifier;
 	
 	// ListView variables
 	static ListView topicsListView;
@@ -131,26 +132,37 @@ public class TopicListActivity extends FragmentActivity {
         	//check if results are "OK" from webview
             if (resultCode == Activity.RESULT_OK)
             {
-                String verifier = (String) data.getExtras().get("oauth_verifier");
+                verifier = (String) data.getExtras().get("oauth_verifier");
 
-                try
-                {
-                	httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
-    	            String user_key = httpOauthConsumer.getToken();
-    	            String user_secret = httpOauthConsumer.getTokenSecret();
+                // Twitter authentication needs to be run in separate thread for newer
+                // versions of android
+            	Runnable runnable = new Runnable() {
+            		@Override
+        		    public void run() {
+        		    	Looper.prepare();
+        		    	try
+        		    	{
+            		    	httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
+            		    
+            		
+            		        String user_key = httpOauthConsumer.getToken();
+            		        String user_secret = httpOauthConsumer.getTokenSecret();
 
-    	            // Save user_key and user_secret in database
-    	            Credentials c = new Credentials(user_key, user_secret);
-    	            dh.open();
-    	            dh.addCredentials(c);
-                }
-                catch (Exception e)
-                {
-                	// user presses cancel button in web view
-                	Toast.makeText(this, e.toString() , Toast.LENGTH_LONG).show();
-                	e.printStackTrace();
-                	finish();
-                } 
+            		        // Save user_key and user_secret in database
+            		        Credentials c = new Credentials(user_key, user_secret);
+            		        dh.open();
+            		        dh.addCredentials(c);
+        		    	}
+        		    	catch (Exception e)
+        		    	{
+        		    		e.printStackTrace();
+        		    		finish();
+        		    	} 
+        		    	Looper.loop();
+            		}
+            	};           	
+            	//start thread
+        		new Thread(runnable).start();
             }else {
             	// user uses back press to leave activity
             	finish();
@@ -176,11 +188,12 @@ public class TopicListActivity extends FragmentActivity {
 	    // Handle item selection
 	    switch (item.getItemId())
 	    {
-	        case R.id.menu_login:
-	        	// remove current credentials from database
+	        case R.id.menu_login:        	
 	        	Credentials c = dh.getCredentials();
-	        	dh.deleteCredentials(c.getId());
-	        	
+	        	// remove current credentials from database
+	        	if(c != null) {
+	        		dh.deleteCredentials(c.getId());
+	        	}	
 	        	// start new thread for Twitter OAuth
 	        	newOAuthThread();
 	            return true;
