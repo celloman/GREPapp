@@ -14,6 +14,7 @@ import com.grep.ui.ListItemAdapter.TopicListItemHolder;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -49,8 +50,6 @@ public class TopicListActivity extends FragmentActivity {
 	static List<ListItem> rows = new ArrayList<ListItem>();
 	List<Topic> topics = new ArrayList<Topic>();
 	
-	DialogFragment dialog;
-	
 	DatabaseHandler dh;
 	
 	@Override
@@ -75,26 +74,9 @@ public class TopicListActivity extends FragmentActivity {
 		dh = new DatabaseHandler(this);
 		dh.open();
 		
-		// check database for credentials
 		if(dh.getCredentials() == null) {
-			// run authentication process in new thread
-			Runnable runnable = new Runnable() {
-			    @Override
-			    public void run() {
-					// show loading dialog
-					dialog = new LoadingDialogFragment();
-					dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
-			    	
-			    	// start Twitter OAuth
-			    	startOAuth();
-			        
-			    	// after finishing, close the progress bar
-			        dialog.dismiss();
-			    }
-			};
-			
-			//start thread
-			new Thread(runnable).start();
+			// start OAuth proccess in new thread
+			newOAuthThread();
 		}
 		
 		setContentView(R.layout.activity_topic_list);
@@ -165,6 +147,8 @@ public class TopicListActivity extends FragmentActivity {
                 catch (Exception e)
                 {
                 	// user presses cancel button in web view
+                	Toast.makeText(this, e.toString() , Toast.LENGTH_LONG).show();
+                	e.printStackTrace();
                 	finish();
                 } 
             }else {
@@ -176,7 +160,6 @@ public class TopicListActivity extends FragmentActivity {
         {
         	// non twitter auth request code
         }
-        dialog.dismiss();
     }
 
 	@Override
@@ -194,30 +177,12 @@ public class TopicListActivity extends FragmentActivity {
 	    switch (item.getItemId())
 	    {
 	        case R.id.menu_login:
-	        	
 	        	// remove current credentials from database
 	        	Credentials c = dh.getCredentials();
 	        	dh.deleteCredentials(c.getId());
 	        	
-	        	// run authentication process in new thread
-				Runnable runnable = new Runnable() {
-				    @Override
-				    public void run() {
-						// show loading dialog
-						dialog = new LoadingDialogFragment();
-						dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
-				    	
-				    	// start Twitter OAuth
-				    	startOAuth();
-				        
-				    	// after finishing, close the progress bar
-				        dialog.dismiss();
-				    }
-				};
-				
-				//start thread
-				new Thread(runnable).start();
-	        	
+	        	// start new thread for Twitter OAuth
+	        	newOAuthThread();
 	            return true;
 	        case R.id.menu_help:
 	        	showHelpActivity();
@@ -228,11 +193,38 @@ public class TopicListActivity extends FragmentActivity {
 	}
 	
 	/**
+	 * Make a new thread for Twitter OAuth and run startOAuth
+	 */
+	public void newOAuthThread() {
+    	
+    	// run authentication process in new thread
+		Runnable runnable = new Runnable() {
+		    @Override
+		    public void run() {
+		    	Looper.prepare();
+				// show loading dialog
+				DialogFragment dialog = new LoadingDialogFragment();
+				dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
+		    	
+		    	// start Twitter OAuth
+		    	startOAuth();
+		        
+		    	// after finishing, close the progress bar
+		        dialog.dismiss();
+		        Looper.loop();
+		    }
+		};
+		
+		//start thread
+		new Thread(runnable).start();
+	}
+	
+	/**
 	 * Starts user authentication using Twitter OAuth
 	 */
 	public void startOAuth() {
 		
-		//Attempt to open Twitter OAuth in browser
+		//Attempt to open Twitter OAuth in webview
 		try {
 		    httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
 		    httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
