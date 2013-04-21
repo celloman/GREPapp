@@ -38,8 +38,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	// Authentication Table column names
 	private static final String USER_KEY_ID = "id";
-	private static final String USER_KEY = "c_key";
-	private static final String USER_SECRET = "c_secret";
+	private static final String USER_KEY = "user_key";
+	private static final String USER_SECRET = "user_secret";
 	
 	// Topic Table column names
 	private static final String TOPIC_KEY_ID = "id";

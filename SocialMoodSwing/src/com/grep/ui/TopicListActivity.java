@@ -11,17 +11,15 @@ import com.grep.database.Credentials;
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Topic;
 import com.grep.ui.ListItemAdapter.TopicListItemHolder;
-import com.grep.ui.LoginDialogFragment.LoginDialogListener;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -36,8 +34,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * @author Gresham, Ryan, Everett, Pierce
  *
  */
-public class TopicListActivity extends FragmentActivity implements LoginDialogListener
-{
+public class TopicListActivity extends FragmentActivity {
 	//OAuth variables
 	private CommonsHttpOAuthConsumer httpOauthConsumer;
 	private OAuthProvider httpOauthprovider;
@@ -51,6 +48,9 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	static ListItemAdapter adapter;
 	static List<ListItem> rows = new ArrayList<ListItem>();
 	List<Topic> topics = new ArrayList<Topic>();
+	
+	DialogFragment dialog;
+	
 	DatabaseHandler dh;
 	
 	@Override
@@ -58,11 +58,6 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	{
 		super.onResume();
 		dh.open();	
-		
-		// check database for credentials
-		if(dh.getCredentials() == null) {
-			showLoginDialog();
-		}
 	}
 	
 	@Override
@@ -80,9 +75,31 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		dh = new DatabaseHandler(this);
 		dh.open();
 		
+		// check database for credentials
+		if(dh.getCredentials() == null) {
+			// run authentication process in new thread
+			Runnable runnable = new Runnable() {
+			    @Override
+			    public void run() {
+					// show loading dialog
+					dialog = new LoadingDialogFragment();
+					dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
+			    	
+			    	// start Twitter OAuth
+			    	startOAuth();
+			        
+			    	// after finishing, close the progress bar
+			        dialog.dismiss();
+			    }
+			};
+			
+			//start thread
+			new Thread(runnable).start();
+		}
+		
 		setContentView(R.layout.activity_topic_list);
 		setTitle(R.string.title_activity_topic_list);
-
+		
         //create an adapter which defines the data/format of each element of our listview
         adapter = new ListItemAdapter(this, R.layout.topics_list_item_row, rows, ListItemAdapter.listItemType.TOPIC);
               
@@ -113,7 +130,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 				rows.add(new ListItem(R.drawable.edit_pencil, topics.get(i).getTopicName(), topics.get(i).getId()));
 				adapter.notifyDataSetChanged();
 			}
-		}	
+		}
 	}
 	
 	/**
@@ -147,56 +164,20 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
                 }
                 catch (Exception e)
                 {
-                	//showLoginDialog();
-                	Toast.makeText(this, "Please log into Twitter" , Toast.LENGTH_LONG).show();
-                }
+                	// user presses cancel button in web view
+                	finish();
+                } 
+            }else {
+            	// user uses back press to leave activity
+            	finish();
             }
         }
         else
         {
-            Toast.makeText(this, "uh oh, Spaghetti Os", 300).show();
+        	// non twitter auth request code
         }
+        dialog.dismiss();
     }
-	
-	/**
-	 * Captures return values from Twitter OAuth
-	 * 
-	 * @param intent
-	 */
-	@Override
-	protected void onNewIntent(Intent intent) {
-	    super.onNewIntent(intent);
-	    
-	    Toast.makeText(this, "onNewIntent", Toast.LENGTH_LONG).show();
-	    
-	    Uri uri = (Uri) intent.getExtras().get("webview_uri");
-	
-	    //Check if you got NewIntent event due to Twitter Call back only
-
-	    if (uri != null && uri.toString().startsWith(CALLBACKURL)) {
-
-	        //String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
-	    	String verifier = (String) intent.getExtras().get("oauth_verifier");
-	        try {
-	            // this will populate token and token_secret in consumer
-
-	            httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
-	            String user_key = httpOauthConsumer.getToken();
-	            String user_secret = httpOauthConsumer.getTokenSecret();
-
-	            // Save user_key and user_secret in database
-	            Credentials c = new Credentials(user_key, user_secret);
-	            dh.open();
-	            dh.addCredentials(c);
-
-	        } catch(Exception e){
-	        	//showLoginDialog();
-	        	Toast.makeText(this, "Please log into Twitter" , Toast.LENGTH_LONG).show();
-	        }
-	    } else {
-	        // Do something if the callback comes from elsewhere
-	    }
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -213,9 +194,30 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	    switch (item.getItemId())
 	    {
 	        case R.id.menu_login:
+	        	
+	        	// remove current credentials from database
 	        	Credentials c = dh.getCredentials();
 	        	dh.deleteCredentials(c.getId());
-	        	showLoginDialog();
+	        	
+	        	// run authentication process in new thread
+				Runnable runnable = new Runnable() {
+				    @Override
+				    public void run() {
+						// show loading dialog
+						dialog = new LoadingDialogFragment();
+						dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
+				    	
+				    	// start Twitter OAuth
+				    	startOAuth();
+				        
+				    	// after finishing, close the progress bar
+				        dialog.dismiss();
+				    }
+				};
+				
+				//start thread
+				new Thread(runnable).start();
+	        	
 	            return true;
 	        case R.id.menu_help:
 	        	showHelpActivity();
@@ -226,17 +228,10 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 	}
 	
 	/**
-	 * Method from Login dialog, when "OK" button is clicked it calls this.
-	 * This method calls startOAuth().
-	 */
-	public void onLoginDialogClick() {
-		startOAuth();
-	}
-	
-	/**
 	 * Starts user authentication using Twitter OAuth
 	 */
 	public void startOAuth() {
+		
 		//Attempt to open Twitter OAuth in browser
 		try {
 		    httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
@@ -244,9 +239,7 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		                                            "https://api.twitter.com/oauth/access_token",
 		                                            "https://api.twitter.com/oauth/authorize");
 		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
-		    /* // Open the browser
-		     * Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
-		     */
+		    
 		    // open web view with for twitter authentication
 		    Intent intent = new Intent(this, TwitterWebviewActivity.class);
 		    intent.putExtra("URL", authUrl);
@@ -254,17 +247,8 @@ public class TopicListActivity extends FragmentActivity implements LoginDialogLi
 		} catch (Exception e) {
 		    Toast.makeText(this, "Unable to connect to Twitter. Make sure you have internet access" +
 		    		" and the correct time for your location.\n\nError: " + e.toString(), Toast.LENGTH_LONG).show();
-		    showLoginDialog();
+		    finish();
 		}
-	}
-	
-	/**
-	 * Display the Twitter login dialog
-	 */
-	public void showLoginDialog() {
-		DialogFragment dialog = new LoginDialogFragment();
-		dialog.setCancelable(false);
-        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
 	}
 	
 	/**

@@ -11,14 +11,12 @@ package com.grep.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Intent;
-import android.view.Menu;
-import android.view.View;
+import android.support.v4.app.FragmentActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class TwitterWebviewActivity extends Activity {
+public class TwitterWebviewActivity extends FragmentActivity {
 	
 	// Twitter callback url for application
 	private final String CALLBACKURL = "socialmoodswing://credentials";
@@ -37,6 +35,7 @@ public class TwitterWebviewActivity extends Activity {
 		
         // setup webview functionality
 		WebView twitterWebView = (WebView)findViewById(R.id.twitter_webview);
+		
 	    twitterWebView.setWebViewClient(new WebViewClient() {
 	    	@Override
 	    	public boolean shouldOverrideUrlLoading(WebView webView, String url) { 
@@ -58,5 +57,4 @@ public class TwitterWebviewActivity extends Activity {
 	    // go to Twitter OAuth site in webview
 	    twitterWebView.loadUrl(url);
 	}
-
 }
