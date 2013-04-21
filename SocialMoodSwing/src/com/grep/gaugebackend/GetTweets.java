@@ -133,5 +133,7 @@ public class GetTweets implements Runnable {
 		// stop the twitter stream
 		twitterStream.cleanUp();
 		twitterStream.shutdown();
+		
+		twitterStream = null;
     }
 }
