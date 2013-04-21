@@ -155,7 +155,7 @@ public class TopicListActivity extends FragmentActivity {
         		    	}
         		    	catch (Exception e)
         		    	{
-        		    		e.printStackTrace();
+        		    		// cancel button pressed in webview
         		    		finish();
         		    	} 
         		    	Looper.loop();
@@ -251,7 +251,7 @@ public class TopicListActivity extends FragmentActivity {
 		    startActivityForResult(intent, TWITTER_AUTH);
 		} catch (Exception e) {
 		    Toast.makeText(this, "Unable to connect to Twitter. Make sure you have internet access" +
-		    		" and the correct time for your location.\n\nError: " + e.toString(), Toast.LENGTH_LONG).show();
+		    		" and the correct time for your location.", Toast.LENGTH_LONG).show();
 		    finish();
 		}
 	}
