@@ -1,0 +1,40 @@
+Data Usage Test: 4G
+
+These test results measure the data usage of Social Mood Swing, using 4G. Keyword used are selected so to maximize the applicaiton's Tweet throughput.
+
+Setup
+=============================
+
+Topic:		test
+
+Keywords:	obama
+		human
+		rights
+		gay
+		day
+		earth
+		marathon
+		boston
+
+Time Started:	11:43 PM 
+     		Sunday, April 21, 2013
+
+Duration:	15 minutes
+
+Device:		Motorola: DROID RAZR M
+		v. 4.1.1 
+
+Service Provider: Verizon Wireless
+-----------------------------
+
+Results - PASS 
+=============================
+(test completed successfully)
+
+4G Data Usage:		89.0 MB
+
+Data Usage per min:	5.93 MB
+
+Tweets Processed:	3693
+
+Calculated Throughput:	246.2 tpm
