@@ -11,7 +11,7 @@
     <script src="./js/jquery.min.js" ></script>
 </head>
 <body>
-    <div style="text-align:center"><canvas id="cvs" height="300" style="display:inline"></canvas></div>
+    <div style="text-align:center"><canvas id="cvs" height="300" width="290" style="display:inline"></canvas></div>
     
     <script>
     	sessions = new Array();
@@ -34,7 +34,7 @@
             //myLine.Set('chart.scale.decimals', 1);
             //myLine.Set('chart.min', -100);
             //myLine.Set('chart.max', 100);
-            myLine.Set('chart.linewidth', 2);
+            myLine.Set('chart.linewidth', 4);
             //myLine.Set('chart.hmargin', 15);
             myLine.Set('chart.text.color', '#000');
             myLine.Set('chart.text.font', 'Arial');
@@ -62,6 +62,13 @@
        	function clear_graph(){
        		RGraph.Clear(document.getElementById("cvs"));
        		RGraph.ObjectRegistry.Clear();
+       	}
+       	
+       	function resize_graph(size){
+			var c = $("#cvs");
+        	ctx = c[0].getContext('2d');
+        	ctx.canvas.width = size;
+        	draw();
        	}
     </script>
 

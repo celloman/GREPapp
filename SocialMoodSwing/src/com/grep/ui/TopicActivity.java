@@ -117,6 +117,10 @@ public class TopicActivity extends FragmentActivity {
 					// Pass toolTip string to graph
 					historyGraphWebView.loadUrl("javascript:toolTips[" + i + "] = '" + toolTips.get(i) + "';");
 				}
+				// Resizes graph if there are more than 8 sessions in the database
+				// Reduces graph clutter
+				if(analysisValues.size() > 8)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 8)*20 + 290) +");");
 				
 				// Call javascript function to draw the graph with appropriate data
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
@@ -131,6 +135,7 @@ public class TopicActivity extends FragmentActivity {
 			historyGraphWebView.loadData("<html><body>There is currently only one analysis session in this topic's history, a graph will" +
 					" display once there are at least two sessions in the database.</body></html>", "text/html", null);
 		}
+		
 		// Allow horizontal scrolling within webview
 		historyGraphWebView.setHorizontalScrollBarEnabled(true);
 		historyGraphWebView.setVerticalScrollBarEnabled(false);
@@ -168,6 +173,7 @@ public class TopicActivity extends FragmentActivity {
 			avgSentiment = avgSentiment/totalTweets;
 			
 			info.setText("Tweets Processed:\t" + totalTweets + "\n");
+			info.append("Sessions:\t\t\t\t\t\t\t" + analysisSessions.size() + "\n");
 			
 			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
 			if(totalTime >= 3600) // Greater than or equal to an hour
@@ -182,9 +188,9 @@ public class TopicActivity extends FragmentActivity {
 			
 			// Format and print average sentiment
 			if(avgSentiment > 0)
-				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%\n"); // Average is positive
+				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%"); // Average is positive
 			else
-				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n"); // Average is negative
+				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%"); // Average is negative
 		}
 		
 		// Display an instructional message to user if there are no sessions in the topic's history
