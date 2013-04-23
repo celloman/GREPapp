@@ -48,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:onClick="goToGaugeActivity"
-                android:text="To Gauge" />
+                android:text="Start" />
         </RelativeLayout>
 
 		<EditText
