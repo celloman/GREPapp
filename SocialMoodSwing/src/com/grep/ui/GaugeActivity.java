@@ -104,7 +104,7 @@ public class GaugeActivity extends FragmentActivity {
 		m_webView.loadUrl("file:///android_asset/gauge.html");
 		
 		// start another thread to process gauge values
-		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, m_webView);
+		m_gaugeConsumer = new GaugeConsumer(gaugeValues, webToasts, m_webView, this);
 		m_gaugeConsumerThread = new Thread(m_gaugeConsumer);
 		m_gaugeConsumerThread.start();
 		
@@ -193,6 +193,7 @@ public class GaugeActivity extends FragmentActivity {
 		} catch (InterruptedException ex) {
 			System.out.println("something went wrong while killing the gauge consumer thread");
 		}
+		System.out.println("stopped consumer thread!");
 	}
 	
 	@Override

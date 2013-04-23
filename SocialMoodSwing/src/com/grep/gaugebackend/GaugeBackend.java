@@ -69,6 +69,8 @@ public class GaugeBackend {
 		} catch (InterruptedException ex) {
 			System.out.println("something went wrong while killing the threads");
 		}
+		
+		System.out.println("successfully stopped gauge threads!!");
 	}
 
 }
