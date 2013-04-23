@@ -6,9 +6,7 @@
 package com.grep.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.webkit.WebView;
-import android.widget.Toast;
 import com.grep.gaugebackend.Gauge;
 import com.grep.gaugebackend.WebToast;
 import java.util.concurrent.BlockingQueue;
@@ -94,7 +92,7 @@ public class GaugeConsumer implements Runnable {
 					}
 					else {
 						currentTime = System.currentTimeMillis();
-						if(currentTime > m_Time+1500){	
+						if(currentTime > m_Time+1500){
 							m_gaugeActivity.runOnUiThread(new Runnable(){
 								public void run() {
 									m_wv.loadUrl( String.format("javascript:makeToast('%s','%s','%s', %d, %d, %d)",
