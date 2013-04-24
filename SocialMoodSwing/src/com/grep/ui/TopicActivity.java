@@ -211,14 +211,6 @@ public class TopicActivity extends FragmentActivity {
 		minutesEntry.setHintTextColor(getResources().getColor(R.color.gray));
 		
 		super.onResume();
-		
-		// Wait a second to ensure any past analysis sessions have fully terminated
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	@Override
