@@ -214,7 +214,7 @@ public class TopicActivity extends FragmentActivity {
 	        public void run(){
 	        	try {
 	                synchronized(this){
-	                    wait(2000);
+	                    wait(1500);
 	                    runOnUiThread(new Runnable() {
 	                    	@Override
 	                    	public void run() {
