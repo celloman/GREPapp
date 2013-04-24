@@ -271,14 +271,6 @@ public class TopicActivity extends FragmentActivity {
 			}
 			int time = hours * 3600 + minutes * 60;
 			
-			// Wait a second to ensure any past analysis sessions have fully terminated
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 			// Create intent to go to Gauge Activity
 			Intent intent = new Intent(this, GaugeActivity.class);
 			// Pass analysis session duration to Gauge Activity
