@@ -211,6 +211,14 @@ public class TopicActivity extends FragmentActivity {
 		minutesEntry.setHintTextColor(getResources().getColor(R.color.gray));
 		
 		super.onResume();
+		
+		// Wait a second to ensure any past analysis sessions have fully terminated
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -240,14 +248,6 @@ public class TopicActivity extends FragmentActivity {
 				minutes = Integer.parseInt(minutesEntry.getText().toString());
 			}
 			int time = hours * 3600 + minutes * 60;
-			
-			// Wait a second to ensure any past analysis sessions have fully terminated
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 			// Create intent to go to Gauge Activity
 			Intent intent = new Intent(this, GaugeActivity.class);
