@@ -12,6 +12,7 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,15 +26,15 @@ import android.widget.Toast;
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
-
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
-
+		
 		dh.open();
 		
 		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
@@ -47,7 +48,7 @@ public class TopicActivity extends FragmentActivity {
 			//Should not ever really get here
 			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
 			this.finish();
-		}
+		}	
 	}
 
 	/**
@@ -199,8 +200,37 @@ public class TopicActivity extends FragmentActivity {
 					" in order to begin an analysis session");
 	} // end drawGraph();
 	
+	
 	@Override
 	protected void onResume() {
+
+		//don't allow another analysis session to start until threads/resources from last
+		//one have been cleaned up
+		final Button startButton =  (Button) findViewById(R.id.button1);
+		startButton.setEnabled(false);
+		
+	    Thread thread=  new Thread(){    
+	        @Override
+	        public void run(){
+	        	try {
+	                synchronized(this){
+	                    wait(2000);
+	                    runOnUiThread(new Runnable() {
+	                    	@Override
+	                    	public void run() {
+	                    		//allow new analysis session to start up
+	                    		startButton.setEnabled(true);	
+	                    	}
+	                    });
+	                }
+	            }
+	            catch(InterruptedException ex){                    
+	            }            
+	        }
+	    };
+
+	    thread.start();
+	    
 		// Calls function to draw javascript graph in webview
 		drawGraph();
 		
