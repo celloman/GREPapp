@@ -48,7 +48,6 @@ public class TopicActivity extends FragmentActivity {
 			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
 			this.finish();
 		}
-
 	}
 
 	/**
@@ -86,9 +85,9 @@ public class TopicActivity extends FragmentActivity {
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 				// Add the sentiment values to the toolTip strings to be placed in toolTips on the graph
 				if(analysisSessions.get(i).getAvgPosSentiment() == 0)
-					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%"); // If 0, don't add +
+					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%, " + analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // If 0, don't add +
 				else
-					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%"); // Add + for positive
+					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%, " + analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // Add + for positive
 			}
 		}
 		
@@ -241,6 +240,14 @@ public class TopicActivity extends FragmentActivity {
 				minutes = Integer.parseInt(minutesEntry.getText().toString());
 			}
 			int time = hours * 3600 + minutes * 60;
+			
+			// Wait a second to ensure any past analysis sessions have fully terminated
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			// Create intent to go to Gauge Activity
 			Intent intent = new Intent(this, GaugeActivity.class);
