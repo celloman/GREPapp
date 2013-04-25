@@ -22,7 +22,7 @@
         android:paddingRight="10dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
-        android:hint="Topic Title"  >    
+        android:hint="@string/topicTitle"  >    
 	</EditText>
 	
 
@@ -48,7 +48,7 @@
 			android:singleLine="true"
 			android:inputType="text"
         	android:layout_marginBottom="15dp"
-        	android:hint="New Keyword"
+        	android:hint="@string/newKeyword"
         	android:paddingBottom="5dp"
         	android:paddingLeft="10dp"
         	android:paddingRight="15dp"
@@ -58,7 +58,6 @@
     	<ImageView
         	android:id="@+id/addKeywordIcon"
          	android:src="@drawable/check"
-         	android:contentDescription="Image to be placed at end of add keyword edittext."
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
          	android:paddingBottom="10dp"
@@ -89,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Save Topic"
+        android:text="@string/save"
         android:onClick="onClickSaveTopicButton" />
 
     <Button
@@ -98,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="Delete Topic"
+        android:text="@string/delete"
         android:onClick="onClickDeleteTopicButton" />
 
     <Button
@@ -107,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:onClick="onClickCancelButton" />
    
 </RelativeLayout>

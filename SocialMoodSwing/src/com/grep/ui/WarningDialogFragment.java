@@ -59,7 +59,9 @@ public class WarningDialogFragment extends DialogFragment {
                })
                .setNegativeButton("Continue Running", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	   WarningDialogFragment.this.getDialog().cancel();
+                	   if(this != null) {
+                		   WarningDialogFragment.this.getDialog().cancel();
+                	   }
                    }
                });
         return builder.create();
