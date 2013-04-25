@@ -155,7 +155,6 @@ public class TopicListActivity extends FragmentActivity {
         		    	catch (Exception e)
         		    	{
         		    		// cancel button pressed in webview
-        		    		finish();
         		    	} 
         		    	Looper.loop();
             		}
@@ -164,7 +163,6 @@ public class TopicListActivity extends FragmentActivity {
         		new Thread(runnable).start();
             }else {
             	// user uses back press to leave activity
-            	finish();
             }
         }
         else
@@ -324,20 +322,5 @@ public class TopicListActivity extends FragmentActivity {
 		Intent intent = new Intent(this, TopicActivity.class);
 		intent.putExtra("topicId", topicId);
 		startActivity(intent);
-	}
-	
-	/**
-	 * Test function on toast button for testing retrieving
-	 * credentials from twitter oauth site. Can be removed
-	 * when successful.
-	 * @param v
-	 */
-	public void toastCredentials(View v) {
-		Credentials c = dh.getCredentials();
-		if(c==null) {
-			Toast.makeText(this, "No credentials in database!" , Toast.LENGTH_LONG).show();
-		} else {
-			Toast.makeText(this, "Key: " + c.getUserKey() + "; Secret: " + c.getUserSecret() , Toast.LENGTH_LONG).show();
-		}	
 	}
 }

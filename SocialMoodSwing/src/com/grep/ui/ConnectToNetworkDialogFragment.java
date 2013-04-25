@@ -36,7 +36,9 @@ public class ConnectToNetworkDialogFragment extends DialogFragment {
                })
                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	   ConnectToNetworkDialogFragment.this.getDialog().cancel();
+                	   if(this != null) {
+                	   		ConnectToNetworkDialogFragment.this.getDialog().cancel();
+                	   }
                    }
                });
         return builder.create();

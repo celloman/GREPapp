@@ -58,7 +58,7 @@ public class EndSessionDialogFragment extends DialogFragment {
         	// If no Tweets were processed, inform user
         	// Their keywords may be bad, or there may have been a communication error with Twitter
         	sessionInfo.append("Error: No Tweets were processed during this analysis session!\n" +
-        			"There may have been a communication error with Twitter, or there may not be any Tweets with your keyword set");
+        			"There may have been a communication error with Twitter, or there may not be any Tweets with your keyword set.");
         	// Don't allow them to save a null session
         	saveSession.setChecked(false);
         	saveSession.setEnabled(false);
