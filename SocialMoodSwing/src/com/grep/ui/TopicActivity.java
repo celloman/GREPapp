@@ -2,12 +2,16 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.grep.database.Credentials;
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -291,5 +295,37 @@ public class TopicActivity extends FragmentActivity {
 			hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
 			minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
 		}
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_topic, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+	    // Handle item selection
+	    switch (item.getItemId())
+	    {
+	        case R.id.menu_help:
+	        	showHelpActivity();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	/**
+	 * Creates an instance of the Help Activity for the user to
+	 * view application help page
+	 */
+	public void showHelpActivity() {
+		Intent intent = new Intent(this, HelpActivity.class);
+		startActivity(intent);
 	}
 }
