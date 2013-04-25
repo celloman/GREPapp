@@ -2,7 +2,6 @@ package com.grep.ui;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
 import android.webkit.WebView;
 
 public class HelpActivity extends Activity {

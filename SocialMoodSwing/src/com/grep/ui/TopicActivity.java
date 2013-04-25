@@ -152,7 +152,8 @@ public class TopicActivity extends FragmentActivity {
 		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph? Might not be necessary
 		
 		// EditText area that displays statistics for all historical analysis sessions
-		EditText info = (EditText) findViewById(R.id.topicInfo);
+		EditText infoLeft= (EditText) findViewById(R.id.topicInfoLeft);
+		EditText infoRight = (EditText) findViewById(R.id.topicInfoRight);
 		
 		int totalTweets = 0;
 		int totalTime = 0;
@@ -176,30 +177,43 @@ public class TopicActivity extends FragmentActivity {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/totalTweets;
 			
-			info.setText("Tweets Processed:\t" + totalTweets + "\n");
-			info.append("Sessions:\t\t\t\t\t\t\t" + analysisSessions.size() + "\n");
+			infoLeft.setText("Tweets Processed:\n");
+			infoRight.setText(totalTweets + "\n");
+			
+			infoLeft.append("Sessions:\n");
+			infoRight.append(analysisSessions.size() + "\n");
 			
 			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
-			if(totalTime >= 3600) // Greater than or equal to an hour
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime/3600) + "h " 
+			if(totalTime >= 3600) {// Greater than or equal to an hour
+				infoLeft.append("Time Running:\n");
+				infoRight.append(String.format("%02d", totalTime/3600) + "h " 
 						+ String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
 						+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
-			else if(totalTime >= 60) // Greater than or equal to a minute (but less than an hour) (XXm XXs)
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
+			}
+			else if(totalTime >= 60) {// Greater than or equal to a minute (but less than an hour) (XXm XXs)
+				infoLeft.append("Time Running:\n");
+				infoRight.append(String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
 				+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
-			else // Less than one minute (XXs)
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			}
+			else {// Less than one minute (XXs)
+				infoLeft.append("Time Running:\n");
+				infoRight.append(String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			}
 			
 			// Format and print average sentiment
-			if(avgSentiment > 0)
-				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%"); // Average is positive
-			else
-				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%"); // Average is negative
+			if(avgSentiment > 0) {
+				infoLeft.append("Avg. Sentiment:");
+				infoRight.append("+" + avgSentiment + "%"); // Average is positive
+			}
+			else {
+				infoLeft.append("Avg. Sentiment:");
+				infoRight.append(avgSentiment + "%"); // Average is negative
+			}
 		}
 		
 		// Display an instructional message to user if there are no sessions in the topic's history
 		if(analysisSessions.size() == 0)
-			info.setText("There are no analysis sessions in the database." +
+			infoLeft.setText("There are no analysis sessions in the database." +
 					" \n\nEnter a duration above and click \"To Gauge\"" +
 					" in order to begin an analysis session");
 	} // end drawGraph();
