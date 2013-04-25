@@ -8,8 +8,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginLeft="@dimen/side_padding"
+        android:layout_marginRight="@dimen/side_padding"
         android:text="@string/delete_topic_warning_message" />
 
 </RelativeLayout>

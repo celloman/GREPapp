@@ -20,5 +20,10 @@
     <string name="title_activity_help">HelpActivity</string>
     <string name="title_activity_twitter_web_view">Twitter / Authorize Social Mood Swing</string>
     <string name="menu_settings">Settings</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="newKeyword">New Keyword</string>
+    <string name="topicTitle">Topic Title</string>
 
 </resources>

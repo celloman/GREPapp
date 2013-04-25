@@ -41,7 +41,9 @@ public class DeleteTopicWarningDialogFragment extends DialogFragment {
                })
                .setNegativeButton("No", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	   DeleteTopicWarningDialogFragment.this.getDialog().cancel();
+                	   if (this != null) {
+                		   DeleteTopicWarningDialogFragment.this.getDialog().cancel();
+                	   }
                    }
                });
         return builder.create();
