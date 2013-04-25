@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -133,6 +134,19 @@ public class TopicActivity extends FragmentActivity {
 					historyGraphWebView.loadUrl("javascript:toolTips[" + i + "] = '" + toolTips.get(i) + "';");
 				}
 				
+				DisplayMetrics metrics = new DisplayMetrics();
+				getWindowManager().getDefaultDisplay().getMetrics(metrics);
+				int width = metrics.widthPixels;
+				if(analysisValues.size() > 1) {
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((width/metrics.density) - 30) +");");
+				}
+				
+				// Resizes graph if there are more than 8 sessions in the database
+				// Reduces graph clutter
+				if(analysisValues.size() > 8 && width < 800)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 8)*20 + ((width/metrics.density) - 30)) +");");
+				else if(analysisValues.size() > 20 && width > 800)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 20)*20 + ((width/metrics.density) - 30)) +");");
 				// Call javascript function to draw the graph with appropriate data
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
@@ -182,16 +196,12 @@ public class TopicActivity extends FragmentActivity {
 		if(analysisSessions.size() > 0) {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/totalTweets;
-			
-<<<<<<< HEAD
-			info.setText("Tweets Processed:\t" + totalTweets + "\n");
-=======
+
 			infoLeft.setText("Tweets Processed:\n");
 			infoRight.setText(totalTweets + "\n");
 			
 			infoLeft.append("Sessions:\n");
 			infoRight.append(analysisSessions.size() + "\n");
->>>>>>> f17255b2db132ef0dab8bab0f690c422f5d74208
 			
 			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
 			if(totalTime >= 3600) {// Greater than or equal to an hour
@@ -211,12 +221,6 @@ public class TopicActivity extends FragmentActivity {
 			}
 			
 			// Format and print average sentiment
-<<<<<<< HEAD
-			if(avgSentiment > 0)
-				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%\n"); // Average is positive
-			else
-				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n"); // Average is negative
-=======
 			if(avgSentiment > 0) {
 				infoLeft.append("Avg. Sentiment:");
 				infoRight.append("+" + avgSentiment + "%"); // Average is positive
@@ -225,7 +229,6 @@ public class TopicActivity extends FragmentActivity {
 				infoLeft.append("Avg. Sentiment:");
 				infoRight.append(avgSentiment + "%"); // Average is negative
 			}
->>>>>>> f17255b2db132ef0dab8bab0f690c422f5d74208
 		}
 		
 		// Display an instructional message to user if there are no sessions in the topic's history
