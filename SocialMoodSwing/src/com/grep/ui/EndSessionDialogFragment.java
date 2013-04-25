@@ -50,12 +50,15 @@ public class EndSessionDialogFragment extends DialogFragment {
         	else if (arguments.getInt("runTime") >=60)
         		sessionInfo.append("Session Duration: \t" + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
         	// Display average sentiment for this session
-        	sessionInfo.append("Avg. Sentiment: \t\t" + arguments.getInt("sessionAverage") + "%\n");
+        	if(arguments.getInt("sessionAverage") > 0)
+        		sessionInfo.append("Avg. Sentiment: \t\t+" + arguments.getInt("sessionAverage") + "%\n");
+        	else
+        		sessionInfo.append("Avg. Sentiment: \t\t" + arguments.getInt("sessionAverage") + "%\n");
         } else {
         	// If no Tweets were processed, inform user
         	// Their keywords may be bad, or there may have been a communication error with Twitter
         	sessionInfo.append("Error: No Tweets were processed during this analysis session!\n" +
-        			"There may have been a communication error with Twitter, or there may not be any Tweets with your keyword set");
+        			"There may have been a communication error with Twitter, or there may not be any Tweets with your keyword set.");
         	// Don't allow them to save a null session
         	saveSession.setChecked(false);
         	saveSession.setEnabled(false);

@@ -42,7 +42,7 @@ function makeModal(type, handle, tweet, followers, retweets, sentiment){
 		if(sentiment < 0) mood = "<span class='sentiment negative'>negative</span>";
 
 		html += "<div>Followers: <span class='followers'>"+followers+"</span></div>"+
-				"<div>Retweets: <span class='retweets'>"+retweets+"</span></div>"+
+				//"<div>Retweets: <span class='retweets'>"+retweets+"</span></div>"+
 				"<div>Sentiment: "+mood+"</div>";
 	}
 
