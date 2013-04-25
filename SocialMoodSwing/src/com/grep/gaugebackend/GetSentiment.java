@@ -21,6 +21,8 @@ public class GetSentiment implements Runnable {
 	protected BlockingQueue<Tweet> m_outQueue = null;
 	// outgoing m_outQueue of tweets
 	protected BlockingQueue<WebToast> m_webToasts = null;
+	// last warning modal display time
+	long m_LastWarningTime = 0;
 	
 	/**
 	 * Constructor
@@ -76,7 +78,12 @@ public class GetSentiment implements Runnable {
 						@Override
 						public void onFailure(Throwable thrwbl, String string) {
 							System.out.println("sentiment request failed...");
-							m_webToasts.offer(new WebToast("warning", "We're having some trouble talking to the sentiment server. We'll keep trying, but you might want to check your internet connection.", "Warning", 0, 0, 0));
+							long currentTime = System.currentTimeMillis();
+							// only show one per minute
+							if(currentTime > m_LastWarningTime+60000){
+								m_webToasts.offer(new WebToast("warning", "We're having some trouble talking to the sentiment server. We'll keep trying, but you might want to check your internet connection.", "Warning", 0, 0, 0));
+								m_LastWarningTime = currentTime;
+							}
 						}
 					});
 				
