@@ -65,8 +65,8 @@ public class Aggregate implements Runnable {
 				m_tweetCount++;
 				// store in tweet wave (removing oldest if necessary)
 				saveTweet(t);
-				// check for popular tweets
-				if(t.weight > 1000) {
+				// check for 'sentimental' tweets
+				if(t.sentiment != 0) {
 					// use offer(), not put() so that it won't block, because this
 					// isn't exactly mission critical
 					m_webToasts.offer(new WebToast("info", t.text, t.user, t.followers, (int)t.retweets, t.sentiment));
