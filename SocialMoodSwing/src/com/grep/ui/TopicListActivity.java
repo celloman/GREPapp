@@ -38,8 +38,8 @@ public class TopicListActivity extends FragmentActivity {
 	//OAuth variables
 	private CommonsHttpOAuthConsumer httpOauthConsumer;
 	private OAuthProvider httpOauthprovider;
-	public final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
-	public final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
+	private final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
+	private final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
 	private final String CALLBACKURL = "socialmoodswing://credentials";
 	private int TWITTER_AUTH;
 	private String verifier;
@@ -249,9 +249,8 @@ public class TopicListActivity extends FragmentActivity {
 		    intent.putExtra("URL", authUrl);
 		    startActivityForResult(intent, TWITTER_AUTH);
 		} catch (Exception e) {
-		    Toast.makeText(this, "Unable to connect to Twitter. Make sure you have internet access" +
-		    		" and the correct time for your location.", Toast.LENGTH_LONG).show();
-		    finish();
+			DialogFragment dialog = new ConnectToNetworkDialogFragment();
+			dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
 		}
 	}
 	

@@ -2,11 +2,17 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -26,6 +32,13 @@ import android.widget.Toast;
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
 
+	// OAuth information for checking internet access
+	private CommonsHttpOAuthConsumer httpOauthConsumer;
+	private OAuthProvider httpOauthprovider;
+	private final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
+	private final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
+	private final String CALLBACKURL = "socialmoodswing://credentials";
+	
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
 	
@@ -222,6 +235,16 @@ public class TopicActivity extends FragmentActivity {
 		EditText hoursEntry = (EditText) findViewById(R.id.hours);
 		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
 		
+		// check access to internet/twitter api
+		try {
+			httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+		    httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
+		                                            "https://api.twitter.com/oauth/access_token",
+		                                            "https://api.twitter.com/oauth/authorize");
+		    httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
+			
+		
+		
 		int hours = 0;
 		int minutes = 0;
 		
@@ -255,6 +278,10 @@ public class TopicActivity extends FragmentActivity {
 			// Set text color to red in duration boxes to inform the user where to look
 			hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
 			minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
+		}
+		} catch (Exception e) {
+			DialogFragment dialog = new ConnectToNetworkDialogFragment();
+			dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
 		}
 	}
 }
