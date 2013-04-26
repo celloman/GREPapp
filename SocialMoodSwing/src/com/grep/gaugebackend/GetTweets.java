@@ -69,13 +69,8 @@ public class GetTweets implements Runnable {
             @Override
             public void onStatus(Status status) {
 				//System.out.println(String.format("getter thread running... %d", this.queue.size()));
-				
-                try {
-					this.queue.put(new Tweet(status));
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					e.printStackTrace();
-				}
+
+				this.queue.offer(new Tweet(status));
             }
 
             @Override
@@ -106,12 +101,7 @@ public class GetTweets implements Runnable {
             public void onException(Exception ex) {
 				Thread.currentThread().interrupt();
             	System.out.println(ex.toString());
-				try {
-					m_webToasts.put(new WebToast("error", "Looks like your internet connection is sketch... we'll keep trying."));
-				} catch (InterruptedException e) {
-					// re-interrupt
-					Thread.currentThread().interrupt();
-				}
+				m_webToasts.offer(new WebToast("error", "Looks like your internet connection is sketch... we'll keep trying."));
             }
         };
 
@@ -119,6 +109,7 @@ public class GetTweets implements Runnable {
         twitterStream.addListener(new StatusListenerQueueing(this.m_outQueue));
 		// add the keyword filtering
         twitterStream.filter(new FilterQuery(0, null, this.m_Keywords));
+		//twitterStream.sample();
 		
 		// wait until the thread is interrupted
 		while(!Thread.currentThread().isInterrupted()) {
@@ -131,8 +122,8 @@ public class GetTweets implements Runnable {
 		}
 		
 		// stop the twitter stream
-		twitterStream.cleanUp();
 		twitterStream.shutdown();
+		twitterStream.cleanUp();
 		
 		twitterStream = null;
     }

@@ -116,7 +116,7 @@ public class GetWeight implements Runnable {
 				t.weight = t.followers + (208 * t.retweets);
 
 				// send to the next module
-				m_outQueue.put(t);
+				m_outQueue.offer(t);
 				
 			} catch (InterruptedException e) {
 				// immediately reset interrupt flag

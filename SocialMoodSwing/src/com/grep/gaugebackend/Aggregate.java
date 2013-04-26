@@ -82,7 +82,7 @@ public class Aggregate implements Runnable {
 					m_Negative += g.m_Negative;
 					
 					// send the gauge values out
-					m_outGauge.put(g);
+					m_outGauge.offer(g);
 				}
 				
 			} catch (InterruptedException e) {
