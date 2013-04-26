@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -135,6 +136,19 @@ public class TopicActivity extends FragmentActivity {
 					historyGraphWebView.loadUrl("javascript:toolTips[" + i + "] = '" + toolTips.get(i) + "';");
 				}
 				
+				DisplayMetrics metrics = new DisplayMetrics();
+				getWindowManager().getDefaultDisplay().getMetrics(metrics);
+				int width = metrics.widthPixels;
+				if(analysisValues.size() > 1) {
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((width/metrics.density) - 30) +");");
+				}
+				
+				// Resizes graph if there are more than 8 sessions in the database
+				// Reduces graph clutter
+				if(analysisValues.size() > 8 && width < 800)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 8)*20 + ((width/metrics.density) - 30)) +");");
+				else if(analysisValues.size() > 20 && width > 800)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 20)*20 + ((width/metrics.density) - 30)) +");");
 				// Call javascript function to draw the graph with appropriate data
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
@@ -184,7 +198,7 @@ public class TopicActivity extends FragmentActivity {
 		if(analysisSessions.size() > 0) {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/totalTweets;
-			
+
 			infoLeft.setText("Tweets Processed:\n");
 			infoRight.setText(totalTweets + "\n");
 			
