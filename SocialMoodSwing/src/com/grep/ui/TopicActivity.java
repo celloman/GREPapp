@@ -12,6 +12,7 @@ import com.grep.database.Session;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -34,12 +35,13 @@ import android.widget.Toast;
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
 
-	// OAuth information for checking internet access
+	// OAuth information for checking Internet access
 	private CommonsHttpOAuthConsumer httpOauthConsumer;
 	private OAuthProvider httpOauthprovider;
 	private final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
 	private final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
 	private final String CALLBACKURL = "socialmoodswing://credentials";
+	private boolean connectedToNetwork;
 	
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
@@ -183,15 +185,11 @@ public class TopicActivity extends FragmentActivity {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/totalTweets;
 			
-<<<<<<< HEAD
-			info.setText("Tweets Processed:\t" + totalTweets + "\n");
-=======
 			infoLeft.setText("Tweets Processed:\n");
 			infoRight.setText(totalTweets + "\n");
 			
 			infoLeft.append("Sessions:\n");
 			infoRight.append(analysisSessions.size() + "\n");
->>>>>>> f17255b2db132ef0dab8bab0f690c422f5d74208
 			
 			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
 			if(totalTime >= 3600) {// Greater than or equal to an hour
@@ -211,12 +209,6 @@ public class TopicActivity extends FragmentActivity {
 			}
 			
 			// Format and print average sentiment
-<<<<<<< HEAD
-			if(avgSentiment > 0)
-				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%\n"); // Average is positive
-			else
-				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%\n"); // Average is negative
-=======
 			if(avgSentiment > 0) {
 				infoLeft.append("Avg. Sentiment:");
 				infoRight.append("+" + avgSentiment + "%"); // Average is positive
@@ -225,7 +217,6 @@ public class TopicActivity extends FragmentActivity {
 				infoLeft.append("Avg. Sentiment:");
 				infoRight.append(avgSentiment + "%"); // Average is negative
 			}
->>>>>>> f17255b2db132ef0dab8bab0f690c422f5d74208
 		}
 		
 		// Display an instructional message to user if there are no sessions in the topic's history
@@ -256,63 +247,99 @@ public class TopicActivity extends FragmentActivity {
 	}
 	
 	/**
+	 * This method is called when "Start" button is pressed. 
+	 * This method checks for network connectivity and
+	 * calls goToGuageActivity if connected to network
+	 * 
+	 * @param v
+	 */
+	public void onClick(View v) {
+		// checking for network connection
+		// create new thread for twitter api call
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				Looper.prepare();
+				
+				connectedToNetwork = true;
+				
+				try {
+					// check access to internet/twitter api
+					httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+					httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
+							"https://api.twitter.com/oauth/access_token",
+							"https://api.twitter.com/oauth/authorize");
+					httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
+				} catch (Exception e) {
+					// Not connected to Internet
+					connectedToNetwork = false;
+					DialogFragment dialog = new ConnectToNetworkDialogFragment();
+					dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
+				}
+				
+				Looper.loop();
+			}
+		};
+		new Thread(runnable).start();
+		
+		// wait for network thread to finish
+		try {
+			Thread.sleep(100);
+			goToGaugeActivity(connectedToNetwork);
+		} catch (InterruptedException e) {
+			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+		}
+	}
+	
+	/**
 	 * Creates an intent to change to the Gauge activity corresponding to the
 	 * current topic.
 	 */
-	public void goToGaugeActivity(View v) {
+	public void goToGaugeActivity(boolean connectedToNetwork) {
+		
 		EditText hoursEntry = (EditText) findViewById(R.id.hours);
 		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
-		
-		// check access to internet/twitter api
-		try {
-			httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
-		    httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
-		                                            "https://api.twitter.com/oauth/access_token",
-		                                            "https://api.twitter.com/oauth/authorize");
-		    httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
-			
 		
 		
 		int hours = 0;
 		int minutes = 0;
 		
-		// If user entered time and has credentials in the database...
-		if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0 && dh.getCredentials() != null) {
-			// Calculate time from user input
-			if(hoursEntry.getText().length() != 0) {
-				hours = Integer.parseInt(hoursEntry.getText().toString());
+		// check for Internet connectivity
+		if(connectedToNetwork) {
+			// If user entered time and has credentials in the database...
+			if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0 && dh.getCredentials() != null) {
+				
+				// Calculate time from user input
+				if(hoursEntry.getText().length() != 0) {
+					hours = Integer.parseInt(hoursEntry.getText().toString());
+				}
+				if(minutesEntry.getText().length() != 0) {
+					minutes = Integer.parseInt(minutesEntry.getText().toString());
+				}
+				int time = hours * 3600 + minutes * 60;
+				
+				// Create intent to go to Gauge Activity
+				Intent intent = new Intent(this, GaugeActivity.class);
+				// Pass analysis session duration to Gauge Activity
+				intent.putExtra("analysisDuration", time);
+				// Pass the topic id to the Gauge Activity
+				intent.putExtra("topicId", topic_id);
+				startActivity(intent);
 			}
-			if(minutesEntry.getText().length() != 0) {
-				minutes = Integer.parseInt(minutesEntry.getText().toString());
+			else if(dh.getCredentials() == null) {
+				// If user hasn't logged in with Twitter, don't allow them to go to Gauge Activity
+				// Should not ever get here, as should be forced on Topic List Activity
+				Toast.makeText(this, "Please log in with Twitter", Toast.LENGTH_LONG).show();
 			}
-			int time = hours * 3600 + minutes * 60;
-			
-			// Create intent to go to Gauge Activity
-			Intent intent = new Intent(this, GaugeActivity.class);
-			// Pass analysis session duration to Gauge Activity
-			intent.putExtra("analysisDuration", time);
-			// Pass the topic id to the Gauge Activity
-			intent.putExtra("topicId", topic_id);
-			startActivity(intent);
-		}
-		else if(dh.getCredentials() == null) {
-			// If user hasn't logged in with Twitter, don't allow them to go to Gauge Activity
-			// Should not ever get here, as should be forced on Topic List Activity
-			Toast.makeText(this, "Please log in with Twitter", Toast.LENGTH_LONG).show();
-		}
-		else {
-			// If user fails to enter a duration, inform them that they need to
-			Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
-			// Set text color to red in duration boxes to inform the user where to look
-			hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
-			minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
-		}
-		} catch (Exception e) {
-			DialogFragment dialog = new ConnectToNetworkDialogFragment();
-			dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
+			else {
+				// If user fails to enter a duration, inform them that they need to
+				Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
+				// Set text color to red in duration boxes to inform the user where to look
+				hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
+				minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
+			}
 		}
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
