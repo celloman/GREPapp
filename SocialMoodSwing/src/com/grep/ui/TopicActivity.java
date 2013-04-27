@@ -236,8 +236,8 @@ public class TopicActivity extends FragmentActivity {
 		// Display an instructional message to user if there are no sessions in the topic's history
 		if(analysisSessions.size() == 0)
 			infoLeft.setText("There are no analysis sessions in the database." +
-					" \n\nEnter a duration above and click \"To Gauge\"" +
-					" in order to begin an analysis session");
+					" \n\nEnter a duration above and click \"Start\"" +
+					" in order to begin an analysis session.");
 	} // end drawGraph();
 	
 	@Override
