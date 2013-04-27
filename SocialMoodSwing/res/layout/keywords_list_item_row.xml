@@ -37,6 +37,6 @@
         android:textColor="@color/black"
         android:paddingBottom="5dp"
         android:paddingLeft="10dp"
-        android:paddingRight="0dp"
+        android:paddingRight="10dp"
         android:paddingTop="5dp" />      
 </RelativeLayout>
