@@ -5,6 +5,7 @@
     tools:context=".TopicActivity"
     android:focusable="true"
 	android:focusableInTouchMode="true"
+	android:background="@color/white"
     >
 
     <LinearLayout
