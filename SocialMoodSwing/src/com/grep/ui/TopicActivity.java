@@ -98,15 +98,20 @@ public class TopicActivity extends FragmentActivity {
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment()) {
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 				// Add negative value to toolTip string... no need to add -
-				toolTips.add(analysisSessions.get(i).getAvgNegSentiment() + "%");
+				toolTips.add(analysisSessions.get(i).getAvgNegSentiment() + "%, " +
+				analysisSessions.get(i).getNumTweetsProcessed() + " tweets");
 			}
 			else {
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 				// Add the sentiment values to the toolTip strings to be placed in toolTips on the graph
-				if(analysisSessions.get(i).getAvgPosSentiment() == 0)
-					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%"); // If 0, don't add +
-				else
-					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%"); // Add + for positive
+				if(analysisSessions.get(i).getAvgPosSentiment() == 0) {
+					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%, " +
+							analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // If 0, don't add +
+				}
+				else {
+					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%, " +
+							analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // Add + for positive
+				}
 			}
 		}
 		
