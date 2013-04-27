@@ -90,7 +90,7 @@ public class Aggregate implements Runnable {
 				if(t.sentiment != 0) {
 					// use offer(), not put() so that it won't block, because this
 					// isn't exactly mission critical
-					m_webToasts.offer(new WebToast("info", t.text, t.user, t.followers, (int)t.retweets, t.sentiment));
+					m_webToasts.offer(new WebToast("info", t.displayText, t.user, t.followers, (int)t.retweets, t.sentiment));
 				}
 				
 				// once we get tweets start aggregating
