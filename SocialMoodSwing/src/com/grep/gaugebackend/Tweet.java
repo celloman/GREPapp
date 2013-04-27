@@ -21,6 +21,8 @@ public class Tweet {
 	public long originalID;
 	// the text of the tweet
 	public String text;
+	// the text of the tweet
+	public String displayText;
 	// the keyword in the tweet
 	public String keyword;
 	// the weight of the tweet
@@ -44,6 +46,7 @@ public class Tweet {
 		id = another.id;
 		retweets = another.retweets;
 		text = another.text;
+		displayText = another.text;
 		isRetweet = another.isRetweet;
 		lang = another.lang;
 		followers = another.followers;
@@ -62,7 +65,8 @@ public class Tweet {
 		// fill in the info from the 'Status'
 		id = status.getId();
 		retweets = (status.getRetweetCount() < 0) ? 0 : status.getRetweetCount();
-		text = status.getText();
+		text = status.getText().toLowerCase();
+		displayText = status.getText();
 		isRetweet = status.isRetweet();
 		lang = status.getUser().getLang();
 		followers = status.getUser().getFollowersCount();

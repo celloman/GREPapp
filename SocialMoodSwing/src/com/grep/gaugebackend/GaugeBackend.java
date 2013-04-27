@@ -29,6 +29,10 @@ public class GaugeBackend {
 		m_weightQueue = new ArrayBlockingQueue<Tweet>(5);
 		m_sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
 		
+		// convert the keywords to lower case
+		for(String keyword : keywords)
+			keyword = keyword.toLowerCase();
+		
 		// create the threads
 		GetTweets getter = new GetTweets(m_fetchQueue, webToasts, keywords, accessToken, accessTokenSecret);
 		GetWeight weighter = new GetWeight(m_fetchQueue, m_weightQueue, keywords);
