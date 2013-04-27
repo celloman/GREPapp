@@ -94,15 +94,15 @@ public class TopicActivity extends FragmentActivity {
 		for(int i = length; i < analysisSessions.size(); i++) {
 			// Save the start time in a list
 			analysisTimes.add(analysisSessions.get(i).getStartTime());
-			// Calculate real analysis session average sentiment and store
+			// add percentage positive sentiment
+			analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
+			// Calculate real analysis session average sentiment and store in tooltip
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment()) {
-				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 				// Add negative value to toolTip string... no need to add -
 				toolTips.add("<span style=\"color: red\">" + analysisSessions.get(i).getAvgNegSentiment() + "%</span>, " +
 				analysisSessions.get(i).getNumTweetsProcessed() + " tweets");
 			}
 			else {
-				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 				// Add the sentiment values to the toolTip strings to be placed in toolTips on the graph
 				if(analysisSessions.get(i).getAvgPosSentiment() == 0) {
 					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%, " +
