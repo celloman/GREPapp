@@ -68,7 +68,7 @@ public class GetWeight implements Runnable {
 	private int getKeyword(Tweet t) {
 		int count = 0;
 		// loop through the m_Keywords
-		for(int i = 0; i < m_Keywords.length - 1; i++) {
+		for(int i = 0; i < m_Keywords.length; i++) {
 			if(t.text.contains(m_Keywords[i])) {
 				// count matches
 				count++;

@@ -107,7 +107,11 @@ public class GetTweets implements Runnable {
         twitterStream.addListener(new StatusListenerQueueing(this.m_outQueue));
 		// add the keyword filtering
         twitterStream.filter(new FilterQuery(0, null, this.m_Keywords));
-		//twitterStream.sample();
+		
+        for(String keyword: this.m_Keywords)
+			System.out.println(keyword +": TEST");
+        
+        //twitterStream.sample();
 		
 		// wait until the thread is interrupted
 		while(!Thread.currentThread().isInterrupted()) {
