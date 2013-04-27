@@ -43,6 +43,8 @@ public class GaugeActivity extends FragmentActivity {
 	int sessionDuration;
 	int elapsedTime;
 	WebView m_webView;
+	protected Boolean m_paused = false;
+	protected Boolean m_sessionPauseFinished = false;
 	
 	// TODO Why on earth is this here, is it ever used?
 	public void showToast(final String toast) {
@@ -238,6 +240,14 @@ public class GaugeActivity extends FragmentActivity {
 		// Stop the gauge threads so gauge does not continue running in background
 		stopGaugeThreads();
 
+		// show the ending dialog
+		if(!m_paused)
+			showEndingDialog();
+		else
+			m_sessionPauseFinished = true;
+	}
+	
+	public void showEndingDialog() {
 		// Create an instance of the dialog fragment and show it
         DialogFragment dialog = new EndSessionDialogFragment();
         Bundle sessionValues = new Bundle();
@@ -254,6 +264,24 @@ public class GaugeActivity extends FragmentActivity {
         dialog.setCancelable(false);
         dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		m_paused = true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		m_paused = false;
+		if(m_sessionPauseFinished){
+			showEndingDialog();
+			m_sessionPauseFinished = false;
+		}
 	}
 	
 	@Override
