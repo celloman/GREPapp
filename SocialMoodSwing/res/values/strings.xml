@@ -20,7 +20,7 @@
     <string name="title_activity_twitter_web_view">Twitter / Authorize Social Mood Swing</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_connect_to_network_dialog_fragment">ConnectToNetworkDialogFragment</string>
-    <string name="connect_to_network_message">Unable to connect to Twitter. Make sure you have internet access and the correct time for your location.</string>
+    <string name="connect_to_network_message">Unable to connect to Twitter. Make sure you have internet access and the time on your device is set correctly.</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
