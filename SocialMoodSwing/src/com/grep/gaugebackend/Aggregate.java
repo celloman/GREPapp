@@ -20,7 +20,7 @@ public class Aggregate implements Runnable {
 	// outgoing queue of gauge values
 	protected BlockingQueue<Gauge> m_outGauge = null;
 	// internal queue of latest tweets (tweet wave)
-	protected CircularFifoBuffer m_tweetWaveQueue = new CircularFifoBuffer(10);
+	protected CircularFifoBuffer m_tweetWaveQueue = new CircularFifoBuffer(500);
 	// total number of tweets processed
 	protected int m_tweetCount = 0;
 	// total positive value
@@ -35,7 +35,7 @@ public class Aggregate implements Runnable {
 	 */
 	public Aggregate(	BlockingQueue<Tweet> inQueue, 
 						BlockingQueue<WebToast> outWebToasts,
-						BlockingQueue<Gauge> outGauge ) {
+						BlockingQueue<Gauge> outGauge) {
 		m_inQueue = inQueue;
 		m_webToasts = outWebToasts;
 		m_outGauge = outGauge;
@@ -53,8 +53,26 @@ public class Aggregate implements Runnable {
 	 * public void run
 	 */
 	public void run() {
+		Boolean sizeReset = false;
+		int tweetFrequency = 0;
+		long beginTime = System.currentTimeMillis();
+		
 		// loop while the thread isn't interrupted
 		while(!Thread.currentThread().isInterrupted()) {
+			
+			if(!sizeReset){
+				long current = System.currentTimeMillis();
+				if(current < beginTime + 30000)
+					tweetFrequency++;
+				else{
+					CircularFifoBuffer tmp = m_tweetWaveQueue;
+					System.out.println(String.format("frequency: %s", tweetFrequency+1));
+					m_tweetWaveQueue = new CircularFifoBuffer(tweetFrequency + 1);
+					m_tweetWaveQueue.addAll(tmp);
+					tmp = null;
+					sizeReset = true;
+				}
+			}
 			
 			//System.out.println(String.format("aggregate thread: (%d, %d)", this.m_inQueue.size(), this.m_outGauge.size()));
 			
