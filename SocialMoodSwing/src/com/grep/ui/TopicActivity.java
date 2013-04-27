@@ -3,20 +3,25 @@ package com.grep.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.grep.database.Credentials;
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,15 +35,23 @@ import android.widget.Toast;
  */
 @SuppressLint("SetJavaScriptEnabled")
 public class TopicActivity extends FragmentActivity {
+
+	// OAuth information for checking Internet access
+	private CommonsHttpOAuthConsumer httpOauthConsumer;
+	private OAuthProvider httpOauthprovider;
+	private final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
+	private final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
+	private final String CALLBACKURL = "socialmoodswing://credentials";
+	private boolean connectedToNetwork;
+	
 	DatabaseHandler dh = new DatabaseHandler(this);
 	int topic_id = -1;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_topic);
-		
+
 		dh.open();
 		
 		//retrieve the topicId as passed to this intent from the TopicListActivity, default return is -1
@@ -52,7 +65,8 @@ public class TopicActivity extends FragmentActivity {
 			//Should not ever really get here
 			Toast.makeText(this, "Error: Could not find topic in database", Toast.LENGTH_LONG).show();
 			this.finish();
-		}	
+		}
+
 	}
 
 	/**
@@ -90,9 +104,9 @@ public class TopicActivity extends FragmentActivity {
 				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 				// Add the sentiment values to the toolTip strings to be placed in toolTips on the graph
 				if(analysisSessions.get(i).getAvgPosSentiment() == 0)
-					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%, " + analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // If 0, don't add +
+					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%"); // If 0, don't add +
 				else
-					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%, " + analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // Add + for positive
+					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%"); // Add + for positive
 			}
 		}
 		
@@ -121,11 +135,20 @@ public class TopicActivity extends FragmentActivity {
 					// Pass toolTip string to graph
 					historyGraphWebView.loadUrl("javascript:toolTips[" + i + "] = '" + toolTips.get(i) + "';");
 				}
+				
+				DisplayMetrics metrics = new DisplayMetrics();
+				getWindowManager().getDefaultDisplay().getMetrics(metrics);
+				int width = metrics.widthPixels;
+				if(analysisValues.size() > 1) {
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((width/metrics.density) - 30) +");");
+				}
+				
 				// Resizes graph if there are more than 8 sessions in the database
 				// Reduces graph clutter
-				if(analysisValues.size() > 8)
-					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 8)*20 + 290) +");");
-				
+				if(analysisValues.size() > 8 && width < 800)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 8)*20 + ((width/metrics.density) - 30)) +");");
+				else if(analysisValues.size() > 20 && width > 800)
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((analysisValues.size() - 20)*20 + ((width/metrics.density) - 30)) +");");
 				// Call javascript function to draw the graph with appropriate data
 				historyGraphWebView.loadUrl("javascript:draw_graph();");
 		    }  
@@ -139,7 +162,6 @@ public class TopicActivity extends FragmentActivity {
 			historyGraphWebView.loadData("<html><body>There is currently only one analysis session in this topic's history, a graph will" +
 					" display once there are at least two sessions in the database.</body></html>", "text/html", null);
 		}
-		
 		// Allow horizontal scrolling within webview
 		historyGraphWebView.setHorizontalScrollBarEnabled(true);
 		historyGraphWebView.setVerticalScrollBarEnabled(false);
@@ -152,7 +174,8 @@ public class TopicActivity extends FragmentActivity {
 		historyGraphWebSettings.setLightTouchEnabled(true); // Possibly allow for touching points on graph? Might not be necessary
 		
 		// EditText area that displays statistics for all historical analysis sessions
-		EditText info = (EditText) findViewById(R.id.topicInfo);
+		EditText infoLeft= (EditText) findViewById(R.id.topicInfoLeft);
+		EditText infoRight = (EditText) findViewById(R.id.topicInfoRight);
 		
 		int totalTweets = 0;
 		int totalTime = 0;
@@ -175,66 +198,50 @@ public class TopicActivity extends FragmentActivity {
 		if(analysisSessions.size() > 0) {
 			// Finish calculating overall average sentiment, being sure to avoid dividing by 0
 			avgSentiment = avgSentiment/totalTweets;
+
+			infoLeft.setText("Tweets Processed:\n");
+			infoRight.setText(totalTweets + "\n");
 			
-			info.setText("Tweets Processed:\t" + totalTweets + "\n");
-			info.append("Sessions:\t\t\t\t\t\t\t" + analysisSessions.size() + "\n");
+			infoLeft.append("Sessions:\n");
+			infoRight.append(analysisSessions.size() + "\n");
 			
 			//Properly format time spent running depending on length (calculated off of number of seconds) (XXh XXm XXs)
-			if(totalTime >= 3600) // Greater than or equal to an hour
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime/3600) + "h " 
+			if(totalTime >= 3600) {// Greater than or equal to an hour
+				infoLeft.append("Time Running:\n");
+				infoRight.append(String.format("%02d", totalTime/3600) + "h " 
 						+ String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
 						+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
-			else if(totalTime >= 60) // Greater than or equal to a minute (but less than an hour) (XXm XXs)
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
+			}
+			else if(totalTime >= 60) {// Greater than or equal to a minute (but less than an hour) (XXm XXs)
+				infoLeft.append("Time Running:\n");
+				infoRight.append(String.format("%02d", (totalTime - (totalTime/3600)*3600)/60) + "m "
 				+ String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
-			else // Less than one minute (XXs)
-				info.append("Time Running:\t\t\t\t" + String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			}
+			else {// Less than one minute (XXs)
+				infoLeft.append("Time Running:\n");
+				infoRight.append(String.format("%02d", totalTime- (totalTime/60)*60) + "s\n");
+			}
 			
 			// Format and print average sentiment
-			if(avgSentiment > 0)
-				info.append("Avg. Sentiment:\t\t\t+" + avgSentiment + "%"); // Average is positive
-			else
-				info.append("Avg. Sentiment:\t\t\t" + avgSentiment + "%"); // Average is negative
+			if(avgSentiment > 0) {
+				infoLeft.append("Avg. Sentiment:");
+				infoRight.append("+" + avgSentiment + "%"); // Average is positive
+			}
+			else {
+				infoLeft.append("Avg. Sentiment:");
+				infoRight.append(avgSentiment + "%"); // Average is negative
+			}
 		}
 		
 		// Display an instructional message to user if there are no sessions in the topic's history
 		if(analysisSessions.size() == 0)
-			info.setText("There are no analysis sessions in the database." +
+			infoLeft.setText("There are no analysis sessions in the database." +
 					" \n\nEnter a duration above and click \"To Gauge\"" +
 					" in order to begin an analysis session");
 	} // end drawGraph();
 	
-	
 	@Override
 	protected void onResume() {
-
-		//don't allow another analysis session to start until threads/resources from last
-		//one have been cleaned up
-		final Button startButton =  (Button) findViewById(R.id.button1);
-		startButton.setEnabled(false);
-		
-	    Thread thread=  new Thread(){    
-	        @Override
-	        public void run(){
-	        	try {
-	                synchronized(this){
-	                    wait(1500);
-	                    runOnUiThread(new Runnable() {
-	                    	@Override
-	                    	public void run() {
-	                    		//allow new analysis session to start up
-	                    		startButton.setEnabled(true);	
-	                    	}
-	                    });
-	                }
-	            }
-	            catch(InterruptedException ex){                    
-	            }            
-	        }
-	    };
-
-	    thread.start();
-	    
 		// Calls function to draw javascript graph in webview
 		drawGraph();
 		
@@ -254,49 +261,99 @@ public class TopicActivity extends FragmentActivity {
 	}
 	
 	/**
+	 * This method is called when "Start" button is pressed. 
+	 * This method checks for network connectivity and
+	 * calls goToGuageActivity if connected to network
+	 * 
+	 * @param v
+	 */
+	public void onClick(View v) {
+		// checking for network connection
+		// create new thread for twitter api call
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				Looper.prepare();
+				
+				connectedToNetwork = true;
+				
+				try {
+					// check access to internet/twitter api
+					httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+					httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
+							"https://api.twitter.com/oauth/access_token",
+							"https://api.twitter.com/oauth/authorize");
+					httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
+				} catch (Exception e) {
+					// Not connected to Internet
+					connectedToNetwork = false;
+					DialogFragment dialog = new ConnectToNetworkDialogFragment();
+					dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
+				}
+				
+				Looper.loop();
+			}
+		};
+		new Thread(runnable).start();
+		
+		// wait for network thread to finish
+		try {
+			Thread.sleep(100);
+			goToGaugeActivity(connectedToNetwork);
+		} catch (InterruptedException e) {
+			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+		}
+	}
+	
+	/**
 	 * Creates an intent to change to the Gauge activity corresponding to the
 	 * current topic.
 	 */
-	public void goToGaugeActivity(View v) {
+	public void goToGaugeActivity(boolean connectedToNetwork) {
+		
 		EditText hoursEntry = (EditText) findViewById(R.id.hours);
 		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
+		
 		
 		int hours = 0;
 		int minutes = 0;
 		
-		// If user entered time and has credentials in the database...
-		if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0 && dh.getCredentials() != null) {
-			// Calculate time from user input
-			if(hoursEntry.getText().length() != 0) {
-				hours = Integer.parseInt(hoursEntry.getText().toString());
+		// check for Internet connectivity
+		if(connectedToNetwork) {
+			// If user entered time and has credentials in the database...
+			if(hoursEntry.getText().length() != 0 || minutesEntry.getText().length() != 0 && dh.getCredentials() != null) {
+				
+				// Calculate time from user input
+				if(hoursEntry.getText().length() != 0) {
+					hours = Integer.parseInt(hoursEntry.getText().toString());
+				}
+				if(minutesEntry.getText().length() != 0) {
+					minutes = Integer.parseInt(minutesEntry.getText().toString());
+				}
+				int time = hours * 3600 + minutes * 60;
+				
+				// Create intent to go to Gauge Activity
+				Intent intent = new Intent(this, GaugeActivity.class);
+				// Pass analysis session duration to Gauge Activity
+				intent.putExtra("analysisDuration", time);
+				// Pass the topic id to the Gauge Activity
+				intent.putExtra("topicId", topic_id);
+				startActivity(intent);
 			}
-			if(minutesEntry.getText().length() != 0) {
-				minutes = Integer.parseInt(minutesEntry.getText().toString());
+			else if(dh.getCredentials() == null) {
+				// If user hasn't logged in with Twitter, don't allow them to go to Gauge Activity
+				// Should not ever get here, as should be forced on Topic List Activity
+				Toast.makeText(this, "Please log in with Twitter", Toast.LENGTH_LONG).show();
 			}
-			int time = hours * 3600 + minutes * 60;
-			
-			// Create intent to go to Gauge Activity
-			Intent intent = new Intent(this, GaugeActivity.class);
-			// Pass analysis session duration to Gauge Activity
-			intent.putExtra("analysisDuration", time);
-			// Pass the topic id to the Gauge Activity
-			intent.putExtra("topicId", topic_id);
-			startActivity(intent);
-		}
-		else if(dh.getCredentials() == null) {
-			// If user hasn't logged in with Twitter, don't allow them to go to Gauge Activity
-			// Should not ever get here, as should be forced on Topic List Activity
-			Toast.makeText(this, "Please log in with Twitter", Toast.LENGTH_LONG).show();
-		}
-		else {
-			// If user fails to enter a duration, inform them that they need to
-			Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
-			// Set text color to red in duration boxes to inform the user where to look
-			hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
-			minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
+			else {
+				// If user fails to enter a duration, inform them that they need to
+				Toast.makeText(this, "Please enter an Analysis Session Duration", Toast.LENGTH_LONG).show();
+				// Set text color to red in duration boxes to inform the user where to look
+				hoursEntry.setHintTextColor(getResources().getColor(R.color.red));
+				minutesEntry.setHintTextColor(getResources().getColor(R.color.red));
+			}
 		}
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)

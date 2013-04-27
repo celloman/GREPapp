@@ -55,8 +55,12 @@
         </activity>
         <activity
             android:name="com.grep.ui.TwitterWebviewActivity"
-            android:label="@string/title_activity_twitter_web_view" 
+            android:label="@string/title_activity_twitter_web_view"
             android:noHistory="true" >
+        </activity>
+        <activity
+            android:name="com.grep.ui.ConnectToNetworkDialogFragment"
+            android:label="@string/title_activity_connect_to_network_dialog_fragment" >
         </activity>
     </application>
 

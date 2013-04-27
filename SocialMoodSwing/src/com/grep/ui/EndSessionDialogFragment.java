@@ -37,27 +37,38 @@ public class EndSessionDialogFragment extends DialogFragment {
         // Get view from inflater
         final View view = inflater.inflate(R.layout.end_session_dialog, null);
         final CheckBox saveSession = (CheckBox) view.findViewById(R.id.saveSessionCheckBox);
-        final TextView sessionInfo = (TextView) view.findViewById(R.id.endSessionTextView);
+        final TextView sessionInfoLeft = (TextView) view.findViewById(R.id.endSessionTextViewLeft);
+        final TextView sessionInfoRight = (TextView) view.findViewById(R.id.endSessionTextViewRight);
         
         // If Tweets were processed during session
         if(arguments.getBoolean("hasValues")) {
         	// Display number of Tweets processed
-        	sessionInfo.append("\nTweets Processed: " + arguments.getInt("numTweets") + "\n");
+        	sessionInfoLeft.append("Tweets Processed:\n");
+        	sessionInfoRight.append(arguments.getInt("numTweets") + "\n");
         	// Display duration of analysis session
         	// No need for seconds only, as user cannot enter less than a minute
-        	if(arguments.getInt("runTime") >= 3600)
-        		sessionInfo.append("Session Duration: \t" + String.format("%02d", arguments.getInt("runTime")/3600) + "h " + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
-        	else if (arguments.getInt("runTime") >=60)
-        		sessionInfo.append("Session Duration: \t" + String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
+        	if(arguments.getInt("runTime") >= 3600) {
+        		sessionInfoLeft.append("Session Duration:\n");
+        		sessionInfoRight.append(String.format("%02d", arguments.getInt("runTime")/3600) + "h " +
+        				String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
+        	}
+        	else if (arguments.getInt("runTime") >=60) {
+        		sessionInfoLeft.append("Session Duration:\n");
+        		sessionInfoRight.append(String.format("%02d", (arguments.getInt("runTime") - (arguments.getInt("runTime")/3600)*3600)/60) + "m\n");
+        	}
         	// Display average sentiment for this session
-        	if(arguments.getInt("sessionAverage") > 0)
-        		sessionInfo.append("Avg. Sentiment: \t\t+" + arguments.getInt("sessionAverage") + "%\n");
-        	else
-        		sessionInfo.append("Avg. Sentiment: \t\t" + arguments.getInt("sessionAverage") + "%\n");
+        	if(arguments.getInt("sessionAverage") > 0) {
+        		sessionInfoLeft.append("Avg. Sentiment:\n");
+        		sessionInfoRight.append("+" + arguments.getInt("sessionAverage") + "%\n");
+        	}
+        	else {
+        		sessionInfoLeft.append("Avg. Sentiment:\n");
+        		sessionInfoRight.append(arguments.getInt("sessionAverage") + "%\n");
+        	}
         } else {
         	// If no Tweets were processed, inform user
         	// Their keywords may be bad, or there may have been a communication error with Twitter
-        	sessionInfo.append("Error: No Tweets were processed during this analysis session!\n" +
+        	sessionInfoLeft.append("Error: No Tweets were processed during this analysis session!\n" +
         			"There may have been a communication error with Twitter, or there may not be any Tweets with your keyword set.");
         	// Don't allow them to save a null session
         	saveSession.setChecked(false);

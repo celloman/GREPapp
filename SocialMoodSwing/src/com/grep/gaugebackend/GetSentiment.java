@@ -66,13 +66,7 @@ public class GetSentiment implements Runnable {
 							t.sentiment = Integer.parseInt((response.split("\"polarity\":")[1]).split(",")[0]);
 							t.sentiment = (t.sentiment / 2) - 1;
 							
-							// send the tweet to the next module
-							try {
-								m_outQueue.put(t);
-							} catch (InterruptedException ex) {
-								// immediately reset interrupt flag
-								Thread.currentThread().interrupt();
-							}
+							m_outQueue.offer(t);
 						}
 						
 						@Override
