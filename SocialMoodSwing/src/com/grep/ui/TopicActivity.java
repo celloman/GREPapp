@@ -98,7 +98,7 @@ public class TopicActivity extends FragmentActivity {
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment()) {
 				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 				// Add negative value to toolTip string... no need to add -
-				toolTips.add(analysisSessions.get(i).getAvgNegSentiment() + "%, " +
+				toolTips.add("<span style=\"color: red\">" + analysisSessions.get(i).getAvgNegSentiment() + "%</span>, " +
 				analysisSessions.get(i).getNumTweetsProcessed() + " tweets");
 			}
 			else {
@@ -109,7 +109,7 @@ public class TopicActivity extends FragmentActivity {
 							analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // If 0, don't add +
 				}
 				else {
-					toolTips.add("+" + analysisSessions.get(i).getAvgPosSentiment() + "%, " +
+					toolTips.add("<span style=\"color: green\">+" + analysisSessions.get(i).getAvgPosSentiment() + "%</span>, " +
 							analysisSessions.get(i).getNumTweetsProcessed() + " tweets"); // Add + for positive
 				}
 			}
@@ -145,7 +145,7 @@ public class TopicActivity extends FragmentActivity {
 				getWindowManager().getDefaultDisplay().getMetrics(metrics);
 				int width = metrics.widthPixels;
 				if(analysisValues.size() > 1) {
-					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((width/metrics.density) - 30) +");");
+					historyGraphWebView.loadUrl("javascript:resize_graph("+ ((width/metrics.density) - 25) +");");
 				}
 				
 				// Resizes graph if there are more than 8 sessions in the database

@@ -53,7 +53,7 @@ public class Session {
 	 */
 	public Session(int topic_id, int duration, int num_tweets, int pos, int neg) {
 		this.t_id = topic_id;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd HH:mm");
 		this.start_time = dateFormat.format(java.util.Calendar.getInstance().getTime());
 		this.duration = duration;
 		this.tweets_processed = num_tweets;

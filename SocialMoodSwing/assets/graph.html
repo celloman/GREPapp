@@ -1,8 +1,6 @@
 <!DOCTYPE html >
 <html>
-<head>
-    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
-    
+<head>    
     <script src="./js/RGraph.common.core.js" ></script>
     <script src="./js/RGraph.common.dynamic.js" ></script>
     <script src="./js/RGraph.common.tooltips.js" ></script>
@@ -26,16 +24,17 @@
             myLine = new RGraph.Line('cvs', sessions);
        		myLine.Set('chart.labels', timeStamps);
 			myLine.Set('tooltips', toolTips);
-			myLine.Set('chart.gutter.left', 45); // set left padding
+			myLine.Set('chart.tooltips.hotspot.size', 30);
+			myLine.Set('chart.gutter.left', 38); // set left padding
             myLine.Set('chart.gutter.right', 15); // set right padding
-            myLine.Set('chart.gutter.bottom', 100); // set space for labels under graph
+            myLine.Set('chart.gutter.bottom', 75); // set space for labels under graph
             myLine.Set('chart.colors', [['green', 'red']]); // different colors for up and down [up, down]
             myLine.Set('chart.units.post', '%');
-            //myLine.Set('chart.scale.decimals', 1);
-            //myLine.Set('chart.min', -100);
-            //myLine.Set('chart.max', 100);
+            myLine.Set('chart.min', -100);
+            myLine.Set('chart.max', 100);
             myLine.Set('chart.linewidth', 2);
-            myLine.Set('chart.tickmarks', 'circle');
+            myLine.Set('chart.tickmarks', 'dot');
+            myLine.Set('chart.tickmarks.dot.color', 'black');
             //myLine.Set('chart.hmargin', 15);
             myLine.Set('chart.text.color', '#000');
             myLine.Set('chart.text.font', 'Arial');
@@ -52,6 +51,7 @@
             myLine.Set('chart.noxaxis', true);
             myLine.Set('chart.axis.color', '#000');
             myLine.Set('chart.text.color', '#000');
+            myLine.Set('chart.text.size', 9);
             myLine.Set('chart.scale.round', true);
             //myLine.Set('chart.spline', true); // Rounded points
             myLine.Set('chart.colors.alternate', true); // Different colors for positive and negative slopes (defined on chart.colors)
