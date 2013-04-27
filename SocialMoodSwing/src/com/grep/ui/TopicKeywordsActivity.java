@@ -111,17 +111,15 @@ public class TopicKeywordsActivity extends FragmentActivity {
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-		//set cancel button width to 0.3*screenwidth
-		double cancelWidth = metrics.widthPixels*.3;
-		Button cancelButton = (Button) findViewById(R.id.cancelButton);
-		cancelButton.setWidth((int)cancelWidth);
+		//set button width to 33% (truncated to int) of the screen width
+		double buttonWidth = metrics.widthPixels*.33;
 		
-		//set save and delete button width to 0.35*screenwidth
-		double otherWidth = metrics.widthPixels*.35;
+		Button cancelButton = (Button) findViewById(R.id.cancelButton);
 		Button saveButton = (Button) findViewById(R.id.saveButton);
 		Button deleteButton = (Button) findViewById(R.id.deleteButton);
-		saveButton.setWidth((int)otherWidth);
-		deleteButton.setWidth((int)otherWidth);
+		cancelButton.setWidth((int)buttonWidth);
+		saveButton.setWidth((int)buttonWidth);
+		deleteButton.setWidth((int)buttonWidth);
 	}
 	
 	

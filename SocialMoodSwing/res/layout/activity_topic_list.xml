@@ -10,19 +10,19 @@
         android:id="@+id/topicsListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/add_topic"
+        android:layout_above="@+id/newTopicButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:scrollingCache ="false" />
 
     <Button
-        android:id="@+id/add_topic"
+        android:id="@+id/newTopicButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Add Topic"
+        android:text="@string/new_topic"
         android:onClick="onClickAddTopicButton" />
 
     <Button

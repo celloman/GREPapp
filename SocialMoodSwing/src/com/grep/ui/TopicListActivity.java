@@ -17,10 +17,12 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -113,6 +115,15 @@ public class TopicListActivity extends FragmentActivity {
 				adapter.notifyDataSetChanged();
 			}
 		}
+		
+		//get screen width
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+		//set new topic button width to 33% (truncated to int) of the screen width
+		double newTopicWidth = metrics.widthPixels*.33;
+		Button newTopicButton = (Button) findViewById(R.id.newTopicButton);
+		newTopicButton.setWidth((int)newTopicWidth);
 	}
 	
 	/**
