@@ -66,11 +66,14 @@ public class Aggregate implements Runnable {
 					tweetFrequency++;
 				else{
 					CircularFifoBuffer tmp = m_tweetWaveQueue;
-					System.out.println(String.format("frequency: %s", tweetFrequency+1));
-					m_tweetWaveQueue = new CircularFifoBuffer(tweetFrequency + 1);
+					if(tweetFrequency == 0) tweetFrequency = 1;
+					System.out.println(String.format("frequency: %s", tweetFrequency));
+					m_tweetWaveQueue = new CircularFifoBuffer(tweetFrequency);
 					m_tweetWaveQueue.addAll(tmp);
 					tmp = null;
 					sizeReset = true;
+					if(tweetFrequency <= 6)
+						m_webToasts.offer(new WebToast("warning", "We aren't finding many tweets that contain the keywords you entered. You might want to add more keywords.", "Warning", 0, 0, 0));
 				}
 			}
 			
