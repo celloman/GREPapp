@@ -317,6 +317,7 @@ public class TopicActivity extends FragmentActivity {
 		EditText hoursEntry = (EditText) findViewById(R.id.hours);
 		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
 		
+		dh.open();
 		
 		int hours = 0;
 		int minutes = 0;
