@@ -51,7 +51,7 @@
         	android:hint="@string/newKeyword"
         	android:paddingBottom="5dp"
         	android:paddingLeft="10dp"
-        	android:paddingRight="15dp"
+        	android:paddingRight="10dp"
         	android:paddingTop="5dp" >
     	</EditText>
     
