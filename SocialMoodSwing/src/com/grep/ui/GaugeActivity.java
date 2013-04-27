@@ -251,6 +251,7 @@ public class GaugeActivity extends FragmentActivity {
         	// No Tweets were processed, don't allow user to attempt to save
         	sessionValues.putBoolean("hasValues", false);
         }
+        dialog.setCancelable(false);
         dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
 	}
