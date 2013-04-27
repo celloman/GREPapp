@@ -30,8 +30,6 @@ public class GetTweets implements Runnable {
 	
 	/**
 	 * Constructor
-	 * @param m_outQueue (BlockingQueue<Tweet>)
-	 * @param m_Keywords (String[])
 	 */
 	public GetTweets(BlockingQueue<Tweet> queue, BlockingQueue<WebToast> webToasts, String[] keywords, String accessToken, String accessTokenSecret) {
 		m_outQueue = queue;
@@ -69,7 +67,7 @@ public class GetTweets implements Runnable {
             @Override
             public void onStatus(Status status) {
 				//System.out.println(String.format("getter thread running... %d", this.queue.size()));
-
+				
 				this.queue.offer(new Tweet(status));
             }
 
