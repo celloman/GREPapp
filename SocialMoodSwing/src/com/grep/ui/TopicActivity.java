@@ -278,7 +278,6 @@ public class TopicActivity extends FragmentActivity {
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
-				Looper.prepare();
 				
 				connectedToNetwork = true;
 				
@@ -295,15 +294,14 @@ public class TopicActivity extends FragmentActivity {
 					DialogFragment dialog = new ConnectToNetworkDialogFragment();
 					dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
 				}
-				
-				Looper.loop();
 			}
 		};
-		new Thread(runnable).start();
+		Thread nThread = new Thread(runnable);
+		nThread.start();
 		
 		// wait for network thread to finish
 		try {
-			Thread.sleep(100);
+			nThread.join();
 			goToGaugeActivity(connectedToNetwork);
 		} catch (InterruptedException e) {
 			Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
