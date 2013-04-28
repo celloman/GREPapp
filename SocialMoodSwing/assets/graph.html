@@ -24,21 +24,26 @@
             myLine = new RGraph.Line('cvs', sessions);
        		myLine.Set('chart.labels', timeStamps);
 			myLine.Set('tooltips', toolTips);
-			myLine.Set('chart.tooltips.hotspot.size', 30);
-			myLine.Set('chart.gutter.left', 38); // set left padding
-            myLine.Set('chart.gutter.right', 15); // set right padding
+			myLine.Set('chart.tooltips.hotspot.size', 20);
+			myLine.Set('chart.gutter.left', 5); // set left padding
+            myLine.Set('chart.gutter.right', 5); // set right padding
             myLine.Set('chart.gutter.bottom', 75); // set space for labels under graph
             myLine.Set('chart.colors', [['green', 'red']]); // different colors for up and down [up, down]
-            myLine.Set('chart.units.post', '%');
+            //myLine.Set('chart.units.post', '%');
             myLine.Set('chart.min', -100);
             myLine.Set('chart.max', 100);
             myLine.Set('chart.linewidth', 2);
             myLine.Set('chart.tickmarks', 'dot');
             myLine.Set('chart.tickmarks.dot.color', 'black');
+            //myLine.Set('chart.ylabels.count', 1);
+            //myLine.Set('chart.ylabels.specific', ['100%', '75%', '50%', '-75%', '-100%']);
             //myLine.Set('chart.hmargin', 15);
             myLine.Set('chart.text.color', '#000');
             myLine.Set('chart.text.font', 'Arial');
-            myLine.Set('chart.text.angle', 75); // set label rotation on bottom
+            myLine.Set('chart.text.angle', 90); // set label rotation on bottom
+			myLine.Set('chart.ylabels', false);
+			myLine.Set('chart.numyticks', 0);
+			myLine.Set('chart.noaxes', true);
             myLine.Set('chart.background.grid.autofit', true);
             myLine.Set('chart.background.grid.autofit.numvlines', 11);
             myLine.Set('chart.shadow', false);
@@ -55,7 +60,7 @@
             myLine.Set('chart.scale.round', true);
             //myLine.Set('chart.spline', true); // Rounded points
             myLine.Set('chart.colors.alternate', true); // Different colors for positive and negative slopes (defined on chart.colors)
-            myLine.Set('chart.xaxispos', 'center'); // Allow for negative values
+            //myLine.Set('chart.xaxispos', 'center'); // Allow for negative values
 			RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000}); // Unfolding effect
 			//myLine.Draw(); // No unfolding effect
        	}

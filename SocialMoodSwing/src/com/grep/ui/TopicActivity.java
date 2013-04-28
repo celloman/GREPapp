@@ -7,9 +7,11 @@ import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
+import com.grep.database.Credentials;
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Session;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
@@ -42,6 +44,8 @@ public class TopicActivity extends FragmentActivity {
 	private final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
 	private final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
 	private final String CALLBACKURL = "socialmoodswing://credentials";
+	private int TWITTER_AUTH;
+	private String verifier;
 	private boolean connectedToNetwork;
 	
 	DatabaseHandler dh = new DatabaseHandler(this);
@@ -70,6 +74,62 @@ public class TopicActivity extends FragmentActivity {
 	}
 
 	/**
+	 * Add credential results returned from Twitter webview to database.
+	 * 
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		// check if results come from webview
+        if (requestCode == TWITTER_AUTH)
+        {
+        	//check if results are "OK" from webview
+            if (resultCode == Activity.RESULT_OK)
+            {
+                verifier = (String) data.getExtras().get("oauth_verifier");
+
+                // Twitter authentication needs to be run in separate thread for newer
+                // versions of android
+            	Runnable runnable = new Runnable() {
+            		@Override
+        		    public void run() {
+        		    	Looper.prepare();
+        		    	try
+        		    	{
+            		    	httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
+            		    
+            		
+            		        String user_key = httpOauthConsumer.getToken();
+            		        String user_secret = httpOauthConsumer.getTokenSecret();
+
+            		        // Save user_key and user_secret in database
+            		        Credentials c = new Credentials(user_key, user_secret);
+            		        dh.open();
+            		        dh.addCredentials(c);
+        		    	}
+        		    	catch (Exception e)
+        		    	{
+        		    		// cancel button pressed in webview
+        		    	} 
+        		    	Looper.loop();
+            		}
+            	};           	
+            	//start thread
+        		new Thread(runnable).start();
+            }else {
+            	// user uses back press to leave activity
+            }
+        }
+        else
+        {
+        	// non twitter auth request code
+        }
+    }
+	
+	/**
 	 * Draw javascript graph in webview
 	 * Takes historical analysis session data from database and passes it to javascript
 	 * 
@@ -94,15 +154,15 @@ public class TopicActivity extends FragmentActivity {
 		for(int i = length; i < analysisSessions.size(); i++) {
 			// Save the start time in a list
 			analysisTimes.add(analysisSessions.get(i).getStartTime());
-			// Calculate real analysis session average sentiment and store
+			// add percentage positive sentiment
+			analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
+			// Calculate real analysis session average sentiment and store in tooltip
 			if(-1 * analysisSessions.get(i).getAvgNegSentiment() > analysisSessions.get(i).getAvgPosSentiment()) {
-				analysisValues.add(analysisSessions.get(i).getAvgNegSentiment());
 				// Add negative value to toolTip string... no need to add -
 				toolTips.add("<span style=\"color: red\">" + analysisSessions.get(i).getAvgNegSentiment() + "%</span>, " +
 				analysisSessions.get(i).getNumTweetsProcessed() + " tweets");
 			}
 			else {
-				analysisValues.add(analysisSessions.get(i).getAvgPosSentiment());
 				// Add the sentiment values to the toolTip strings to be placed in toolTips on the graph
 				if(analysisSessions.get(i).getAvgPosSentiment() == 0) {
 					toolTips.add(analysisSessions.get(i).getAvgPosSentiment() + "%, " +
@@ -317,6 +377,7 @@ public class TopicActivity extends FragmentActivity {
 		EditText hoursEntry = (EditText) findViewById(R.id.hours);
 		EditText minutesEntry = (EditText) findViewById(R.id.minutes);
 		
+		dh.open();
 		
 		int hours = 0;
 		int minutes = 0;
@@ -372,6 +433,15 @@ public class TopicActivity extends FragmentActivity {
 	    // Handle item selection
 	    switch (item.getItemId())
 	    {
+	    	case R.id.menu_login:        	
+	    		Credentials c = dh.getCredentials();
+	    		// remove current credentials from database
+	    		if(c != null) {
+	    			dh.deleteCredentials(c.getId());
+	    		}	
+	    		// start new thread for Twitter OAuth
+	    		newOAuthThread();
+	    		return true;
 	        case R.id.menu_help:
 	        	showHelpActivity();
 	        	return true;
@@ -387,5 +457,55 @@ public class TopicActivity extends FragmentActivity {
 	public void showHelpActivity() {
 		Intent intent = new Intent(this, HelpActivity.class);
 		startActivity(intent);
+	}
+	
+	/**
+	 * Make a new thread for Twitter OAuth and run startOAuth
+	 */
+	public void newOAuthThread() {
+    	
+    	// run authentication process in new thread
+		Runnable runnable = new Runnable() {
+		    @Override
+		    public void run() {
+		    	Looper.prepare();
+				// show loading dialog
+				DialogFragment dialog = new LoadingDialogFragment();
+				dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
+		    	
+		    	// start Twitter OAuth
+		    	startOAuth();
+		        
+		    	// after finishing, close the progress bar
+		        dialog.dismiss();
+		        Looper.loop();
+		    }
+		};
+		
+		//start thread
+		new Thread(runnable).start();
+	}
+	
+	/**
+	 * Starts user authentication using Twitter OAuth
+	 */
+	public void startOAuth() {
+		
+		//Attempt to open Twitter OAuth in webview
+		try {
+		    httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+		    httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
+		                                            "https://api.twitter.com/oauth/access_token",
+		                                            "https://api.twitter.com/oauth/authorize");
+		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
+		    
+		    // open web view with for twitter authentication
+		    Intent intent = new Intent(this, TwitterWebviewActivity.class);
+		    intent.putExtra("URL", authUrl);
+		    startActivityForResult(intent, TWITTER_AUTH);
+		} catch (Exception e) {
+			DialogFragment dialog = new ConnectToNetworkDialogFragment();
+			dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
+		}
 	}
 }
