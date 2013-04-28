@@ -2,37 +2,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GaugeActivity"
-	android:background="@color/white"
-     >
-	
-	<WebView  xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/webview"
-		android:layout_width="fill_parent"
-		android:layout_height="390dp"
-	/>
+    android:background="@color/white"
+    tools:context=".GaugeActivity" >
 
-    <Button
-        android:id="@+id/stop_button"
+    
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:textSize="20sp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="@color/button_red"
-        android:onClick="showWarningMessage"
-        android:text="@string/text_button_stop"
-        android:textColor="@color/white" />
+       	android:layout_above="@+id/lowerLayout"
+       	>
 
-    <TextView
-        android:id="@+id/time_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/stop_button"
-        android:textColor="@color/black"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+       <WebView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/webview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:layout_marginTop="15dp"
+        android:id="@+id/lowerLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="85dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" >
+
+ 	        <TextView
+ 	            android:id="@+id/time_left"
+ 	            android:layout_width="wrap_content"
+ 	            android:layout_height="20dp"
+ 	            android:layout_above="@+id/stop_button"
+ 	            android:layout_centerHorizontal="true"
+            	android:layout_alignParentTop="true"	
+ 	            android:textAppearance="?android:attr/textAppearanceMedium"
+ 	            android:textColor="@color/black" />
+
+         <Button
+            android:id="@+id/stop_button"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            
+            android:background="@color/button_red"
+            
+            android:onClick="showWarningMessage"
+            android:text="@string/text_button_stop"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+            
+    </RelativeLayout>
+
+
 
 </RelativeLayout>
