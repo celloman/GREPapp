@@ -26,5 +26,6 @@
     <string name="cancel">Cancel</string>
     <string name="newKeyword">New Keyword</string>
     <string name="topicTitle">Topic Title</string>
+    <string name="menu_login">Change User</string>
 
 </resources>
