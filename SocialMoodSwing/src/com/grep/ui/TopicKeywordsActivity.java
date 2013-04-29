@@ -2,13 +2,25 @@ package com.grep.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+
+import com.grep.database.Credentials;
 import com.grep.database.DatabaseHandler;
 import com.grep.database.Keyword;
 import com.grep.database.Topic;
+
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +48,15 @@ public class TopicKeywordsActivity extends FragmentActivity {
 	boolean buttonHeightSet = false;
 	static int topicId = -1;
 	static List<Keyword> keywordTracker = new ArrayList<Keyword>();
+	
+	// OAuth information for checking Internet access
+	private CommonsHttpOAuthConsumer httpOauthConsumer;
+	private OAuthProvider httpOauthprovider;
+	private final static String consumerKey = "2RKMlxcy1cf1WGFfHJvpg";
+	private final static String consumerSecret = "35Ege9Yk1vkoZmk4koDDZj07e9CJZtkRaLycXZepqA";
+	private final String CALLBACKURL = "socialmoodswing://credentials";
+	private int TWITTER_AUTH;
+	private String verifier;
 	
 	@Override
 	public void onResume()
@@ -330,6 +351,152 @@ public class TopicKeywordsActivity extends FragmentActivity {
 			}
 		}
      }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_topic_keywords, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+	    // Handle item selection
+	    switch (item.getItemId())
+	    {
+	    	case R.id.menu_login:        	
+	    		Credentials c = dh.getCredentials();
+	    		// remove current credentials from database
+	    		if(c != null) {
+	    			dh.deleteCredentials(c.getId());
+	    		}	
+	    		// start new thread for Twitter OAuth
+	    		newOAuthThread();
+	    		return true;
+	        case R.id.menu_help:
+	        	showHelpActivity();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	/**
+	 * Creates an instance of the Help Activity for the user to
+	 * view application help page
+	 */
+	public void showHelpActivity() {
+		Intent intent = new Intent(this, HelpActivity.class);
+		startActivity(intent);
+	}
+	
+	/**
+	 * Make a new thread for Twitter OAuth and run startOAuth
+	 */
+	public void newOAuthThread() {
+    	
+    	// run authentication process in new thread
+		Runnable runnable = new Runnable() {
+		    @Override
+		    public void run() {
+		    	Looper.prepare();
+				// show loading dialog
+				DialogFragment dialog = new LoadingDialogFragment();
+				dialog.show(getSupportFragmentManager(), "LoadingDialogFragment");
+		    	
+		    	// start Twitter OAuth
+		    	startOAuth();
+		        
+		    	// after finishing, close the progress bar
+		        dialog.dismiss();
+		        Looper.loop();
+		    }
+		};
+		
+		//start thread
+		new Thread(runnable).start();
+	}
+	
+	/**
+	 * Starts user authentication using Twitter OAuth
+	 */
+	public void startOAuth() {
+		
+		//Attempt to open Twitter OAuth in webview
+		try {
+		    httpOauthConsumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+		    httpOauthprovider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token",
+		                                            "https://api.twitter.com/oauth/access_token",
+		                                            "https://api.twitter.com/oauth/authorize");
+		    String authUrl = httpOauthprovider.retrieveRequestToken(httpOauthConsumer, CALLBACKURL);
+		    
+		    // open web view with for twitter authentication
+		    Intent intent = new Intent(this, TwitterWebviewActivity.class);
+		    intent.putExtra("URL", authUrl);
+		    startActivityForResult(intent, TWITTER_AUTH);
+		} catch (Exception e) {
+			DialogFragment dialog = new ConnectToNetworkDialogFragment();
+			dialog.show(getSupportFragmentManager(), "ConnectToNetworkDialogFragment");
+		}
+	}
+	
+	/**
+	 * Add credential results returned from Twitter webview to database.
+	 * 
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		// check if results come from webview
+        if (requestCode == TWITTER_AUTH)
+        {
+        	//check if results are "OK" from webview
+            if (resultCode == Activity.RESULT_OK)
+            {
+                verifier = (String) data.getExtras().get("oauth_verifier");
+
+                // Twitter authentication needs to be run in separate thread for newer
+                // versions of android
+            	Runnable runnable = new Runnable() {
+            		@Override
+        		    public void run() {
+        		    	Looper.prepare();
+        		    	try
+        		    	{
+            		    	httpOauthprovider.retrieveAccessToken(httpOauthConsumer, verifier);
+            		    
+            		
+            		        String user_key = httpOauthConsumer.getToken();
+            		        String user_secret = httpOauthConsumer.getTokenSecret();
+
+            		        // Save user_key and user_secret in database
+            		        Credentials c = new Credentials(user_key, user_secret);
+            		        dh.open();
+            		        dh.addCredentials(c);
+        		    	}
+        		    	catch (Exception e)
+        		    	{
+        		    		// cancel button pressed in webview
+        		    	} 
+        		    	Looper.loop();
+            		}
+            	};           	
+            	//start thread
+        		new Thread(runnable).start();
+            }else {
+            	// user uses back press to leave activity
+            }
+        }
+        else
+        {
+        	// non twitter auth request code
+        }
+    }
 }
 
 
