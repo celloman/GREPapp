@@ -61,8 +61,8 @@
             //myLine.Set('chart.spline', true); // Rounded points
             myLine.Set('chart.colors.alternate', true); // Different colors for positive and negative slopes (defined on chart.colors)
             //myLine.Set('chart.xaxispos', 'center'); // Allow for negative values
-			RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000}); // Unfolding effect
-			//myLine.Draw(); // No unfolding effect
+			//RGraph.Effects.Line.jQuery.UnfoldFromCenterTrace(myLine, {'duration': 1000}); // Unfolding effect
+			myLine.Draw(); // No unfolding effect
        	}
        	
        	function clear_graph(){
