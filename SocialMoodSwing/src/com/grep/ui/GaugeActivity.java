@@ -264,6 +264,7 @@ public class GaugeActivity extends FragmentActivity {
         dialog.setCancelable(false);
         dialog.setArguments(sessionValues);
         dialog.show(getSupportFragmentManager(), "EndSessionDialogFragment");
+		m_sessionPauseFinished = false;
 	}
 	
 	@Override
