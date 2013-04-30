@@ -22,17 +22,17 @@
     </RelativeLayout>
     
     <RelativeLayout
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:id="@+id/lowerLayout"
         android:layout_width="fill_parent"
-        android:layout_height="85dp"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" >
 
  	        <TextView
  	            android:id="@+id/time_left"
  	            android:layout_width="wrap_content"
- 	            android:layout_height="20dp"
+ 	            android:layout_height="18dp"
  	            android:layout_above="@+id/stop_button"
  	            android:layout_centerHorizontal="true"
             	android:layout_alignParentTop="true"	
