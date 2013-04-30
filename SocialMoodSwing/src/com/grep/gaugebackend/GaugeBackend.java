@@ -30,8 +30,8 @@ public class GaugeBackend {
 		m_sentimentQueue = new ArrayBlockingQueue<Tweet>(5);
 		
 		// convert the keywords to lower case
-		for(String keyword : keywords)
-			keyword = keyword.toLowerCase();
+		for(int i = 0; i < keywords.length; i++)
+			keywords[i] = keywords[i].toLowerCase();
 		
 		// create the threads
 		GetTweets getter = new GetTweets(m_fetchQueue, webToasts, keywords, accessToken, accessTokenSecret);
