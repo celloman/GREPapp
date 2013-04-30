@@ -5,27 +5,96 @@ and open the template in the editor.
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>User Manual</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<style>
+			li {margin-bottom:5px;}
+			h3 {margin-bottom:10px;}
+			ul {margin-top: 5px;margin-bottom:10px;}
+		</style>
 	</head>
 	<body>
-		<div><img src="./img/sms_logo.png" style="width:40px;vertical-align:middle;"/>
-		<strong style="font-size:22px">User Manual</strong></div>
+		<div><img src="./img/sms_logo.png" style="width:40px;vertical-align:middle;margin-right:10px;"/>
+		<strong style="font-size:30px;vertical-align:middle">Help Page</strong></div>
+		<br />
 		<div>
-			Disclaimer: The user is responsible for monitoring their own data usage.
+			This application gauges the real-time mood of Twitter users on any topic based on related keywords.
+		</div>
+		<br />
+		<div>
+			A Twitter account and Internet access is required in order to analyze topics with this app.
+			You may change Twitter accounts from the settings menu by selecting "Change User".
+			Changing accounts will not alter the contents that you have saved within the app.
+		</div>
+		<div>
+			<h3>Disclaimer</h3>
+			The user is responsible for monitoring their own data usage.
 			Analyzing topics with Social Mood Swing may utilize a large amount of data.
 			We recommend that you use Wi-Fi while running analysis sessions.
 		</div>
-		</br>
+		<br />
+		<div style="padding-left:10px">Jump To:
+			<br />
+			<div style="margin-left: 10px;">
+				<a href="#keywords">Keyword Selection Tips</a><br />
+				Usage:
+				<div style="padding-left:10px">
+					<a href="#usageList">Topic List Page</a><br />
+					<a href="#usageRun">Run History Page</a><br />
+					<a href="#usageAnalysis">Analysis Session Page</a><br />
+				</div>
+			</div>
+		</div>
 		<div>
-			<strong>Keyword Selection Tips:</strong></br>
+			<a name="keywords">
+			<h3>Keyword Selection Tips</h3>
 			The performance of this application is highly dependent on keywords that you choose.
 			The following tips may be helpful in selecting keywords for various topics:
 			<ul>
 				<li>Make sure that your keywords are spelled correctly (keywords are not case sensitive).</li>
+				<li>For Example: The Keyword "Twitter":
+					<ul>
+					<li>will match any of the following: TWITTER, twitter, "Twitter", twitter., #twitter, @twitter, or http://twitter.com</li>
+					<li>but it will not match: TwitterTracker or #newtwitter</li>
+					</ul>
+				</li>
 				<li>Do not choose keywords that are vague or not specific to the topic, as this may cause the application to gather irrelevant Tweets.</li>
 				<li>Do not choose keywords with built-in bias. Choosing keywords that are negatively/positively associated with the topic to begin with may bias your results.</li>
-				<li></li>
+				<li>A single keyword field may contain multiple words.</li>
+			</ul>
+		</div>
+		<div>
+			<a name="usageList">
+			<h3>Application Usage</h3>
+				<strong>Topics Page</strong>
+					<ul>
+						<li>When looking at the Topics page, click the "New Topic" button in order to create a new topic.</li>
+						<li>Once there is at least one topic, you may click the pencil icon to edit or delete that topic.</li>
+						<li>Clicking on a topic's title will take you to the "Run History" page for that topic.</li>
+					</ul>
+					<br />
+				<a name="usageRun">
+				<strong>Run History Page</strong>
+					<ul>
+						<li>From the top of the Run History page you can start a new analysis session by entering the number of hours/minutes you want the session to run for.</li>
+						<li>Starting an analysis session from this page will begin an analysis session based on the keywords for the current topic.</li>
+						<li>General average statistics are displayed concerning all analysis sessions in the history for the current topic.</li>
+						<li>Once at least two sessions are stored in the current topic's history, a graph will be displayed showing the trends for the 
+						topic from one analysis session to the next.</li>
+						<li>Tapping on a point in the graph will display the average sentiment and number of Tweets processed for that analysis session.</li>
+						<li>Once there are more than 8 analysis sessions in the current topic's history, the graph will become horizontally scrollable.</li>
+						<li>The date and time of the analysis session is displayed underneath the graph below each point.</li>
+					</ul>
+					<br />
+				<a name="usageAnalysis">
+				<strong>Analysis Session Page</strong>
+					<ul>
+						<li>At the top of the Analysis Session page is a gauge which displays the ratio of positive vs. negative sentiment for the most recent Tweets that have been processed.</li>
+						<li>Also displayed are the number of Tweets that have been processed as well as the total average sentiment for the current analysis session.</li>
+						<li>Popular Tweets will be displayed below the gauge as they are processed and may be clicked on for more detailed information (this information may be exited by clicking anywhere on the screen).</li>
+						<li>The amount of time remaining for the current analysis session is displayed near the bottom of the screen.</li>
+						<li>Upon clicking "Stop" you will have the option to terminate the current analysis session and choose whether or not to save the current results, or to continue running the session.</li>
+						<li>When an analysis session has ended after the specified time interval, a dialog will display a summary of the session results. You may choose whether or not to save these results.</li>
+					</ul>
 			</ul>
 		</div>
 	</body>
